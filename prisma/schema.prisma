@@ -11,6 +11,7 @@ model Admin {
   id       String @id @default(uuid())
   username String @unique
   password String
+  role     String @default("admin")
 }
 
 model Category {
@@ -313,4 +314,18 @@ model Referral {
   status       String   @default("pending")
   bonus        Float    @default(0)
   createdAt    DateTime @default(now())
+}
+
+model HomeBlock {
+  id          String  @id @default(uuid())
+  blockType   String
+  title       String  @default("")
+  subtitle    String  @default("")
+  buttonText  String  @default("")
+  buttonLink  String  @default("")
+  image       String  @default("")
+  bgImage     String  @default("")
+  order       Int     @default(0)
+  active      Boolean @default(true)
+  config      String  @default("{}")
 }

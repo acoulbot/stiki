@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import HeroSlider from "@/components/HeroSlider";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -8,8 +7,11 @@ import { prisma } from "@/lib/prisma";
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [slides, devices, sticks, blogPosts] = await Promise.all([
-    prisma.sliderImage.findMany({ where: { active: true }, orderBy: { order: "asc" } }),
+  const [heroBlocks, deviceBlocks, stickBlocks, newsBlocks, devices, sticks, news] = await Promise.all([
+    prisma.homeBlock.findMany({ where: { active: true, blockType: "hero" }, orderBy: { order: "asc" }, take: 1 }),
+    prisma.homeBlock.findMany({ where: { active: true, blockType: "device" }, orderBy: { order: "asc" }, take: 4 }),
+    prisma.homeBlock.findMany({ where: { active: true, blockType: "stick" }, orderBy: { order: "asc" }, take: 3 }),
+    prisma.homeBlock.findMany({ where: { active: true, blockType: "news" }, orderBy: { order: "asc" }, take: 4 }),
     prisma.product.findMany({
       take: 4,
       where: { productType: "device" },
@@ -22,12 +24,14 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
       include: { category: true },
     }),
-    prisma.blogPost.findMany({
+    prisma.news.findMany({
       take: 4,
       where: { published: true },
       orderBy: { createdAt: "desc" },
     }),
   ]);
+
+  const hero = heroBlocks[0] || null;
 
   const websiteLd = {
     "@context": "https://schema.org",
@@ -54,247 +58,247 @@ export default async function HomePage() {
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
       <main className="flex-1 pb-16 lg:pb-0">
-        {/* Hero Slider */}
-        <section className="max-w-7xl mx-auto px-4 py-6">
-          <HeroSlider slides={slides} />
+
+        {/* 1. Hero Block — neon diamond gradient */}
+        <section className="relative overflow-hidden" style={{ minHeight: "520px" }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#2a1015]" />
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rotate-45 border border-[#E8403A]/30 rounded-[40px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rotate-45 border border-[#E8403A]/20 rounded-[30px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rotate-45 border border-[#E8403A]/40 rounded-[20px] shadow-[0_0_60px_rgba(232,64,58,0.15)]" />
+          </div>
+          <div className="absolute top-[10%] left-[5%] w-32 h-32 bg-[#E8403A]/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-[10%] right-[10%] w-48 h-48 bg-[#E8403A]/8 rounded-full blur-3xl" />
+
+          <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1 text-center md:text-left z-10">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
+                {hero?.title || "hittabak"}
+              </h1>
+              <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-lg">
+                {hero?.subtitle || "Устройства нагревания табака нового поколения"}
+              </p>
+              {(hero?.buttonText || true) && (
+                <Link
+                  href={hero?.buttonLink || "/catalog/devices"}
+                  className="inline-block bg-[#E8403A] hover:bg-[#d63530] text-white font-bold px-8 py-3.5 rounded-lg transition-all hover:shadow-[0_0_20px_rgba(232,64,58,0.4)] text-sm uppercase tracking-wider"
+                >
+                  {hero?.buttonText || "Смотреть каталог"}
+                </Link>
+              )}
+            </div>
+            <div className="flex-1 flex justify-center z-10">
+              {hero?.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={getImageSrc(hero.image)}
+                  alt={hero.title}
+                  className="max-h-[400px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-[fadeInUp_0.8s_ease-out]"
+                />
+              ) : (
+                <div className="w-64 h-80 rounded-2xl bg-gradient-to-b from-[#333] to-[#1a1a1a] border border-[#E8403A]/20 flex items-center justify-center shadow-[0_0_40px_rgba(232,64,58,0.2)]">
+                  <span className="text-[#E8403A] text-4xl font-bold">hit</span>
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
-        {/* Devices catalog */}
+        {/* 2. Products Grid — 1 big + 1 medium + 2 small */}
         <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-4 py-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все устройства</h2>
-              <Link href="/catalog/devices" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
-                Весь каталог &rarr;
-              </Link>
+          <section className="max-w-7xl mx-auto px-4 py-10">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все продукты hittabak</h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {devices.length > 0 ? devices.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/product/${product.slug}`}
-                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-square bg-bg-light p-4 flex items-center justify-center relative overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={getImageSrc(product.image)}
-                      alt={product.name}
-                      className="max-h-full max-w-full object-contain img-zoom"
-                      loading="lazy"
-                    />
-                    {product.tags?.includes("new") && (
-                      <span className="absolute top-2 left-2 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                        НОВИНКА
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-sm font-semibold text-text-dark line-clamp-2">{product.name}</h3>
-                    <p className="text-xs text-text-gray mt-1">{product.brand}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="font-bold text-text-dark">{product.price.toLocaleString("ru-RU")} &#8381;</span>
-                      <svg className="w-5 h-5 text-text-light group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[280px] md:auto-rows-[320px]">
+              {(deviceBlocks.length > 0 ? deviceBlocks : devices.slice(0, 4)).map((item, idx) => {
+                const isBlock = "blockType" in item;
+                const title = isBlock ? item.title : item.name;
+                const subtitle = isBlock ? item.subtitle : item.brand;
+                const image = isBlock ? item.image : item.image;
+                const link = isBlock ? item.buttonLink : `/product/${item.slug}`;
+                const isBig = idx === 0;
+                const isMedium = idx === 1;
+
+                return (
+                  <Link
+                    key={item.id}
+                    href={link || "/catalog/devices"}
+                    className={`group relative overflow-hidden rounded-2xl ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rotate-45 border border-[#E8403A]/30 rounded-[15px]" />
+                    </div>
+                    <div className="relative h-full flex flex-col justify-between p-5 z-10">
+                      <div>
+                        <h3 className={`font-bold text-white ${isBig ? "text-xl md:text-2xl" : "text-sm md:text-base"} mb-1`}>
+                          {title}
+                        </h3>
+                        {subtitle && (
+                          <p className={`text-gray-400 ${isBig ? "text-sm" : "text-xs"}`}>{subtitle}</p>
+                        )}
+                      </div>
+                      <div className="flex justify-center items-end flex-1 pt-4">
+                        {image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={getImageSrc(image)}
+                            alt={title}
+                            className={`object-contain transition-transform group-hover:scale-105 ${isBig ? "max-h-[280px]" : isMedium ? "max-h-[160px]" : "max-h-[120px]"}`}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className={`bg-[#222] rounded-xl flex items-center justify-center ${isBig ? "w-40 h-40" : "w-20 h-20"}`}>
+                            <span className="text-gray-500 text-xs">Фото</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-colors z-10">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
-                  </div>
-                </Link>
-              )) : (
-                <>
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
-                      <div className="aspect-square bg-bg-light flex items-center justify-center">
-                        <span className="text-text-light text-sm">Устройство {i}</span>
-                      </div>
-                      <div className="p-3">
-                        <div className="h-4 skeleton w-3/4 mb-2" />
-                        <div className="h-3 skeleton w-1/2" />
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
+                  </Link>
+                );
+              })}
             </div>
-          </section>
-        </ScrollReveal>
-
-        {/* Sticks catalog */}
-        <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-4 py-8 bg-bg-beige rounded-2xl mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Стики</h2>
-              <Link href="/catalog/sticks" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
-                Весь каталог &rarr;
+            <div className="text-center mt-6">
+              <Link
+                href="/catalog/devices"
+                className="inline-block bg-[#1A1A1A] hover:bg-[#333] text-white font-bold px-8 py-3 rounded-lg transition-colors text-sm uppercase tracking-wider"
+              >
+                Весь каталог устройств
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {sticks.length > 0 ? sticks.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/product/${product.slug}`}
-                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-[4/3] bg-white p-4 flex items-center justify-center overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={getImageSrc(product.image)}
-                      alt={product.name}
-                      className="max-h-full max-w-full object-contain img-zoom"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-text-dark">{product.name}</h3>
-                    <p className="text-xs text-text-gray mt-1 line-clamp-2">{product.description}</p>
-                  </div>
-                </Link>
-              )) : (
-                <>
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
-                      <div className="aspect-[4/3] bg-bg-light flex items-center justify-center">
-                        <span className="text-text-light text-sm">Стики {i}</span>
-                      </div>
-                      <div className="p-4">
-                        <div className="h-4 skeleton w-3/4 mb-2" />
-                        <div className="h-3 skeleton w-1/2" />
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
           </section>
         </ScrollReveal>
 
-        {/* Services grid */}
+        {/* 3. Sticks Grid — 3 cards + full catalog link */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-4 py-10">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { icon: "📍", title: "Найти точку продаж", desc: "Ближайший магазин рядом", href: "/stores" },
-                { icon: "🛡️", title: "Продление гарантии", desc: "Зарегистрируйте устройство", href: "/support" },
-                { icon: "💬", title: "Поддержка 24/7", desc: "Мы всегда на связи", href: "/support" },
-                { icon: "🎁", title: "Приглашай друзей", desc: "Получай бонусы", href: "/referral" },
-              ].map((item) => (
-                <Link
-                  key={item.title}
-                  href={item.href}
-                  className="bg-white rounded-xl border border-border p-5 hover:shadow-lg hover:border-accent/30 transition-all text-center group"
-                >
-                  <span className="text-3xl block mb-3">{item.icon}</span>
-                  <h3 className="text-sm font-bold text-text-dark mb-1">{item.title}</h3>
-                  <p className="text-xs text-text-gray">{item.desc}</p>
-                </Link>
-              ))}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все стики</h2>
             </div>
-          </section>
-        </ScrollReveal>
-
-        {/* Social block */}
-        <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-4 py-8">
-            <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark text-center mb-6">Подписывайся!</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <a
-                href="https://t.me/hittabak"
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-                className="flex items-center gap-4 bg-white rounded-xl border border-border p-5 hover:shadow-lg transition-shadow"
+              {(stickBlocks.length > 0 ? stickBlocks : sticks.slice(0, 3)).map((item) => {
+                const isBlock = "blockType" in item;
+                const title = isBlock ? item.title : item.name;
+                const subtitle = isBlock ? item.subtitle : item.description;
+                const image = isBlock ? item.image : item.image;
+                const link = isBlock ? item.buttonLink : `/product/${item.slug}`;
+
+                return (
+                  <Link
+                    key={item.id}
+                    href={link || "/catalog/sticks"}
+                    className="group relative overflow-hidden rounded-2xl aspect-[4/5]"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rotate-45 border border-[#E8403A]/25 rounded-[12px]" />
+                    </div>
+                    <div className="relative h-full flex flex-col p-5 z-10">
+                      <div>
+                        <h3 className="font-bold text-white text-base md:text-lg mb-1">{title}</h3>
+                        {subtitle && <p className="text-gray-400 text-xs line-clamp-2">{subtitle}</p>}
+                      </div>
+                      <div className="flex-1 flex items-center justify-center pt-4">
+                        {image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={getImageSrc(image)}
+                            alt={title}
+                            className="max-h-[200px] object-contain transition-transform group-hover:scale-105"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-24 h-32 bg-[#222] rounded-xl flex items-center justify-center">
+                            <span className="text-gray-500 text-xs">Фото</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-colors z-10">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="text-center mt-6">
+              <Link
+                href="/catalog/sticks"
+                className="inline-block bg-[#1A1A1A] hover:bg-[#333] text-white font-bold px-8 py-3 rounded-lg transition-colors text-sm uppercase tracking-wider"
               >
-                <div className="w-12 h-12 bg-[#229ED9]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-text-dark">Telegram-бот</h3>
-                  <p className="text-xs text-text-gray">Новости и акции</p>
-                </div>
-              </a>
-              <a
-                href="https://vk.com/hittabak"
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-                className="flex items-center gap-4 bg-white rounded-xl border border-border p-5 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-12 h-12 bg-[#4C75A3]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-[#4C75A3]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.391 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.847 2.49 2.27 4.674 2.862 4.674.22 0 .322-.102.322-.66V9.72c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.644v3.049c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.644-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-text-dark">ВКонтакте</h3>
-                  <p className="text-xs text-text-gray">Сообщество бренда</p>
-                </div>
-              </a>
-              <a
-                href="https://dzen.ru/hittabak"
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-                className="flex items-center gap-4 bg-white rounded-xl border border-border p-5 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-12 h-12 bg-[#FF6600]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl font-bold text-[#FF6600]">Я</span>
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-text-dark">Дзен</h3>
-                  <p className="text-xs text-text-gray">Статьи и обзоры</p>
-                </div>
-              </a>
+                Весь каталог стиков
+              </Link>
             </div>
           </section>
         </ScrollReveal>
 
-        {/* Blog preview */}
+        {/* 4. News Block — 4 cards */}
         <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-4 py-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Блог hittabak</h2>
-              <Link href="/blog" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
-                Все статьи &rarr;
+          <section className="max-w-7xl mx-auto px-4 py-10">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Наши новости</h2>
+              <Link href="/news" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
+                Все новости &rarr;
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {blogPosts.length > 0 ? blogPosts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-video bg-bg-light overflow-hidden">
-                    {post.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={getImageSrc(post.image)}
-                        alt={post.title}
-                        className="w-full h-full object-cover img-zoom"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-text-light text-sm">Блог</div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-text-dark line-clamp-2 group-hover:text-accent transition-colors">
-                      {post.title}
-                    </h3>
-                    {post.excerpt && (
-                      <p className="text-xs text-text-gray mt-2 line-clamp-2">{post.excerpt}</p>
-                    )}
-                  </div>
-                </Link>
-              )) : (
+              {(newsBlocks.length > 0 ? newsBlocks : news).map((item) => {
+                const isBlock = "blockType" in item;
+                const title = isBlock ? item.title : item.title;
+                const desc = isBlock ? item.subtitle : item.excerpt;
+                const image = isBlock ? item.image : item.image;
+                const link = isBlock ? (item.buttonLink || "/news") : `/news/${item.slug}`;
+
+                return (
+                  <Link
+                    key={item.id}
+                    href={link}
+                    className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                  >
+                    <div className="aspect-video bg-bg-light overflow-hidden">
+                      {image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getImageSrc(image)}
+                          alt={title}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#2a1015] flex items-center justify-center">
+                          <span className="text-[#E8403A]/40 text-2xl font-bold">hit</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-sm font-semibold text-text-dark line-clamp-2 group-hover:text-accent transition-colors">
+                        {title}
+                      </h3>
+                      {desc && (
+                        <p className="text-xs text-text-gray mt-2 line-clamp-2">{desc}</p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+              {newsBlocks.length === 0 && news.length === 0 && (
                 <>
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
-                      <div className="aspect-video bg-bg-light flex items-center justify-center">
-                        <span className="text-text-light text-sm">Статья {i}</span>
+                      <div className="aspect-video bg-gradient-to-br from-[#1a1a1a] to-[#2a1015] flex items-center justify-center">
+                        <span className="text-[#E8403A]/30 text-xl font-bold">hit</span>
                       </div>
                       <div className="p-4">
-                        <div className="h-4 skeleton w-3/4 mb-2" />
-                        <div className="h-3 skeleton w-full" />
+                        <div className="h-4 bg-bg-light rounded w-3/4 mb-2" />
+                        <div className="h-3 bg-bg-light rounded w-full" />
                       </div>
                     </div>
                   ))}
