@@ -12,7 +12,7 @@ export default function OGImage() {
     (
       <div
         style={{
-          background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+          background: "linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 50%, #1A1A1A 100%)",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -26,26 +26,10 @@ export default function OGImage() {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            gap: "8px",
             marginBottom: "32px",
           }}
         >
-          <div
-            style={{
-              width: "80px",
-              height: "80px",
-              background: "#e94560",
-              borderRadius: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "40px",
-              color: "white",
-              fontWeight: 800,
-            }}
-          >
-            TH
-          </div>
           <div
             style={{
               fontSize: "72px",
@@ -54,7 +38,17 @@ export default function OGImage() {
               letterSpacing: "-2px",
             }}
           >
-            ТОПХИТ
+            hit
+          </div>
+          <div
+            style={{
+              fontSize: "72px",
+              fontWeight: 800,
+              color: "#E8403A",
+              letterSpacing: "-2px",
+            }}
+          >
+            tabak
           </div>
         </div>
         <div
@@ -66,7 +60,7 @@ export default function OGImage() {
             lineHeight: 1.4,
           }}
         >
-          Интернет-магазин товаров оптом и в розницу
+          Устройства и стики нового поколения
         </div>
         <div
           style={{
@@ -75,7 +69,7 @@ export default function OGImage() {
             marginTop: "16px",
           }}
         >
-          tophitt.ru
+          hittabak.ru
         </div>
       </div>
     ),

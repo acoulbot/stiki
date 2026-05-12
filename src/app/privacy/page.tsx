@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Политика обработки персональных данных — ТОПХИТ",
-  description: "Политика обработки персональных данных ООО/ИП ТОПХИТ. Порядок сбора, хранения и защиты персональных данных пользователей сайта tophitt.ru",
-  alternates: { canonical: "https://tophitt.ru/privacy" },
+  title: "Политика обработки персональных данных — hittabak",
+  description: "Политика обработки персональных данных hittabak. Порядок сбора, хранения и защиты персональных данных пользователей сайта hittabak.ru",
+  alternates: { canonical: "https://hittabak.ru/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -20,8 +20,8 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-base font-bold text-text-dark mb-2">1. Общие положения</h2>
               <p>1.1. Настоящая Политика оператора в отношении обработки персональных данных (далее — Политика) разработана в соответствии с требованиями Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
-              <p className="mt-2">1.2. Оператор: Компания ТОПХИТ (далее — Оператор).</p>
-              <p className="mt-2">1.3. Сайт Оператора: tophitt.ru (далее — Сайт).</p>
+              <p className="mt-2">1.2. Оператор: Компания hittabak (далее — Оператор).</p>
+              <p className="mt-2">1.3. Сайт Оператора: hittabak.ru (далее — Сайт).</p>
               <p className="mt-2">1.4. Настоящая Политика определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных Пользователей Сайта.</p>
             </section>
 
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
               <ul className="list-disc ml-5 space-y-1 mt-2">
                 <li>Получать информацию, касающуюся обработки его данных;</li>
                 <li>Требовать уточнения, блокирования или уничтожения данных в случае их неполноты или неточности;</li>
-                <li>Отозвать согласие на обработку персональных данных, направив электронное письмо на официальный адрес Оператора: <a href="mailto:info@tophitt.ru" className="text-primary hover:underline">info@tophitt.ru</a>.</li>
+                <li>Отозвать согласие на обработку персональных данных, направив электронное письмо на официальный адрес Оператора: <a href="mailto:support@hittabak.ru" className="text-primary hover:underline">support@hittabak.ru</a>.</li>
               </ul>
             </section>
 
@@ -104,8 +104,8 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-base font-bold text-text-dark mb-2">Контактная информация</h2>
               <p>По вопросам обработки персональных данных обращайтесь:</p>
-              <p className="mt-2">Телефон: <a href="tel:+79362568950" className="text-primary hover:underline">+7 (936) 256-89-50</a></p>
-              <p>Email: <a href="mailto:info@tophitt.ru" className="text-primary hover:underline">info@tophitt.ru</a></p>
+              <p className="mt-2">Телефон: <a href="tel:+78000000000" className="text-primary hover:underline">8 (800) 000-00-00</a></p>
+              <p>Email: <a href="mailto:support@hittabak.ru" className="text-primary hover:underline">support@hittabak.ru</a></p>
             </section>
           </div>
         </div>

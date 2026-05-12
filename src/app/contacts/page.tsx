@@ -1,0 +1,63 @@
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import type { Metadata } from "next";
+import ContactForm from "@/components/ContactForm";
+
+export const metadata: Metadata = {
+  title: "Контакты — hittabak",
+  description: "Свяжитесь с hittabak. Телефон, email, адрес офиса, форма обратной связи.",
+};
+
+export default function ContactsPage() {
+  return (
+    <>
+      <Header />
+      <main className="flex-1 pb-16 lg:pb-0">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <h1 className="font-heading text-3xl sm:text-4xl font-extrabold text-text-dark mb-8">Контакты</h1>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl border border-border p-5">
+                  <h3 className="text-sm font-bold text-text-dark mb-2">Телефон горячей линии</h3>
+                  <a href="tel:+78000000000" className="text-lg font-bold text-accent hover:text-accent-dark transition-colors">
+                    8 (800) 000-00-00
+                  </a>
+                  <p className="text-xs text-text-gray mt-1">Бесплатно по России, ПН-ВС 09:00-21:00</p>
+                </div>
+
+                <div className="bg-white rounded-xl border border-border p-5">
+                  <h3 className="text-sm font-bold text-text-dark mb-2">Email</h3>
+                  <a href="mailto:support@hittabak.ru" className="text-accent hover:text-accent-dark transition-colors">
+                    support@hittabak.ru
+                  </a>
+                </div>
+
+                <div className="bg-white rounded-xl border border-border p-5">
+                  <h3 className="text-sm font-bold text-text-dark mb-2">Мессенджеры</h3>
+                  <div className="flex gap-3">
+                    <a href="https://t.me/hittabak" target="_blank" rel="nofollow noopener noreferrer"
+                      className="px-4 py-2 bg-[#229ED9]/10 text-[#229ED9] rounded-lg text-sm font-medium hover:bg-[#229ED9]/20 transition-colors">
+                      Telegram
+                    </a>
+                    <a href="https://vk.com/hittabak" target="_blank" rel="nofollow noopener noreferrer"
+                      className="px-4 py-2 bg-[#4C75A3]/10 text-[#4C75A3] rounded-lg text-sm font-medium hover:bg-[#4C75A3]/20 transition-colors">
+                      VK
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-bold text-text-dark mb-4">Форма обратной связи</h2>
+              <ContactForm />
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}

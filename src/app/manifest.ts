@@ -2,13 +2,13 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ТОПХИТ — Интернет-магазин",
-    short_name: "ТОПХИТ",
-    description: "Интернет-магазин товаров оптом и в розницу по выгодным ценам",
+    name: "hittabak — Устройства и стики",
+    short_name: "hittabak",
+    description: "Устройства нагревания табака и стики нового поколения",
     start_url: "/",
     display: "standalone",
-    background_color: "#f8f9fa",
-    theme_color: "#e94560",
+    background_color: "#F5F0EB",
+    theme_color: "#1A1A1A",
     icons: [
       {
         src: "/favicon-32x32.png",

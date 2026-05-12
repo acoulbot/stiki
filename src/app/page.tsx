@@ -1,256 +1,308 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlider from "@/components/HeroSlider";
-import ProductCard from "@/components/ProductCard";
 import ScrollReveal from "@/components/ScrollReveal";
-import CategoryGrid from "@/components/CategoryGrid";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const now = new Date();
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-  const [slides, categories, featuredProducts, newProducts, saleProducts, reviews] = await Promise.all([
+  const [slides, devices, sticks, blogPosts] = await Promise.all([
     prisma.sliderImage.findMany({ where: { active: true }, orderBy: { order: "asc" } }),
-    prisma.category.findMany({
-      where: { parentId: null },
-      orderBy: { order: "asc" },
-      include: { children: { orderBy: { order: "asc" } }, _count: { select: { products: true } } },
-    }),
-    prisma.product.findMany({
-      take: 8,
-      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-      include: { category: true, reviews: { select: { rating: true } } },
-    }),
     prisma.product.findMany({
       take: 4,
-      where: { createdAt: { gte: sevenDaysAgo } },
+      where: { productType: "device" },
       orderBy: { createdAt: "desc" },
-      include: { category: true, reviews: { select: { rating: true } } },
+      include: { category: true },
     }),
     prisma.product.findMany({
-      take: 4,
-      where: { oldPrice: { not: null } },
-      orderBy: { updatedAt: "desc" },
-      include: { category: true, reviews: { select: { rating: true } } },
-    }),
-    prisma.review.findMany({
-      take: 6,
-      where: { published: true, rating: { gte: 4 } },
+      take: 3,
+      where: { productType: "stick" },
       orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true, lastName: true } }, product: { select: { name: true, slug: true } } },
+      include: { category: true },
+    }),
+    prisma.blogPost.findMany({
+      take: 4,
+      where: { published: true },
+      orderBy: { createdAt: "desc" },
     }),
   ]);
 
   const websiteLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "ТОПХИТ",
-    url: "https://tophitt.ru",
+    name: "hittabak",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://hittabak.ru",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://tophitt.ru/catalog?search={search_term_string}",
+      target: `${process.env.NEXT_PUBLIC_BASE_URL || "https://hittabak.ru"}/catalog?search={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };
 
-  function getAvgRating(revs: { rating: number }[]) {
-    if (revs.length === 0) return 0;
-    return Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length);
+  function getImageSrc(image: string) {
+    if (!image) return "/placeholder.jpg";
+    if (image.startsWith("http")) return image;
+    if (image.startsWith("/uploads/")) return `/api${image}`;
+    if (image.startsWith("/")) return `/api/static${image}`;
+    return image;
   }
 
   return (
     <>
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
-      <main className="flex-1">
+      <main className="flex-1 pb-16 lg:pb-0">
         {/* Hero Slider */}
-        <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <section className="max-w-7xl mx-auto px-4 py-6">
           <HeroSlider slides={slides} />
         </section>
 
-        {/* H1 + УТП / Оффер */}
-        <section className="max-w-7xl mx-auto px-3 sm:px-4 pt-2 sm:pt-4 pb-4 sm:pb-6">
-          <div className="bg-gradient-to-br from-bg-white to-primary/[0.03] rounded-2xl border border-border p-5 sm:p-8 text-center">
-            <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-dark leading-tight mb-3 sm:mb-4">
-              Товары оптом и в розницу<br className="hidden sm:block" /> по ценам от производителя
-            </h1>
-            <p className="text-text-gray text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed">
-              Продукты, бытовая химия, товары для дома — <strong className="text-text-dark">от 1 штуки</strong> или <strong className="text-text-dark">упаковками со скидкой&nbsp;10%</strong>. Доставка по Москве и МО, самовывоз со склада.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/catalog" className="bg-primary hover:bg-primary-dark text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm sm:text-base shadow-md hover:shadow-lg">
-                Перейти в каталог
-              </Link>
-              <Link href="/wholesale" className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold px-8 py-3 rounded-xl transition-all text-sm sm:text-base">
-                Оптовым клиентам
+        {/* Devices catalog */}
+        <ScrollReveal>
+          <section className="max-w-7xl mx-auto px-4 py-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все устройства</h2>
+              <Link href="/catalog/devices" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
+                Весь каталог &rarr;
               </Link>
             </div>
-          </div>
-        </section>
-
-        {/* Advantages */}
-        <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-              {[
-                { icon: "🚚", title: "Бесплатная доставка", desc: "При заказе от 5 000 ₽" },
-                { icon: "🛡️", title: "Гарантия качества", desc: "Только оригинальная продукция" },
-                { icon: "💬", title: "Поддержка 24/7", desc: "Ответим на любые вопросы" },
-                { icon: "↩️", title: "Возврат 14 дней", desc: "Без лишних вопросов" },
-              ].map((item) => (
-                <div key={item.title} className="bg-bg-white rounded-xl border border-border p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3 hover:shadow-md transition-shadow">
-                  <span className="text-xl sm:text-2xl flex-shrink-0">{item.icon}</span>
-                  <div>
-                    <h3 className="font-heading text-xs sm:text-sm font-bold text-text-dark">{item.title}</h3>
-                    <p className="text-[10px] sm:text-xs text-text-gray mt-0.5">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </ScrollReveal>
-
-        {/* Categories */}
-        <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Категории товаров</h2>
-              <Link href="/catalog" className="text-primary hover:underline text-xs sm:text-sm">Все категории →</Link>
-            </div>
-            <CategoryGrid categories={categories.map(c => ({ id: c.id, name: c.name, slug: c.slug, icon: c.icon, children: c.children.map(ch => ({ id: ch.id, name: ch.name, slug: ch.slug, icon: ch.icon })), _count: c._count }))} />
-          </section>
-        </ScrollReveal>
-
-        {/* Sale products */}
-        {saleProducts.length > 0 && (
-          <ScrollReveal>
-            <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-              <div className="bg-gradient-to-r from-danger/10 to-accent/10 rounded-xl p-4 sm:p-6 border border-danger/20">
-                <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <span className="text-xl sm:text-2xl">🔥</span>
-                    <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Акции и скидки</h2>
-                  </div>
-                  <Link href="/catalog?sort=price_asc" className="text-danger hover:underline text-xs sm:text-sm font-medium">Все акции →</Link>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-                  {saleProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      id={product.id}
-                      name={product.name}
-                      slug={product.slug}
-                      price={product.price}
-                      oldPrice={product.oldPrice}
-                      image={product.image}
-                      inStock={product.inStock}
-                      categorySlug={product.category.slug}
-                      rating={getAvgRating(product.reviews)}
-                      reviewCount={product.reviews.length}
-                    />
-                  ))}
-                </div>
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* Featured products */}
-        <ScrollReveal>
-          <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Популярные товары</h2>
-              <Link href="/catalog" className="text-primary hover:underline text-xs sm:text-sm">Все товары →</Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-              {featuredProducts.map((product) => (
-                <ProductCard
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {devices.length > 0 ? devices.map((product) => (
+                <Link
                   key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  slug={product.slug}
-                  price={product.price}
-                  oldPrice={product.oldPrice}
-                  image={product.image}
-                  inStock={product.inStock}
-                  categorySlug={product.category.slug}
-                  rating={getAvgRating(product.reviews)}
-                  reviewCount={product.reviews.length}
-                  isFeatured={product.isFeatured}
-                />
-              ))}
-            </div>
-          </section>
-        </ScrollReveal>
-
-        {/* New arrivals */}
-        {newProducts.length > 0 && (
-          <ScrollReveal>
-            <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <span className="text-xl sm:text-2xl">✨</span>
-                  <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Новинки</h2>
-                </div>
-                <Link href="/catalog?sort=new" className="text-primary hover:underline text-xs sm:text-sm">Все новинки →</Link>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-                {newProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    slug={product.slug}
-                    price={product.price}
-                    oldPrice={product.oldPrice}
-                    image={product.image}
-                    inStock={product.inStock}
-                    categorySlug={product.category.slug}
-                    rating={getAvgRating(product.reviews)}
-                    reviewCount={product.reviews.length}
-                    isNew
-                  />
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* Customer reviews */}
-        {reviews.length > 0 && (
-          <ScrollReveal>
-            <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-6 sm:pb-10">
-              <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark mb-4 sm:mb-6 text-center">Отзывы покупателей</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {reviews.map((review) => (
-                  <div key={review.id} className="bg-bg-white rounded-xl border border-border p-4 sm:p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
-                        {(review.user.name || "?")[0].toUpperCase()}
+                  href={`/product/${product.slug}`}
+                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-square bg-bg-light p-4 flex items-center justify-center relative overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getImageSrc(product.image)}
+                      alt={product.name}
+                      className="max-h-full max-w-full object-contain img-zoom"
+                      loading="lazy"
+                    />
+                    {product.tags?.includes("new") && (
+                      <span className="absolute top-2 left-2 bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                        НОВИНКА
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-sm font-semibold text-text-dark line-clamp-2">{product.name}</h3>
+                    <p className="text-xs text-text-gray mt-1">{product.brand}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="font-bold text-text-dark">{product.price.toLocaleString("ru-RU")} &#8381;</span>
+                      <svg className="w-5 h-5 text-text-light group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              )) : (
+                <>
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
+                      <div className="aspect-square bg-bg-light flex items-center justify-center">
+                        <span className="text-text-light text-sm">Устройство {i}</span>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-text-dark">{review.user.name || "Покупатель"} {review.user.lastName?.[0] ? `${review.user.lastName[0]}.` : ""}</p>
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <svg key={s} className={`w-3 h-3 ${s <= review.rating ? "text-accent fill-accent" : "text-gray-200 fill-gray-200"}`} viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                        </div>
+                      <div className="p-3">
+                        <div className="h-4 skeleton w-3/4 mb-2" />
+                        <div className="h-3 skeleton w-1/2" />
                       </div>
                     </div>
-                    {review.text && <p className="text-sm text-text-gray line-clamp-3 mb-2">{review.text}</p>}
-                    <Link href={`/product/${review.product.slug}`} className="text-xs text-primary hover:underline">{review.product.name}</Link>
+                  ))}
+                </>
+              )}
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Sticks catalog */}
+        <ScrollReveal>
+          <section className="max-w-7xl mx-auto px-4 py-8 bg-bg-beige rounded-2xl mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Стики</h2>
+              <Link href="/catalog/sticks" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
+                Весь каталог &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {sticks.length > 0 ? sticks.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/product/${product.slug}`}
+                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-[4/3] bg-white p-4 flex items-center justify-center overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getImageSrc(product.image)}
+                      alt={product.name}
+                      className="max-h-full max-w-full object-contain img-zoom"
+                      loading="lazy"
+                    />
                   </div>
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-text-dark">{product.name}</h3>
+                    <p className="text-xs text-text-gray mt-1 line-clamp-2">{product.description}</p>
+                  </div>
+                </Link>
+              )) : (
+                <>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
+                      <div className="aspect-[4/3] bg-bg-light flex items-center justify-center">
+                        <span className="text-text-light text-sm">Стики {i}</span>
+                      </div>
+                      <div className="p-4">
+                        <div className="h-4 skeleton w-3/4 mb-2" />
+                        <div className="h-3 skeleton w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Services grid */}
+        <ScrollReveal>
+          <section className="max-w-7xl mx-auto px-4 py-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { icon: "📍", title: "Найти точку продаж", desc: "Ближайший магазин рядом", href: "/stores" },
+                { icon: "🛡️", title: "Продление гарантии", desc: "Зарегистрируйте устройство", href: "/support" },
+                { icon: "💬", title: "Поддержка 24/7", desc: "Мы всегда на связи", href: "/support" },
+                { icon: "🎁", title: "Приглашай друзей", desc: "Получай бонусы", href: "/referral" },
+              ].map((item) => (
+                <Link
+                  key={item.title}
+                  href={item.href}
+                  className="bg-white rounded-xl border border-border p-5 hover:shadow-lg hover:border-accent/30 transition-all text-center group"
+                >
+                  <span className="text-3xl block mb-3">{item.icon}</span>
+                  <h3 className="text-sm font-bold text-text-dark mb-1">{item.title}</h3>
+                  <p className="text-xs text-text-gray">{item.desc}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Social block */}
+        <ScrollReveal>
+          <section className="max-w-7xl mx-auto px-4 py-8">
+            <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark text-center mb-6">Подписывайся!</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <a
+                href="https://t.me/hittabak"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="flex items-center gap-4 bg-white rounded-xl border border-border p-5 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-12 h-12 bg-[#229ED9]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-[#229ED9]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-text-dark">Telegram-бот</h3>
+                  <p className="text-xs text-text-gray">Новости и акции</p>
+                </div>
+              </a>
+              <a
+                href="https://vk.com/hittabak"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="flex items-center gap-4 bg-white rounded-xl border border-border p-5 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-12 h-12 bg-[#4C75A3]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-[#4C75A3]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.391 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4.03 8.57 4.03 8.096c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.847 2.49 2.27 4.674 2.862 4.674.22 0 .322-.102.322-.66V9.72c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.644v3.049c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.15-3.574 2.15-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .644.27.525.644-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-text-dark">ВКонтакте</h3>
+                  <p className="text-xs text-text-gray">Сообщество бренда</p>
+                </div>
+              </a>
+              <a
+                href="https://dzen.ru/hittabak"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="flex items-center gap-4 bg-white rounded-xl border border-border p-5 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-12 h-12 bg-[#FF6600]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <span className="text-xl font-bold text-[#FF6600]">Я</span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-text-dark">Дзен</h3>
+                  <p className="text-xs text-text-gray">Статьи и обзоры</p>
+                </div>
+              </a>
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Blog preview */}
+        <ScrollReveal>
+          <section className="max-w-7xl mx-auto px-4 py-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Блог hittabak</h2>
+              <Link href="/blog" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
+                Все статьи &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {blogPosts.length > 0 ? blogPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/blog/${post.slug}`}
+                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="aspect-video bg-bg-light overflow-hidden">
+                    {post.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={getImageSrc(post.image)}
+                        alt={post.title}
+                        className="w-full h-full object-cover img-zoom"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-text-light text-sm">Блог</div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-text-dark line-clamp-2 group-hover:text-accent transition-colors">
+                      {post.title}
+                    </h3>
+                    {post.excerpt && (
+                      <p className="text-xs text-text-gray mt-2 line-clamp-2">{post.excerpt}</p>
+                    )}
+                  </div>
+                </Link>
+              )) : (
+                <>
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
+                      <div className="aspect-video bg-bg-light flex items-center justify-center">
+                        <span className="text-text-light text-sm">Статья {i}</span>
+                      </div>
+                      <div className="p-4">
+                        <div className="h-4 skeleton w-3/4 mb-2" />
+                        <div className="h-3 skeleton w-full" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </section>
+        </ScrollReveal>
       </main>
       <Footer />
     </>

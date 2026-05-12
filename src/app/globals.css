@@ -1,15 +1,19 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #4A90D9;
-  --color-primary-dark: #3A7BC8;
-  --color-primary-light: #6BA5E3;
-  --color-secondary: #5BA3E6;
-  --color-accent: #F59E0B;
-  --color-accent-dark: #D97706;
-  --color-bg-light: #F0F4F8;
+  --color-primary: #1A1A1A;
+  --color-primary-dark: #000000;
+  --color-primary-light: #333333;
+  --color-secondary: #E8403A;
+  --color-accent: #E8403A;
+  --color-accent-dark: #C4302B;
+  --color-accent-light: #F06A65;
+  --color-bg-light: #F5F0EB;
   --color-bg-white: #FFFFFF;
-  --color-text-dark: #1A2332;
+  --color-bg-beige: #F5F0EB;
+  --color-bg-blue: #E8F0FE;
+  --color-bg-dark: #1A1A1A;
+  --color-text-dark: #1A1A1A;
   --color-text-gray: #6B7280;
   --color-text-light: #9CA3AF;
   --color-border: #E2E8F0;
@@ -31,7 +35,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: var(--color-accent);
   cursor: pointer;
 }
 
@@ -216,8 +220,6 @@ input[type="range"]::-webkit-slider-thumb {
   overflow: hidden;
 }
 
-
-
 /* Hide scrollbar but keep scrolling */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -225,4 +227,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Age gate blur */
+.age-gate-blur {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
