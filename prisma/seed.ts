@@ -198,6 +198,24 @@ async function main() {
     });
   }
 
+  // HomeBlocks — default blocks for homepage constructor
+  const existingBlocks = await prisma.homeBlock.count();
+  if (existingBlocks === 0) {
+    await prisma.homeBlock.createMany({
+      data: [
+        { blockType: "hero", title: "hittabak", subtitle: "Устройства нагревания табака нового поколения", buttonText: "Смотреть каталог", buttonLink: "/catalog/devices", order: 0, active: true },
+        { blockType: "device", title: "hittabak Air", subtitle: "100% вкуса со старта", buttonLink: "/catalog/devices", order: 1, active: true },
+        { blockType: "device", title: "hittabak Ultra", subtitle: "Первый с автостартом", buttonLink: "/catalog/devices", order: 2, active: true },
+        { blockType: "device", title: "hittabak Pro", subtitle: "Максимум технологий", buttonLink: "/catalog/devices", order: 3, active: true },
+        { blockType: "device", title: "Выбери свой hittabak", subtitle: "Сравнение моделей", buttonLink: "/catalog/devices", order: 4, active: true },
+        { blockType: "stick", title: "Стики Neo", subtitle: "Премиальные аромы и микс коллекции", buttonLink: "/catalog/sticks", order: 5, active: true },
+        { blockType: "stick", title: "Стики Kent", subtitle: "Классические отборные табаки", buttonLink: "/catalog/sticks", order: 6, active: true },
+        { blockType: "stick", title: "О производстве", subtitle: "Виртуальный тур по цехам", buttonLink: "/science", order: 7, active: true },
+      ],
+    });
+    console.log("Default home blocks created");
+  }
+
   console.log("Seed completed successfully");
 }
 

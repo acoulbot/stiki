@@ -107,7 +107,27 @@ const statusLabels: Record<string, string> = {
   cancelled: "Отменён",
 };
 
-type TabType = "analytics" | "categories" | "products" | "popular" | "slider" | "news" | "orders" | "callbacks" | "clients" | "settings" | "site-editor";
+type TabType = "analytics" | "categories" | "products" | "popular" | "slider" | "news" | "orders" | "callbacks" | "clients" | "settings" | "site-editor" | "constructor" | "admins";
+
+interface HomeBlock {
+  id: string;
+  blockType: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  image: string;
+  bgImage: string;
+  order: number;
+  active: boolean;
+  config: string;
+}
+
+interface AdminUser {
+  id: string;
+  username: string;
+  role: string;
+}
 
 interface CallbackItem {
   id: string;
@@ -813,7 +833,7 @@ export default function AdminPage() {
 
   const topCategories = categories.filter((c) => !c.parentId);
   const tabLabels: Record<TabType, string> = {
-    analytics: "Статистика", categories: "Категории", products: "Товары", popular: "Популярные", slider: "Слайдер", news: "Новости", orders: `Заказы (${orders.length})`, callbacks: `Заявки на звонок`, clients: "Клиенты", "site-editor": "Редактирование сайта", settings: "Настройки",
+    analytics: "Статистика", categories: "Категории", products: "Товары", popular: "Популярные", slider: "Слайдер", news: "Новости", orders: `Заказы (${orders.length})`, callbacks: `Заявки на звонок`, clients: "Клиенты", "site-editor": "Редактирование сайта", constructor: "Конструктор", admins: "Администраторы", settings: "Настройки",
   };
 
   return (
@@ -1610,6 +1630,12 @@ export default function AdminPage() {
         {/* Clients */}
         {activeTab === "clients" && <ClientsPanel token={token} />}
 
+        {/* Constructor */}
+        {activeTab === "constructor" && <ConstructorPanel token={token} />}
+
+        {/* Admins */}
+        {activeTab === "admins" && <AdminsPanel token={token} />}
+
         {/* Settings */}
         {activeTab === "settings" && (
           <div className="max-w-lg">
@@ -2110,6 +2136,337 @@ function ClientsPanel({ token }: { token: string }) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function ConstructorPanel({ token }: { token: string }) {
+  const [blocks, setBlocks] = useState<HomeBlock[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<HomeBlock | null>(null);
+  const [msg, setMsg] = useState("");
+
+  const emptyBlock: Omit<HomeBlock, "id"> = {
+    blockType: "hero", title: "", subtitle: "", buttonText: "", buttonLink: "",
+    image: "", bgImage: "", order: 0, active: true, config: "{}",
+  };
+  const [form, setForm] = useState<Omit<HomeBlock, "id"> & { id?: string }>(emptyBlock);
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/home-blocks", { headers: { Authorization: `Bearer ${token}` } });
+    if (res.ok) setBlocks(await res.json());
+    setLoading(false);
+  }, [token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    const method = form.id ? "PUT" : "POST";
+    const body = form.id
+      ? { id: form.id, ...form }
+      : form;
+    const res = await fetch("/api/admin/home-blocks", {
+      method,
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) {
+      setMsg(form.id ? "Блок обновлён" : "Блок создан");
+      setForm(emptyBlock);
+      setEditing(null);
+      load();
+    } else {
+      const err = await res.json();
+      setMsg(`Ошибка: ${err.error}`);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Удалить блок?")) return;
+    await fetch(`/api/admin/home-blocks?id=${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    load();
+  };
+
+  const startEdit = (block: HomeBlock) => {
+    setEditing(block);
+    setForm({ ...block });
+  };
+
+  const uploadImage = async (field: "image" | "bgImage") => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      if (res.ok) {
+        const { url } = await res.json();
+        setForm((prev) => ({ ...prev, [field]: url }));
+      }
+    };
+    input.click();
+  };
+
+  const blockTypeLabels: Record<string, string> = {
+    hero: "Главный баннер",
+    device: "Продукт (устройство)",
+    stick: "Стик",
+    news: "Новость",
+  };
+
+  if (loading) return <div className="text-center py-12 text-text-gray">Загрузка...</div>;
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-text-dark">Конструктор главной страницы</h2>
+      {msg && <p className={`text-sm ${msg.includes("Ошибка") ? "text-danger" : "text-success"}`}>{msg}</p>}
+
+      {/* Block form */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <h3 className="font-bold text-text-dark mb-4">{editing ? "Редактировать блок" : "Добавить блок"}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Тип блока</label>
+            <select value={form.blockType} onChange={(e) => setForm({ ...form, blockType: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary">
+              {Object.entries(blockTypeLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Порядок</label>
+            <input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="text-sm text-text-gray mb-1 block">Заголовок</label>
+            <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="Заголовок блока" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="text-sm text-text-gray mb-1 block">Подзаголовок / описание</label>
+            <input type="text" value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="Подзаголовок" />
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Текст кнопки</label>
+            <input type="text" value={form.buttonText} onChange={(e) => setForm({ ...form, buttonText: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="Смотреть каталог" />
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Ссылка кнопки</label>
+            <input type="text" value={form.buttonLink} onChange={(e) => setForm({ ...form, buttonLink: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="/catalog/devices" />
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Изображение продукта (PNG)</label>
+            <div className="flex items-center gap-2">
+              <button onClick={() => uploadImage("image")} className="bg-bg-light hover:bg-border text-text-dark px-4 py-2.5 rounded-lg text-sm transition-colors border border-border">
+                Загрузить PNG
+              </button>
+              {form.image && <span className="text-xs text-success truncate max-w-[200px]">{form.image}</span>}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Фоновое изображение</label>
+            <div className="flex items-center gap-2">
+              <button onClick={() => uploadImage("bgImage")} className="bg-bg-light hover:bg-border text-text-dark px-4 py-2.5 rounded-lg text-sm transition-colors border border-border">
+                Загрузить фон
+              </button>
+              {form.bgImage && <span className="text-xs text-success truncate max-w-[200px]">{form.bgImage}</span>}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} id="block-active" />
+            <label htmlFor="block-active" className="text-sm text-text-gray">Активен</label>
+          </div>
+        </div>
+        <div className="flex gap-2 mt-4">
+          <button onClick={save} className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg transition-colors font-medium">
+            {editing ? "Сохранить" : "Добавить"}
+          </button>
+          {editing && (
+            <button onClick={() => { setEditing(null); setForm(emptyBlock); }} className="bg-bg-light text-text-gray px-6 py-2.5 rounded-lg transition-colors border border-border">
+              Отмена
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Block list */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <h3 className="font-bold text-text-dark mb-4">Блоки ({blocks.length})</h3>
+        {blocks.length === 0 ? <p className="text-text-gray text-sm">Нет блоков. Добавьте первый блок через форму выше.</p> : (
+          <div className="space-y-3">
+            {blocks.map((block) => (
+              <div key={block.id} className="flex items-center justify-between p-4 bg-bg-light rounded-lg">
+                <div className="flex items-center gap-4">
+                  {block.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={block.image.startsWith("/uploads/") ? `/api${block.image}` : block.image} alt="" className="w-16 h-16 object-contain rounded bg-white p-1" />
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${block.active ? "bg-success text-white" : "bg-text-light text-white"}`}>
+                        {blockTypeLabels[block.blockType] || block.blockType}
+                      </span>
+                      <span className="text-xs text-text-gray">#{block.order}</span>
+                    </div>
+                    <p className="font-medium text-text-dark text-sm mt-1">{block.title || "(без заголовка)"}</p>
+                    {block.subtitle && <p className="text-xs text-text-gray">{block.subtitle}</p>}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => startEdit(block)} className="text-sm px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white transition-colors">
+                    Редактировать
+                  </button>
+                  <button onClick={() => remove(block.id)} className="text-sm px-3 py-1.5 rounded-lg border border-danger text-danger hover:bg-danger hover:text-white transition-colors">
+                    Удалить
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AdminsPanel({ token }: { token: string }) {
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState("");
+  const [newAdmin, setNewAdmin] = useState({ username: "", password: "", role: "editor" });
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/admins", { headers: { Authorization: `Bearer ${token}` } });
+    if (res.ok) setAdmins(await res.json());
+    setLoading(false);
+  }, [token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const create = async () => {
+    if (!newAdmin.username || !newAdmin.password) {
+      setMsg("Ошибка: логин и пароль обязательны");
+      return;
+    }
+    const res = await fetch("/api/admin/admins", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(newAdmin),
+    });
+    if (res.ok) {
+      setMsg("Администратор создан");
+      setNewAdmin({ username: "", password: "", role: "editor" });
+      load();
+    } else {
+      const err = await res.json();
+      setMsg(`Ошибка: ${err.error}`);
+    }
+  };
+
+  const toggleRole = async (admin: AdminUser) => {
+    const newRole = admin.role === "admin" ? "editor" : "admin";
+    await fetch("/api/admin/admins", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ id: admin.id, role: newRole }),
+    });
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Удалить этого администратора?")) return;
+    const res = await fetch(`/api/admin/admins?id=${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      load();
+    } else {
+      const err = await res.json();
+      setMsg(`Ошибка: ${err.error}`);
+    }
+  };
+
+  if (loading) return <div className="text-center py-12 text-text-gray">Загрузка...</div>;
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-text-dark">Управление администраторами</h2>
+      {msg && <p className={`text-sm ${msg.includes("Ошибка") ? "text-danger" : "text-success"}`}>{msg}</p>}
+
+      {/* New admin form */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <h3 className="font-bold text-text-dark mb-4">Добавить администратора</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Логин</label>
+            <input type="text" value={newAdmin.username} onChange={(e) => setNewAdmin({ ...newAdmin, username: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="login" />
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Пароль</label>
+            <input type="password" value={newAdmin.password} onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="min 6 символов" />
+          </div>
+          <div>
+            <label className="text-sm text-text-gray mb-1 block">Роль</label>
+            <select value={newAdmin.role} onChange={(e) => setNewAdmin({ ...newAdmin, role: e.target.value })}
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary">
+              <option value="editor">Редактор</option>
+              <option value="admin">Администратор</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button onClick={create} className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg transition-colors font-medium w-full">
+              Создать
+            </button>
+          </div>
+        </div>
+        <p className="text-xs text-text-gray mt-3"><strong>Администратор</strong> — полный доступ, может создавать других админов. <strong>Редактор</strong> — может редактировать контент сайта, но не управлять пользователями.</p>
+      </div>
+
+      {/* Admin list */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <h3 className="font-bold text-text-dark mb-4">Список ({admins.length})</h3>
+        <div className="space-y-3">
+          {admins.map((admin) => (
+            <div key={admin.id} className="flex items-center justify-between p-4 bg-bg-light rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">{admin.username.slice(0, 2).toUpperCase()}</span>
+                </div>
+                <div>
+                  <p className="font-medium text-text-dark">{admin.username}</p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${admin.role === "admin" ? "bg-accent text-white" : "bg-primary text-white"}`}>
+                    {admin.role === "admin" ? "Администратор" : "Редактор"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => toggleRole(admin)} className="text-sm px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white transition-colors">
+                  {admin.role === "admin" ? "Сделать редактором" : "Сделать админом"}
+                </button>
+                <button onClick={() => remove(admin.id)} className="text-sm px-3 py-1.5 rounded-lg border border-danger text-danger hover:bg-danger hover:text-white transition-colors">
+                  Удалить
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
