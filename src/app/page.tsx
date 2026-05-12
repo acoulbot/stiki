@@ -60,15 +60,15 @@ export default async function HomePage() {
       <main className="flex-1 pb-16 lg:pb-0">
 
         {/* 1. Hero Block — neon diamond gradient */}
-        <section className="relative overflow-hidden" style={{ minHeight: "520px" }}>
+        <section className="relative overflow-hidden" style={{ minHeight: "580px" }}>
           <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#2a1015]" />
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rotate-45 border border-[#E8403A]/30 rounded-[40px]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rotate-45 border border-[#E8403A]/20 rounded-[30px]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rotate-45 border border-[#E8403A]/40 rounded-[20px] shadow-[0_0_60px_rgba(232,64,58,0.15)]" />
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] animate-float-slow border border-[#E8403A]/20 rounded-[40px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rotate-45 border border-[#E8403A]/15 rounded-[30px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] animate-float-slow border border-[#E8403A]/30 rounded-[20px] shadow-[0_0_80px_rgba(232,64,58,0.15)]" style={{ animationDelay: "-3s" }} />
           </div>
-          <div className="absolute top-[10%] left-[5%] w-32 h-32 bg-[#E8403A]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-[10%] right-[10%] w-48 h-48 bg-[#E8403A]/8 rounded-full blur-3xl" />
+          <div className="absolute top-[10%] left-[5%] w-40 h-40 bg-[#E8403A]/5 rounded-full blur-3xl animate-pulse-glow" />
+          <div className="absolute bottom-[10%] right-[10%] w-56 h-56 bg-[#E8403A]/8 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: "-2s" }} />
 
           <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center gap-8">
             <div className="flex-1 text-center md:text-left z-10">
@@ -93,7 +93,7 @@ export default async function HomePage() {
                 <img
                   src={getImageSrc(hero.image)}
                   alt={hero.title}
-                  className="max-h-[400px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-[fadeInUp_0.8s_ease-out]"
+                  className="max-h-[420px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-fade-in-up"
                 />
               ) : (
                 <div className="w-64 h-80 rounded-2xl bg-gradient-to-b from-[#333] to-[#1a1a1a] border border-[#E8403A]/20 flex items-center justify-center shadow-[0_0_40px_rgba(232,64,58,0.2)]">
@@ -110,7 +110,7 @@ export default async function HomePage() {
             <div className="flex items-center justify-between mb-8">
               <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все продукты hittabak</h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[280px] md:auto-rows-[320px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[280px] md:auto-rows-[340px]">
               {(deviceBlocks.length > 0 ? deviceBlocks : devices.slice(0, 4)).map((item, idx) => {
                 const isBlock = "blockType" in item;
                 const title = isBlock ? item.title : item.name;
@@ -124,11 +124,11 @@ export default async function HomePage() {
                   <Link
                     key={item.id}
                     href={link || "/catalog/devices"}
-                    className={`group relative overflow-hidden rounded-2xl ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
+                    className={`group relative overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-[1.02] ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rotate-45 border border-[#E8403A]/30 rounded-[15px]" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rotate-45 border border-[#E8403A]/40 rounded-[15px]" />
                     </div>
                     <div className="relative h-full flex flex-col justify-between p-5 z-10">
                       <div>
@@ -145,7 +145,7 @@ export default async function HomePage() {
                           <img
                             src={getImageSrc(image)}
                             alt={title}
-                            className={`object-contain transition-transform group-hover:scale-105 ${isBig ? "max-h-[280px]" : isMedium ? "max-h-[160px]" : "max-h-[120px]"}`}
+                            className={`object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_20px_rgba(232,64,58,0.25)] ${isBig ? "max-h-[300px]" : isMedium ? "max-h-[180px]" : "max-h-[140px]"}`}
                             loading="lazy"
                           />
                         ) : (
@@ -155,7 +155,7 @@ export default async function HomePage() {
                         )}
                       </div>
                     </div>
-                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-colors z-10">
+                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 group-hover:scale-110 z-10">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -193,11 +193,11 @@ export default async function HomePage() {
                   <Link
                     key={item.id}
                     href={link || "/catalog/sticks"}
-                    className="group relative overflow-hidden rounded-2xl aspect-[4/5]"
+                    className="group relative overflow-hidden rounded-2xl aspect-[4/5] transition-transform duration-300 hover:scale-[1.02]"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rotate-45 border border-[#E8403A]/25 rounded-[12px]" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rotate-45 border border-[#E8403A]/30 rounded-[12px]" />
                     </div>
                     <div className="relative h-full flex flex-col p-5 z-10">
                       <div>
@@ -210,7 +210,7 @@ export default async function HomePage() {
                           <img
                             src={getImageSrc(image)}
                             alt={title}
-                            className="max-h-[200px] object-contain transition-transform group-hover:scale-105"
+                            className="max-h-[220px] object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(232,64,58,0.2)]"
                             loading="lazy"
                           />
                         ) : (
@@ -220,7 +220,7 @@ export default async function HomePage() {
                         )}
                       </div>
                     </div>
-                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-colors z-10">
+                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 group-hover:scale-110 z-10">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -261,7 +261,7 @@ export default async function HomePage() {
                   <Link
                     key={item.id}
                     href={link}
-                    className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow"
+                    className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
                   >
                     <div className="aspect-video bg-bg-light overflow-hidden">
                       {image ? (

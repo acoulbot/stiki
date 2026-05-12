@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
 interface NavItem {
@@ -112,6 +113,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+          <Image src="/logo.png" alt="hittabak" width={36} height={36} className="rounded" />
           <span className="font-heading text-xl sm:text-2xl font-extrabold tracking-tight">
             hit<span className="text-accent">tabak</span>
           </span>
