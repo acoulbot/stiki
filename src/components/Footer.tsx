@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -62,7 +63,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/50">&copy; {new Date().getFullYear()} hittabak. Все права защищены.</p>
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="hittabak" width={24} height={24} className="rounded opacity-70" />
+            <p className="text-xs text-white/50">&copy; {new Date().getFullYear()} hittabak. Все права защищены.</p>
+          </div>
           <p className="text-[10px] text-white/30 max-w-xl text-center sm:text-right">
             Данный сайт содержит информацию о продукции, предназначенной для совершеннолетних пользователей.
             Продукция не является безрисковой и содержит никотин, вызывающий зависимость.

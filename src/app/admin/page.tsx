@@ -841,9 +841,8 @@ export default function AdminPage() {
       <header className="bg-bg-white shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">Т</span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="hittabak" className="w-8 h-8 rounded" />
             <h1 className="text-lg font-bold text-text-dark">hittabak — Админ</h1>
           </div>
           <div className="flex items-center gap-4">
