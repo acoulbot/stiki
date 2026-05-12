@@ -48,13 +48,11 @@ interface Product {
 
 interface ImportRow {
   index: number;
+  section: string;
   name: string;
+  color: string;
   price: number;
-  brand: string;
-  category: string;
-  inStock: number;
-  country: string;
-  weight: number | null;
+  image: string;
 }
 
 interface SliderImage {
@@ -604,27 +602,14 @@ export default function AdminPage() {
     if (res.ok) setSlides(await res.json());
   };
 
-  // Target fields for column mapping
+  // Target fields for column mapping (simplified for new format)
   const targetFields: { value: string; label: string }[] = [
     { value: "", label: "— Пропустить —" },
-    { value: "name", label: "Название" },
-    { value: "category", label: "Категория" },
-    { value: "brand", label: "Бренд" },
-    { value: "country", label: "Страна" },
-    { value: "price", label: "Цена" },
-    { value: "weight", label: "Вес (кг)" },
-    { value: "inStock", label: "Кол-во" },
-    { value: "barcode", label: "Штрихкод" },
-    { value: "code", label: "Код/Артикул" },
-    { value: "image", label: "Изображение" },
-    { value: "volume", label: "Объём" },
-    { value: "packSize", label: "Кол-во в упаковке" },
-    { value: "expirationDate", label: "Годен до" },
-    { value: "description", label: "Описание" },
-    { value: "oldPrice", label: "Старая цена" },
+    { value: "section", label: "Раздел (модель девайса)" },
+    { value: "name", label: "Название товара" },
     { value: "color", label: "Цвет" },
-    { value: "productType", label: "Тип/Вид" },
-    { value: "tags", label: "Теги" },
+    { value: "price", label: "Цена (₽)" },
+    { value: "image", label: "Файл изображения" },
   ];
 
   // Import — step 1: upload file to server for fast parsing
@@ -685,13 +670,11 @@ export default function AdminPage() {
       }
       return {
         index: i,
+        section: mapped.section || "",
         name: mapped.name || "",
+        color: mapped.color || "",
         price: mapped.price ? Number(mapped.price) : 0,
-        brand: mapped.brand || "",
-        category: mapped.category || "",
-        inStock: mapped.inStock ? Number(mapped.inStock) : 0,
-        country: mapped.country || "",
-        weight: mapped.weight ? Number(mapped.weight) : null,
+        image: mapped.image || "",
       };
     });
     setImportPreview(preview);
@@ -735,7 +718,7 @@ export default function AdminPage() {
     }
     setImportLoading(false);
     if (res.ok) {
-      setImportStatus(`Новых: ${data.imported}, обновлено: ${data.updated || 0} из ${data.total}`);
+      setImportStatus(`Новых: ${data.imported}, обновлено: ${data.updated || 0} из ${data.total}${data.categoriesCreated ? `, категорий создано: ${data.categoriesCreated}` : ""}`);
       resetImport();
       fetchData();
     } else {
@@ -946,7 +929,8 @@ export default function AdminPage() {
             <div className="bg-bg-white rounded-xl border border-border p-5">
               <h2 className="font-bold text-text-dark mb-3">Импорт товаров</h2>
               <p className="text-sm text-text-gray mb-3">
-                Загрузите CSV, XLSX или XLS файл для импорта товаров.
+                Загрузите XLSX файл с колонками: №, Раздел, Название товара, Цвет, Цена (₽), Файл изображения.
+                Раздел — модель девайса (автоматически создаётся как категория).
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <label className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm px-4 py-2 rounded-lg cursor-pointer transition-colors">
@@ -1046,13 +1030,11 @@ export default function AdminPage() {
                           <th className="px-2 py-2 text-left">
                             <input type="checkbox" checked={importSelected.size === importPreview.length} onChange={toggleImportAll} />
                           </th>
-                          <th className="px-2 py-2 text-left">Название</th>
-                          <th className="px-2 py-2 text-left">Категория</th>
-                          <th className="px-2 py-2 text-left">Бренд</th>
-                          <th className="px-2 py-2 text-left">Страна</th>
-                          <th className="px-2 py-2 text-right">Цена</th>
-                          <th className="px-2 py-2 text-right">Вес (кг)</th>
-                          <th className="px-2 py-2 text-right">Кол-во</th>
+                          <th className="px-2 py-2 text-left">Раздел</th>
+                          <th className="px-2 py-2 text-left">Название товара</th>
+                          <th className="px-2 py-2 text-left">Цвет</th>
+                          <th className="px-2 py-2 text-right">Цена (₽)</th>
+                          <th className="px-2 py-2 text-left">Файл изображения</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1065,13 +1047,11 @@ export default function AdminPage() {
                             <td className="px-2 py-1.5">
                               <input type="checkbox" checked={importSelected.has(row.index)} onChange={() => toggleImportRow(row.index)} />
                             </td>
+                            <td className="px-2 py-1.5">{row.section || "—"}</td>
                             <td className="px-2 py-1.5 max-w-[200px] truncate" title={row.name}>{row.name || "—"}</td>
-                            <td className="px-2 py-1.5">{row.category || "—"}</td>
-                            <td className="px-2 py-1.5">{row.brand || "—"}</td>
-                            <td className="px-2 py-1.5">{row.country || "—"}</td>
+                            <td className="px-2 py-1.5">{row.color || "—"}</td>
                             <td className="px-2 py-1.5 text-right">{row.price || "—"}</td>
-                            <td className="px-2 py-1.5 text-right">{row.weight ?? "—"}</td>
-                            <td className="px-2 py-1.5 text-right">{row.inStock || "—"}</td>
+                            <td className="px-2 py-1.5 max-w-[150px] truncate" title={row.image}>{row.image || "—"}</td>
                           </tr>
                         ))}
                       </tbody>

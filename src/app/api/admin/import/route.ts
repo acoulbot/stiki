@@ -10,32 +10,22 @@ function checkAdmin(request: Request): boolean {
   return !!payload && payload.role === "admin";
 }
 
-const AUTO_DETECT: Record<string, string[]> = {
-  name: ["название", "наименование", "наименование товара", "товар", "name", "product"],
-  category: ["категория", "category"],
-  brand: ["бренд", "brand", "производитель"],
-  country: ["страна произв.", "страна", "country"],
-  price: ["цена", "price", "стоимость", "дистр"],
-  weight: ["вес (кг)", "вес", "weight"],
-  inStock: ["в наличии", "остаток", "количество", "instock", "stock", "кол-во", "наличие", "количество шт"],
-  barcode: ["штрихкод", "barcode", "штрих-код", "ean"],
-  code: ["код", "code", "артикул", "sku"],
-  image: ["изображение", "картинка", "фото", "image"],
-  volume: ["объем (м³)", "объём (м³)", "объем", "объём", "volume"],
-  packSize: ["кол-во (шт) в упаковке", "в упаковке", "упаковка"],
-  expirationDate: ["годен до", "срок годности", "expiration", "годность"],
-  description: ["описание", "description"],
-  oldPrice: ["старая цена", "old price", "oldprice"],
+// Expected XLSX columns: №, Раздел, Название товара, Цвет, Цена (₽), Файл изображения
+const KNOWN_COLUMNS: Record<string, string[]> = {
+  section: ["раздел", "модель", "девайс", "device", "section"],
+  name: ["название товара", "название", "наименование", "наименование товара", "товар", "name", "product"],
   color: ["цвет", "color"],
-  productType: ["тип", "type", "вид", "producttype"],
-  tags: ["теги", "ключевые слова", "tags", "keywords", "мета-теги"],
+  price: ["цена", "цена (₽)", "цена (руб)", "цена (руб.)", "price", "стоимость"],
+  image: ["файл изображения", "изображение", "картинка", "фото", "image", "файл"],
 };
 
-function autoDetectMapping(headers: string[]): Record<string, string> {
+function autoDetectColumns(headers: string[]): Record<string, string> {
   const mapping: Record<string, string> = {};
   for (const header of headers) {
     const lower = header.toLowerCase().trim();
-    for (const [field, aliases] of Object.entries(AUTO_DETECT)) {
+    // Skip index column (№, #, номер)
+    if (lower === "№" || lower === "#" || lower === "номер" || lower === "n") continue;
+    for (const [field, aliases] of Object.entries(KNOWN_COLUMNS)) {
       if (aliases.includes(lower) && !Object.values(mapping).includes(field)) {
         mapping[header] = field;
         break;
@@ -53,34 +43,25 @@ function findHeaderRow(aoa: unknown[][]): number {
     const row = aoa[i];
     if (!row) continue;
     const nonEmpty = row.filter((c) => c !== undefined && c !== null && String(c).trim() !== "");
-    if (nonEmpty.length < 3) continue;
-
-    const textCells = nonEmpty.filter((c) => typeof c === "string" && isNaN(Number(c)));
-    const score = textCells.length;
+    if (nonEmpty.length < 2) continue;
 
     const lower = nonEmpty.map((c) => String(c).toLowerCase().trim());
     const knownHeaders = lower.filter((l) =>
-      Object.values(AUTO_DETECT).some((aliases) => aliases.includes(l))
+      Object.values(KNOWN_COLUMNS).some((aliases) => aliases.includes(l))
     );
-    const finalScore = score + knownHeaders.length * 5;
+    const score = knownHeaders.length * 5 + nonEmpty.length;
 
-    if (finalScore > bestScore) {
-      bestScore = finalScore;
+    if (score > bestScore) {
+      bestScore = score;
       bestRow = i;
     }
   }
   return bestRow;
 }
 
-function isDataRow(row: unknown[], minCells: number): boolean {
-  if (!row) return false;
-  const nonEmpty = row.filter((c) => c !== undefined && c !== null && String(c).trim() !== "");
-  return nonEmpty.length >= minCells;
-}
-
 export const maxDuration = 60;
 
-// PUT — parse file and return structured data (upload file once)
+// PUT — parse XLSX and return structured data
 export async function PUT(request: Request) {
   if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
 
@@ -131,36 +112,30 @@ export async function PUT(request: Request) {
     }
   }
 
-  const minCells = Math.max(3, Math.floor(headers.length * 0.3));
-
-  const nameColIdx = colIndices[headers.findIndex((h) => {
-    const l = h.toLowerCase();
-    return AUTO_DETECT.name.includes(l);
-  })] ?? -1;
-
-  const catColIdx = colIndices[headers.findIndex((h) => AUTO_DETECT.category.includes(h.toLowerCase()))] ?? -1;
-  const brandColIdx = colIndices[headers.findIndex((h) => AUTO_DETECT.brand.includes(h.toLowerCase()))] ?? -1;
+  // Find name column for row validation
+  const autoMap = autoDetectColumns(headers);
+  const nameHeader = Object.entries(autoMap).find(([, v]) => v === "name")?.[0];
 
   const rows: Record<string, string>[] = [];
   for (let i = headerRowIdx + 1; i < aoa.length; i++) {
     const row = aoa[i];
     if (!row) continue;
 
-    if (!isDataRow(row, minCells)) continue;
+    const nonEmpty = row.filter((c) => c !== undefined && c !== null && String(c).trim() !== "");
+    if (nonEmpty.length < 2) continue;
 
+    // Skip rows where first cell repeats header
     const firstCell = row[colIndices[0]];
     if (firstCell !== undefined && String(firstCell).trim() === headers[0]) continue;
 
-    if (nameColIdx >= 0) {
-      const nameVal = row[nameColIdx];
+    // Validate name column has data
+    if (nameHeader) {
+      const nameColIdx = colIndices[headers.indexOf(nameHeader)];
+      const nameVal = nameColIdx !== undefined ? row[nameColIdx] : undefined;
       if (!nameVal || String(nameVal).trim() === "") continue;
       const nameStr = String(nameVal).trim();
-      if (nameStr === "ИТОГО УПАКОВОК:" || nameStr.startsWith("ИТОГО")) continue;
+      if (nameStr === "ИТОГО" || nameStr.startsWith("ИТОГО")) continue;
     }
-
-    const hasCat = catColIdx >= 0 && row[catColIdx] && String(row[catColIdx]).trim() !== "";
-    const hasBrand = brandColIdx >= 0 && row[brandColIdx] && String(row[brandColIdx]).trim() !== "";
-    if (!hasCat && !hasBrand && nameColIdx >= 0) continue;
 
     const obj: Record<string, string> = {};
     for (let k = 0; k < headers.length; k++) {
@@ -175,34 +150,20 @@ export async function PUT(request: Request) {
     return Response.json({ error: "Не найдено строк с данными" }, { status: 400 });
   }
 
-  const autoMap = autoDetectMapping(headers);
   const sample = rows.slice(0, 3);
 
   return Response.json({ headers, autoMap, sample, rows, totalRows: rows.length });
 }
 
 interface ImportProduct {
+  section?: string;
   name?: string;
-  price?: number | string;
-  brand?: string;
-  category?: string;
-  image?: string;
-  inStock?: number | string;
-  country?: string;
-  barcode?: string;
-  code?: string;
-  weight?: number | string | null;
-  volume?: number | string | null;
-  packSize?: number | string | null;
-  description?: string;
-  oldPrice?: number | string | null;
   color?: string;
-  productType?: string;
-  expirationDate?: string;
-  tags?: string;
+  price?: number | string;
+  image?: string;
 }
 
-// POST — import products (receive mapped data as JSON)
+// POST — import products with new structure (Раздел, Название, Цвет, Цена, Файл изображения)
 export async function POST(request: Request) {
   if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
 
@@ -218,83 +179,85 @@ export async function POST(request: Request) {
     return Response.json({ error: "Не найдено строк с названием товара" }, { status: 400 });
   }
 
+  // Auto-create categories from "Раздел" (device models)
   const allCategories = await prisma.category.findMany({ orderBy: { order: "asc" } });
   const catByName = new Map(allCategories.map((c) => [c.name.toLowerCase(), c.id]));
-  const defaultCatId = allCategories[0]?.id;
+  let nextOrder = allCategories.length > 0 ? Math.max(...allCategories.map((c) => c.order)) + 1 : 0;
 
-  if (!defaultCatId) {
-    return Response.json({ error: "Нет категорий в базе данных" }, { status: 400 });
+  // Collect unique sections and create missing categories
+  const uniqueSections = [...new Set(
+    validRows
+      .filter((r) => r.section && String(r.section).trim() !== "")
+      .map((r) => String(r.section!).trim())
+  )];
+
+  for (const sectionName of uniqueSections) {
+    if (!catByName.has(sectionName.toLowerCase())) {
+      const slug = slugify(sectionName);
+      let finalSlug = slug;
+      const slugExists = await prisma.category.findFirst({ where: { slug: finalSlug } });
+      if (slugExists) {
+        let counter = 2;
+        while (await prisma.category.findFirst({ where: { slug: `${finalSlug}-${counter}` } })) {
+          counter++;
+        }
+        finalSlug = `${slug}-${counter}`;
+      }
+      const created = await prisma.category.create({
+        data: {
+          name: sectionName,
+          slug: finalSlug,
+          order: nextOrder++,
+        },
+      });
+      catByName.set(sectionName.toLowerCase(), created.id);
+    }
   }
 
-  const names = validRows.map((r) => String(r.name));
-  const codes = validRows.filter((r) => r.code).map((r) => String(r.code));
-  const barcodes = validRows.filter((r) => r.barcode).map((r) => String(r.barcode));
+  const defaultCatId = catByName.values().next().value;
+  if (!defaultCatId) {
+    return Response.json({ error: "Нет категорий и не удалось создать" }, { status: 400 });
+  }
 
+  // Check existing products by name + color for deduplication
   const existingProducts = await prisma.product.findMany({
-    where: {
-      OR: [
-        { name: { in: names } },
-        ...(codes.length > 0 ? [{ code: { in: codes } }] : []),
-        ...(barcodes.length > 0 ? [{ barcode: { in: barcodes } }] : []),
-      ],
-    },
-    select: { id: true, name: true, brand: true, inStock: true, code: true, barcode: true },
+    select: { id: true, name: true, color: true, categoryId: true },
   });
-
-  const existingByName = new Map<string, { id: string; inStock: number }>();
-  const existingByCode = new Map<string, { id: string; inStock: number }>();
-  const existingByBarcode = new Map<string, { id: string; inStock: number }>();
+  const existingByKey = new Map<string, string>();
   for (const p of existingProducts) {
-    existingByName.set(`${p.name}|||${p.brand}`, { id: p.id, inStock: p.inStock });
-    if (p.code) existingByCode.set(p.code, { id: p.id, inStock: p.inStock });
-    if (p.barcode) existingByBarcode.set(p.barcode, { id: p.id, inStock: p.inStock });
+    existingByKey.set(`${p.name.toLowerCase()}|||${p.color.toLowerCase()}`, p.id);
   }
 
   let imported = 0;
   let updated = 0;
 
   for (const row of validRows) {
-    const name = String(row.name);
-    const brand = row.brand ? String(row.brand) : "";
+    const name = String(row.name).trim();
+    const color = row.color ? String(row.color).trim() : "";
     const price = Number(row.price) || 0;
-    const oldPrice = row.oldPrice != null && row.oldPrice !== "" ? Number(row.oldPrice) : null;
-    const inStock = Number(row.inStock) || 0;
-    const weight = row.weight != null && row.weight !== "" ? Number(row.weight) : null;
-    const volume = row.volume != null && row.volume !== "" ? Number(row.volume) : null;
-    const packSize = row.packSize != null && row.packSize !== "" ? Number(row.packSize) : null;
+    const image = row.image ? String(row.image).trim() : "";
+    const section = row.section ? String(row.section).trim() : "";
 
-    const categoryId = (row.category ? catByName.get(String(row.category).toLowerCase()) : undefined) || defaultCatId;
+    const categoryId = (section ? catByName.get(section.toLowerCase()) : undefined) || defaultCatId;
+    const key = `${name.toLowerCase()}|||${color.toLowerCase()}`;
+    const existingId = existingByKey.get(key);
 
-    const codeStr = row.code ? String(row.code) : "";
-    const barcodeStr = row.barcode ? String(row.barcode) : "";
-    const existing = (codeStr && existingByCode.get(codeStr))
-      || (barcodeStr && existingByBarcode.get(barcodeStr))
-      || existingByName.get(`${name}|||${brand}`);
-
-    if (existing) {
-      const updateData: Record<string, unknown> = { inStock };
-      if (price > 0) updateData.price = price;
-      if (oldPrice !== null) updateData.oldPrice = oldPrice;
-      if (brand) updateData.brand = brand;
-      if (row.country) updateData.country = String(row.country);
-      if (weight !== null) updateData.weight = weight;
-      if (volume !== null) updateData.volume = volume;
-      if (packSize !== null) updateData.packSize = packSize;
-      if (codeStr) updateData.code = codeStr;
-      if (barcodeStr) updateData.barcode = barcodeStr;
-      if (row.color) updateData.color = String(row.color);
-      if (row.description) updateData.description = String(row.description);
-      if (row.tags) updateData.tags = String(row.tags);
-      if (row.image) updateData.image = String(row.image);
-      if (row.expirationDate) updateData.expirationDate = String(row.expirationDate);
-
+    if (existingId) {
       await prisma.product.update({
-        where: { id: existing.id },
-        data: updateData,
+        where: { id: existingId },
+        data: {
+          price,
+          color,
+          categoryId,
+          ...(image ? { image } : {}),
+        },
       });
       updated++;
     } else {
       let slug = slugify(name);
+      if (color) {
+        slug = `${slug}-${slugify(color)}`;
+      }
       const slugExists = await prisma.product.findFirst({ where: { slug } });
       if (slugExists) {
         let counter = 2;
@@ -308,30 +271,31 @@ export async function POST(request: Request) {
           name,
           slug,
           price,
-          oldPrice,
-          description: row.description ? String(row.description) : "",
-          image: row.image ? String(row.image) : "",
-          inStock,
-          brand,
-          color: row.color ? String(row.color) : "",
-          productType: row.productType ? String(row.productType) : "",
-          country: row.country ? String(row.country) : "",
-          barcode: barcodeStr,
-          code: codeStr,
-          weight,
-          volume,
-          packSize,
-          expirationDate: row.expirationDate ? String(row.expirationDate) : "",
-          tags: row.tags ? String(row.tags) : "",
+          color,
+          image,
           categoryId,
+          description: "",
+          brand: "",
+          productType: "",
+          country: "",
+          barcode: "",
+          code: "",
+          tags: "",
+          expirationDate: "",
         },
       });
-      existingByName.set(`${name}|||${brand}`, { id: created.id, inStock });
-      if (codeStr) existingByCode.set(codeStr, { id: created.id, inStock });
-      if (barcodeStr) existingByBarcode.set(barcodeStr, { id: created.id, inStock });
+      existingByKey.set(key, created.id);
       imported++;
     }
   }
 
-  return Response.json({ imported, updated, total: products.length, skipped: products.length - imported - updated });
+  return Response.json({
+    imported,
+    updated,
+    total: products.length,
+    skipped: products.length - imported - updated,
+    categoriesCreated: uniqueSections.filter(
+      (s) => !allCategories.some((c) => c.name.toLowerCase() === s.toLowerCase())
+    ).length,
+  });
 }
