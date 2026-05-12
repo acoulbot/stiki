@@ -312,6 +312,10 @@ export default function AdminPage() {
   const [importRawRows, setImportRawRows] = useState<Record<string, string>[]>([]);
   const [importStep, setImportStep] = useState<"idle" | "mapping" | "preview">("idle");
 
+  const [bulkImgLoading, setBulkImgLoading] = useState(false);
+  const [bulkImgStatus, setBulkImgStatus] = useState("");
+  const [bulkImgResults, setBulkImgResults] = useState<{ fileName: string; matched: boolean; productName?: string }[] | null>(null);
+
   const hdrs = useCallback(() => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -759,6 +763,49 @@ export default function AdminPage() {
     window.open(`https://www.google.com/search?q=${encodeURIComponent(name + " товар описание фото")}&tbm=isch`, "_blank");
   };
 
+  // Bulk image upload
+  const handleBulkImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+    setBulkImgLoading(true);
+    setBulkImgStatus(`Загрузка ${fileList.length} файлов...`);
+    setBulkImgResults(null);
+
+    const formData = new FormData();
+    for (let i = 0; i < fileList.length; i++) {
+      formData.append("files", fileList[i]);
+    }
+
+    try {
+      const res = await fetch("/api/admin/bulk-images", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        setBulkImgStatus("Ошибка: файлы слишком большие или сервер не ответил.");
+        setBulkImgLoading(false);
+        e.target.value = "";
+        return;
+      }
+      if (!res.ok) {
+        setBulkImgStatus(`Ошибка: ${data.error || "Не удалось загрузить"}`);
+      } else {
+        setBulkImgStatus(`Привязано: ${data.matched} из ${data.total}${data.unmatched > 0 ? `, не найдено: ${data.unmatched}` : ""}`);
+        setBulkImgResults(data.results || []);
+        fetchData();
+      }
+    } catch (err) {
+      setBulkImgStatus(`Ошибка: ${err instanceof Error ? err.message : "неизвестная ошибка"}`);
+    }
+    setBulkImgLoading(false);
+    e.target.value = "";
+  };
+
   // News CRUD
   const saveNews = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1052,6 +1099,59 @@ export default function AdminPage() {
                             <td className="px-2 py-1.5">{row.color || "—"}</td>
                             <td className="px-2 py-1.5 text-right">{row.price || "—"}</td>
                             <td className="px-2 py-1.5 max-w-[150px] truncate" title={row.image}>{row.image || "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bulk image upload section */}
+            <div className="bg-bg-white rounded-xl border border-border p-5">
+              <h2 className="font-bold text-text-dark mb-3">Загрузить пак изображений</h2>
+              <p className="text-sm text-text-gray mb-3">
+                Выберите несколько изображений (PNG, JPG, WEBP). Имя файла = название товара. Система автоматически сопоставит файлы с товарами.
+                Знаки препинания, дефисы, подчёркивания игнорируются при поиске.
+              </p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <label className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg cursor-pointer transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  Загрузить пак
+                  <input type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.svg" multiple onChange={handleBulkImageUpload} className="hidden" />
+                </label>
+                {bulkImgLoading && <span className="text-sm text-text-gray">Загрузка...</span>}
+                {bulkImgStatus && <span className={`text-sm ${bulkImgStatus.startsWith("Ошибка") ? "text-danger" : "text-success"}`}>{bulkImgStatus}</span>}
+                {bulkImgResults && (
+                  <button onClick={() => { setBulkImgResults(null); setBulkImgStatus(""); }} className="text-sm text-danger hover:underline">Скрыть отчёт</button>
+                )}
+              </div>
+
+              {bulkImgResults && bulkImgResults.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-sm font-bold text-text-dark mb-2">Результат сопоставления</h3>
+                  <div className="overflow-x-auto max-h-64 overflow-y-auto border border-border rounded-lg">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50 sticky top-0">
+                        <tr>
+                          <th className="px-3 py-2 text-left">Файл</th>
+                          <th className="px-3 py-2 text-left">Статус</th>
+                          <th className="px-3 py-2 text-left">Товар</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bulkImgResults.map((r, i) => (
+                          <tr key={i} className={`border-t border-border ${r.matched ? "bg-green-50" : "bg-red-50"}`}>
+                            <td className="px-3 py-1.5 max-w-[200px] truncate" title={r.fileName}>{r.fileName}</td>
+                            <td className="px-3 py-1.5">
+                              {r.matched ? (
+                                <span className="text-success font-medium">Привязано</span>
+                              ) : (
+                                <span className="text-danger font-medium">Не найдено</span>
+                              )}
+                            </td>
+                            <td className="px-3 py-1.5">{r.productName || "—"}</td>
                           </tr>
                         ))}
                       </tbody>
