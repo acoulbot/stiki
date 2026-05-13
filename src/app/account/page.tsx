@@ -2,7 +2,6 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Image from "next/image";
 import { useState, useEffect, startTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -321,7 +320,9 @@ export default function AccountPage() {
             {/* Logo */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-3 mb-2">
-                <Image src="/logo.png" alt="hittabak" width={56} height={56} className="w-14 h-14 drop-shadow-md" />
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center shadow-lg">
+                  <span className="text-white font-extrabold text-2xl tracking-tight">HT</span>
+                </div>
                 <span className="text-primary text-3xl font-extrabold font-heading tracking-tight">hittabak</span>
               </div>
               <p className="text-text-gray text-sm">

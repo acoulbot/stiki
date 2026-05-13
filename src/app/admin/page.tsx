@@ -16,12 +16,6 @@ interface Category {
   _count?: { products: number };
 }
 
-interface SitePage {
-  id?: string;
-  slug: string;
-  title: string;
-  content: string;
-}
 
 interface Product {
   id: string;
@@ -55,15 +49,6 @@ interface ImportRow {
   image: string;
 }
 
-interface SliderImage {
-  id: string;
-  title: string;
-  subtitle: string;
-  imageUrl: string;
-  link: string;
-  order: number;
-  active: boolean;
-}
 
 interface NewsItem {
   id: string;
@@ -105,7 +90,7 @@ const statusLabels: Record<string, string> = {
   cancelled: "Отменён",
 };
 
-type TabType = "analytics" | "categories" | "products" | "popular" | "slider" | "news" | "orders" | "callbacks" | "clients" | "settings" | "site-editor" | "constructor" | "admins";
+type TabType = "analytics" | "categories" | "products" | "news" | "orders" | "callbacks" | "clients" | "constructor" | "admins" | "settings";
 
 interface HomeBlock {
   id: string;
@@ -260,7 +245,7 @@ export default function AdminPage() {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [slides, setSlides] = useState<SliderImage[]>([]);
+
   const [news, setNews] = useState<NewsItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -273,10 +258,7 @@ export default function AdminPage() {
   const [catMetaDesc, setCatMetaDesc] = useState("");
   const [catSeoText, setCatSeoText] = useState("");
   const [editingCat, setEditingCat] = useState<Category | null>(null);
-  const [sitePages, setSitePages] = useState<Record<string, SitePage>>({});
-  const [editingPage, setEditingPage] = useState<string | null>(null);
-  const [pageForm, setPageForm] = useState({ title: "", content: "" });
-  const [pageSaveMsg, setPageSaveMsg] = useState("");
+
 
   const [prodForm, setProdForm] = useState({
     name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "",
@@ -294,10 +276,7 @@ export default function AdminPage() {
   const [adminSettings, setAdminSettings] = useState({ newUsername: "", currentPassword: "", newPassword: "" });
   const [adminSettingsMsg, setAdminSettingsMsg] = useState("");
 
-  const [slideForm, setSlideForm] = useState({
-    title: "", subtitle: "", imageUrl: "", link: "", order: "0", active: true,
-  });
-  const [editingSlide, setEditingSlide] = useState<SliderImage | null>(null);
+
 
   const [newsForm, setNewsForm] = useState({ title: "", excerpt: "", content: "", image: "", type: "article", published: false });
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
@@ -323,25 +302,16 @@ export default function AdminPage() {
 
   const fetchData = useCallback(async () => {
     if (!token) return;
-    const [catRes, prodRes, slideRes, newsRes, ordersRes, pagesRes] = await Promise.all([
+    const [catRes, prodRes, newsRes, ordersRes] = await Promise.all([
       fetch("/api/admin/categories", { headers: hdrs() }),
       fetch("/api/admin/products", { headers: hdrs() }),
-      fetch("/api/admin/slider", { headers: hdrs() }),
       fetch("/api/admin/news", { headers: hdrs() }),
       fetch("/api/admin/orders", { headers: hdrs() }),
-      fetch("/api/admin/pages", { headers: hdrs() }),
     ]);
     if (catRes.ok) setCategories(await catRes.json());
     if (prodRes.ok) setProducts(await prodRes.json());
-    if (slideRes.ok) setSlides(await slideRes.json());
     if (newsRes.ok) setNews(await newsRes.json());
     if (ordersRes.ok) setOrders(await ordersRes.json());
-    if (pagesRes.ok) {
-      const pages: SitePage[] = await pagesRes.json();
-      const map: Record<string, SitePage> = {};
-      for (const p of pages) map[p.slug] = p;
-      setSitePages(map);
-    }
   }, [token, hdrs]);
 
   useEffect(() => {
@@ -395,21 +365,6 @@ export default function AdminPage() {
   };
 
   // Site pages
-  const saveSitePage = async (slug: string) => {
-    setPageSaveMsg("");
-    const res = await fetch("/api/admin/pages", {
-      method: "PUT",
-      headers: hdrs(),
-      body: JSON.stringify({ slug, ...pageForm }),
-    });
-    if (res.ok) {
-      const page = await res.json();
-      setSitePages((prev) => ({ ...prev, [slug]: page }));
-      setPageSaveMsg("Сохранено");
-      setTimeout(() => setPageSaveMsg(""), 3000);
-    }
-  };
-
   const deleteCategory = async (id: string) => {
     if (!confirm("Удалить категорию? Все товары в ней также будут удалены.")) return;
     await fetch("/api/admin/categories", { method: "DELETE", headers: hdrs(), body: JSON.stringify({ id }) });
@@ -577,34 +532,7 @@ export default function AdminPage() {
   const prodTotalPages = Math.ceil(filteredProducts.length / PROD_PER_PAGE);
   const paginatedProducts = filteredProducts.slice((prodPage - 1) * PROD_PER_PAGE, prodPage * PROD_PER_PAGE);
 
-  // Slider CRUD
-  const saveSlide = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const method = editingSlide ? "PUT" : "POST";
-    const newOrder = editingSlide ? editingSlide.order : (slides.length > 0 ? Math.max(...slides.map((s) => s.order)) + 1 : 0);
-    const body = editingSlide
-      ? { id: editingSlide.id, ...slideForm, order: editingSlide.order }
-      : { ...slideForm, order: newOrder };
-    await fetch("/api/admin/slider", { method, headers: hdrs(), body: JSON.stringify(body) });
-    setSlideForm({ title: "", subtitle: "", imageUrl: "", link: "", order: "0", active: true });
-    setEditingSlide(null); fetchData();
-  };
 
-  const deleteSlide = async (id: string) => {
-    if (!confirm("Удалить слайд?")) return;
-    await fetch("/api/admin/slider", { method: "DELETE", headers: hdrs(), body: JSON.stringify({ id }) });
-    fetchData();
-  };
-
-  const moveSlide = async (index: number, direction: "up" | "down") => {
-    const sorted = [...slides].sort((a, b) => a.order - b.order);
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= sorted.length) return;
-    const ids = sorted.map((s) => s.id);
-    [ids[index], ids[targetIndex]] = [ids[targetIndex], ids[index]];
-    const res = await fetch("/api/admin/slider", { method: "PATCH", headers: hdrs(), body: JSON.stringify({ orderedIds: ids }) });
-    if (res.ok) setSlides(await res.json());
-  };
 
   // Target fields for column mapping (simplified for new format)
   const targetFields: { value: string; label: string }[] = [
@@ -839,8 +767,9 @@ export default function AdminPage() {
       <div className="min-h-screen bg-bg-light flex items-center justify-center px-4">
         <div className="bg-bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
           <div className="text-center mb-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="hittabak" className="w-14 h-14 rounded-xl mx-auto mb-3" />
+            <div className="w-14 h-14 rounded-xl mx-auto mb-3 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center shadow-lg">
+              <span className="text-white font-extrabold text-2xl tracking-tight">HT</span>
+            </div>
             <h1 className="text-xl font-bold text-text-dark">Админ-панель hittabak</h1>
             <p className="text-sm text-text-gray mt-1">Введите данные для входа</p>
           </div>
@@ -862,7 +791,7 @@ export default function AdminPage() {
 
   const topCategories = categories.filter((c) => !c.parentId);
   const tabLabels: Record<TabType, string> = {
-    analytics: "Статистика", categories: "Категории", products: "Товары", popular: "Популярные", slider: "Слайдер", news: "Новости", orders: `Заказы (${orders.length})`, callbacks: `Заявки на звонок`, clients: "Клиенты", "site-editor": "Редактирование сайта", constructor: "Конструктор", admins: "Администраторы", settings: "Настройки",
+    analytics: "Статистика", categories: "Категории", products: "Товары", news: "Новости", orders: `Заказы (${orders.length})`, callbacks: `Заявки на звонок`, clients: "Клиенты", constructor: "Конструктор", admins: "Администраторы", settings: "Настройки",
   };
 
   return (
@@ -870,8 +799,9 @@ export default function AdminPage() {
       <header className="bg-bg-white shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="hittabak" className="w-8 h-8 rounded" />
+            <div className="w-8 h-8 rounded bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center">
+              <span className="text-white font-extrabold text-xs tracking-tight">HT</span>
+            </div>
             <h1 className="text-lg font-bold text-text-dark">hittabak — Админ</h1>
           </div>
           <div className="flex items-center gap-4">
@@ -1400,104 +1330,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Slider */}
-        {activeTab === "slider" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-bg-white rounded-xl border border-border p-5">
-              <h2 className="font-bold text-text-dark mb-4">{editingSlide ? "Редактировать" : "Добавить"} слайд</h2>
-              <form onSubmit={saveSlide} className="space-y-3">
-                <input type="text" placeholder="Заголовок" value={slideForm.title} onChange={(e) => setSlideForm({ ...slideForm, title: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Подзаголовок" value={slideForm.subtitle} onChange={(e) => setSlideForm({ ...slideForm, subtitle: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <div>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="URL изображения" value={slideForm.imageUrl} onChange={(e) => setSlideForm({ ...slideForm, imageUrl: e.target.value })} className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                    <label className={`px-3 py-2 border border-border rounded-lg text-sm cursor-pointer transition-colors flex items-center gap-1 ${uploadingImage === "slider" ? "bg-primary/10 text-primary border-primary" : "bg-bg-light text-text-gray hover:text-primary"}`}>
-                      {uploadingImage === "slider" ? (
-                        <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Загрузка...</>
-                      ) : (
-                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> Файл</>
-                      )}
-                      <input type="file" accept=".jpg,.jpeg,.png,.webp,.svg" className="hidden" disabled={uploadingImage === "slider"} onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        if (file.size > 10 * 1024 * 1024) { alert("Максимальный размер файла: 10 МБ"); e.target.value = ""; return; }
-                        setUploadingImage("slider");
-                        try {
-                          const fd = new FormData();
-                          fd.append("file", file);
-                          const res = await fetch("/api/admin/upload", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
-                          if (res.ok) { const data = await res.json(); setSlideForm((prev) => ({ ...prev, imageUrl: data.url })); }
-                          else { const text = await res.text(); try { const err = JSON.parse(text); alert(err.error || "Ошибка загрузки"); } catch { alert("Ошибка загрузки изображения. Попробуйте файл меньшего размера."); } }
-                        } catch { alert("Ошибка соединения с сервером"); }
-                        finally { setUploadingImage(null); e.target.value = ""; }
-                      }} />
-                    </label>
-                  </div>
-                  <p className="text-xs text-text-light mt-1">Рекомендуемый размер: 1920×600px. Форматы: JPG, PNG, WEBP, SVG. Макс. 10 МБ</p>
-                  {slideForm.imageUrl && (
-                    <div className="mt-2 rounded-lg overflow-hidden border border-border">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={slideForm.imageUrl} alt="Превью" className="w-full h-24 object-cover" />
-                    </div>
-                  )}
-                </div>
-                <input type="text" placeholder="Ссылка" value={slideForm.link} onChange={(e) => setSlideForm({ ...slideForm, link: e.target.value })} className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <label className="flex items-center gap-2 text-sm text-text-gray">
-                  <input type="checkbox" checked={slideForm.active} onChange={(e) => setSlideForm({ ...slideForm, active: e.target.checked })} className="accent-primary" /> Активен
-                </label>
-                <div className="flex gap-2">
-                  <button type="submit" className="flex-1 bg-primary hover:bg-primary-dark text-white text-sm py-2 rounded-lg">{editingSlide ? "Сохранить" : "Добавить"}</button>
-                  {editingSlide && <button type="button" onClick={() => { setEditingSlide(null); setSlideForm({ title: "", subtitle: "", imageUrl: "", link: "", order: "0", active: true }); }} className="px-4 bg-bg-light text-text-gray text-sm py-2 rounded-lg">Отмена</button>}
-                </div>
-              </form>
-            </div>
-            <div className="lg:col-span-2 bg-bg-white rounded-xl border border-border p-5">
-              <h2 className="font-bold text-text-dark mb-4">Порядок слайдов ({slides.length})</h2>
-              <p className="text-xs text-text-gray mb-3">Используйте стрелки для изменения порядка отображения</p>
-              {slides.length === 0 ? <p className="text-text-gray text-sm">Слайдов пока нет</p> : (
-                <div className="space-y-2">
-                  {[...slides].sort((a, b) => a.order - b.order).map((slide, idx) => (
-                    <div key={slide.id} className={`flex items-center gap-3 p-3 rounded-lg border ${slide.active ? "bg-bg-light border-border" : "bg-red-50/50 border-red-200/50"}`}>
-                      <div className="flex flex-col gap-1 flex-shrink-0">
-                        <button
-                          onClick={() => moveSlide(idx, "up")}
-                          disabled={idx === 0}
-                          className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${idx === 0 ? "text-border cursor-not-allowed" : "text-text-gray hover:bg-primary hover:text-white"}`}
-                          title="Вверх"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
-                        </button>
-                        <button
-                          onClick={() => moveSlide(idx, "down")}
-                          disabled={idx === slides.length - 1}
-                          className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${idx === slides.length - 1 ? "text-border cursor-not-allowed" : "text-text-gray hover:bg-primary hover:text-white"}`}
-                          title="Вниз"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                        </button>
-                      </div>
-                      <span className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">{idx + 1}</span>
-                      <div className="w-20 h-14 bg-border rounded overflow-hidden flex-shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={slide.imageUrl} alt={slide.title ? `${slide.title} — слайд` : `Слайд ${idx + 1}`} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-text-dark text-sm truncate">{slide.title || "Без названия"}</p>
-                        <p className="text-xs text-text-gray truncate">{slide.subtitle}</p>
-                        <span className={`text-xs ${slide.active ? "text-success" : "text-danger"}`}>{slide.active ? "Активен" : "Скрыт"}</span>
-                      </div>
-                      <div className="flex gap-2 flex-shrink-0">
-                        <button onClick={() => { setEditingSlide(slide); setSlideForm({ title: slide.title, subtitle: slide.subtitle, imageUrl: slide.imageUrl, link: slide.link, order: String(slide.order), active: slide.active }); }} className="text-primary hover:underline text-sm">Изменить</button>
-                        <button onClick={() => deleteSlide(slide.id)} className="text-danger hover:underline text-sm">Удалить</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* News */}
         {activeTab === "news" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1596,112 +1428,6 @@ export default function AdminPage() {
         {activeTab === "orders" && (
           <OrdersPanel orders={orders} statusLabels={statusLabels} updateOrderStatus={updateOrderStatus} deleteOrder={deleteOrder} token={token} />
         )}
-        {/* Popular Products */}
-        {activeTab === "popular" && (
-          <div className="bg-bg-white rounded-xl border border-border p-5">
-            <h2 className="font-bold text-text-dark mb-4">Популярные товары (до 8 штук)</h2>
-            <p className="text-text-gray text-sm mb-4">Выберите товары, которые будут отображаться на главной странице в разделе «Популярные товары».</p>
-            <div className="space-y-3 mb-6">
-              {products.filter(p => p.isFeatured).length === 0 && <p className="text-text-gray text-sm italic">Пока не выбрано ни одного популярного товара</p>}
-              {products.filter(p => p.isFeatured).map((prod) => (
-                <div key={prod.id} className="flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <svg className="w-5 h-5 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                  {prod.image && <img src={prod.image} alt="" className="w-10 h-10 rounded object-cover" />}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-text-dark truncate">{prod.name}</p>
-                    <p className="text-xs text-text-gray">{prod.price.toLocaleString("ru-RU")} ₽ — {prod.category?.name}</p>
-                  </div>
-                  <button onClick={async () => {
-                    await fetch("/api/admin/products", { method: "PUT", headers: hdrs(), body: JSON.stringify({ id: prod.id, name: prod.name, description: prod.description, price: prod.price, oldPrice: prod.oldPrice, image: prod.image, image2: prod.image2, image3: prod.image3, image4: prod.image4, inStock: prod.inStock, brand: prod.brand, color: prod.color, productType: prod.productType, categoryId: prod.categoryId, isFeatured: false }) });
-                    fetchData();
-                  }} className="text-danger hover:underline text-sm flex-shrink-0">Убрать</button>
-                </div>
-              ))}
-            </div>
-            {products.filter(p => p.isFeatured).length < 8 && (
-              <div>
-                <h3 className="font-medium text-text-dark text-sm mb-2">Добавить товар ({products.filter(p => p.isFeatured).length}/8)</h3>
-                <div className="max-h-64 overflow-y-auto border border-border rounded-lg divide-y divide-border/50">
-                  {products.filter(p => !p.isFeatured).map((prod) => (
-                    <div key={prod.id} className="flex items-center gap-3 p-2.5 hover:bg-bg-light cursor-pointer" onClick={async () => {
-                      if (products.filter(p => p.isFeatured).length >= 8) { alert("Максимум 8 популярных товаров"); return; }
-                      await fetch("/api/admin/products", { method: "PUT", headers: hdrs(), body: JSON.stringify({ id: prod.id, name: prod.name, description: prod.description, price: prod.price, oldPrice: prod.oldPrice, image: prod.image, image2: prod.image2, image3: prod.image3, image4: prod.image4, inStock: prod.inStock, brand: prod.brand, color: prod.color, productType: prod.productType, categoryId: prod.categoryId, isFeatured: true }) });
-                      fetchData();
-                    }}>
-                      {prod.image && <img src={prod.image} alt="" className="w-8 h-8 rounded object-cover" />}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-text-dark truncate">{prod.name}</p>
-                        <p className="text-xs text-text-gray">{prod.price.toLocaleString("ru-RU")} ₽</p>
-                      </div>
-                      <span className="text-primary text-sm">+ Добавить</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Site Editor */}
-        {activeTab === "site-editor" && (
-          <div className="space-y-6">
-            <div className="bg-bg-white rounded-xl border border-border p-5">
-              <h2 className="font-bold text-text-dark mb-4">Редактирование разделов сайта</h2>
-              <p className="text-text-gray text-sm mb-4">Выберите раздел для редактирования. Контент обновится на сайте после сохранения.</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[
-                  { slug: "about", label: "О компании" },
-                  { slug: "delivery", label: "Доставка" },
-                  { slug: "contacts", label: "Контакты" },
-                  { slug: "wholesale", label: "Оптовые продажи" },
-                ].map((p) => (
-                  <button key={p.slug} onClick={() => {
-                    setEditingPage(p.slug);
-                    const existing = sitePages[p.slug];
-                    setPageForm({ title: existing?.title || "", content: existing?.content || "" });
-                    setPageSaveMsg("");
-                  }} className={`p-4 rounded-lg border text-left transition-colors ${editingPage === p.slug ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                    <p className="font-medium text-text-dark text-sm">{p.label}</p>
-                    <p className="text-xs text-text-gray mt-1">{sitePages[p.slug] ? "Редактировано" : "По умолчанию"}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {editingPage && (
-              <div className="bg-bg-white rounded-xl border border-border p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-text-dark">
-                    Редактирование: {editingPage === "about" ? "О компании" : editingPage === "delivery" ? "Доставка" : editingPage === "contacts" ? "Контакты" : "Оптовые продажи"}
-                  </h3>
-                  {pageSaveMsg && <span className="text-sm text-success font-medium">{pageSaveMsg}</span>}
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-sm text-text-gray mb-1 block">Заголовок раздела</label>
-                    <input type="text" value={pageForm.title} onChange={(e) => setPageForm({ ...pageForm, title: e.target.value })}
-                      placeholder="Заголовок страницы" className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                  </div>
-                  <div>
-                    <label className="text-sm text-text-gray mb-1 block">Содержимое (HTML поддерживается)</label>
-                    <textarea value={pageForm.content} onChange={(e) => setPageForm({ ...pageForm, content: e.target.value })}
-                      placeholder={"Введите текст раздела...\n\nПоддерживается HTML разметка:\n<p>Параграф</p>\n<h3>Подзаголовок</h3>\n<ul><li>Пункт</li></ul>\n<strong>Жирный</strong>"}
-                      className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary font-mono" rows={15} />
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => saveSitePage(editingPage)} className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg transition-colors font-medium text-sm">
-                      Сохранить
-                    </button>
-                    <button onClick={() => { setEditingPage(null); setPageSaveMsg(""); }} className="bg-bg-light text-text-gray px-4 py-2.5 rounded-lg text-sm">
-                      Закрыть
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Callbacks */}
         {activeTab === "callbacks" && <CallbacksPanel token={token} />}
 

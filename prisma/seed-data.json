@@ -1,0 +1,2767 @@
+{
+  "categories": {
+    "Нагреватели табака": [
+      "Glo Hyper Pro (Польша)",
+      "Glo Hyper Pro (Россия)",
+      "IQOS 3 Duos",
+      "IQOS Iluma",
+      "IQOS Iluma One",
+      "IQOS Iluma Prime",
+      "IQOS Iluma i",
+      "IQOS Iluma i One",
+      "IQOS Iluma i Prime",
+      "MOK FWRD",
+      "MOK Sensio",
+      "TEO",
+      "lil SOLID 2.0",
+      "lil SOLID 2.0 Plus",
+      "lil SOLID 3.0",
+      "lil Solid Dual",
+      "lil Solid EZ"
+    ],
+    "Стики для нагревателей": [
+      "Стики Ashima для IQOS",
+      "Стики Baisha для Glo",
+      "Стики COO для IQOS",
+      "Стики Delia для IQOS Iluma",
+      "Стики Farstar для Rejo и IQOS",
+      "Стики Fiit для Lil solid и IQOS - Казахстан",
+      "Стики Five senses для IQOS Iluma",
+      "Стики Fondz для IQOS Iluma (Индонезия)",
+      "Стики Heets для IQOS (Армения)",
+      "Стики Kent Sticks для Glo",
+      "Стики Kroos для IQOS",
+      "Стики Kuanzhai для IQOS",
+      "Стики LONO для IQOS 19мг (1,9%) никотина",
+      "Стики Marlboro для IQOS - Япония",
+      "Стики Mofee для IQOS Iluma (Индонезия)",
+      "Стики Mofee для IQOS Iluma (Япония)",
+      "Стики Neafs для IQOS 0% (без никотина)",
+      "Стики Neafs для IQOS 15мг (1,5%) никотина",
+      "Стики Neo Demi для Glo",
+      "Стики Nise+ для IQOS",
+      "Стики OCBD для IQOS КБД 250мг 0% никотина",
+      "Стики Sentic для MOK Sensio и IQOS Iluma",
+      "Стики Terea для IQOS Iluma",
+      "Стики UGare iRod для IQOS"
+    ]
+  },
+  "products": [
+    {
+      "name": "IQOS Iluma Prime Oasis Limited edition - оранжевый",
+      "color": "",
+      "price": 22000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Prime Bronze taupe - бронзовый",
+      "color": "",
+      "price": 18000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Prime Gold khaki - золотой",
+      "color": "",
+      "price": 18000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Prime Jade green - зелёный",
+      "color": "",
+      "price": 18000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Prime Obsidian black - чёрный",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Prime WE Limited edition - бирюзовый",
+      "color": "",
+      "price": 22000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Moss green - зелёный",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Pebble beige - бежевый",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Pebble grey - серый",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Sunset red - красный",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Azure blue - синий",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Сияющий янтарь и стики СОО (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Электрический синий и стики СОО (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Prime Aspen green - тёмно-зелёный",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Prime Breeze blue - бирюзовый",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Prime Garnet red - гранатово-красный",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Prime Midnight black - полуночный чёрный",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Prime Anniversary edition - чёрно-бирюзовый градиент",
+      "color": "",
+      "price": 45000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Anniversary edition - багровый",
+      "color": "",
+      "price": 40000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Breeze blue - бирюзовый",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Vivid terracotta - яркий терракотовый",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Midnight black - полуночный чёрный",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Digital violet - фиолетовый",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "TEO Синий",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Digital violet - фиолетовый (Япония)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Breeze blue - бирюзовый (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Vivid terracotta - яркий терракотовый (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Anniversary edition - чёрно-фиолетовый",
+      "color": "",
+      "price": 34000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Digital violet - фиолетовый (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Midnight blue - тёмно-синий (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Фиолетовый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Чёрно-красный (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Чёрно-красный (Россия)",
+      "color": "",
+      "price": 2000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil Solid Dual Зелёный кобальт",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil Solid Dual Красная медь",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil Solid Dual Чёрный титан",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Лазурный бриз и стики СОО (Ментол, Черника, Арбуз)",
+      "color": "",
+      "price": 2900.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Огненный рассвет и стики СОО (Ментол, Черника, Арбуз)",
+      "color": "",
+      "price": 2900.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK Sensio Зелёный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK Sensio Синий",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK Sensio Чёрный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Prime Bright Limited edition - салатовый",
+      "color": "",
+      "price": 22000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Bright Limited edition - cалатовый",
+      "color": "",
+      "price": 17000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma WE Limited edition - бирюзовый",
+      "color": "",
+      "price": 17000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma Oasis Limited edition - оранжевый",
+      "color": "",
+      "price": 17000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma One Sunset red - красный",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma One Moss green - зелёный",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma One Pebble beige - бежевый",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma One Azure blue - синий",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma One Pebble grey - серый",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Зелёный бархат и стики COO (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Пепельно-чёрный и стики COO (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Синий",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Чёрный",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Бронза",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Зелёный бархат",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Розовый шёлк",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Фиолетовый",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Фиолетовый - Iridescent purple Limited edition",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Графитовый",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Золотой",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Красный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Синий",
+      "color": "",
+      "price": 8000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i Prime Vivid terracotta - яркий терракотовый",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "TEO Розовый",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "TEO Зелёный",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "TEO Серый",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID Ez Синий",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID Ez Серый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID Ez Зелёный",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID Ez Бежевый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID Ez Белый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID Ez Розовый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Breeze blue - бирюзовый (Япония)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS Iluma i One Breeze green - светло-зелёный (Япония)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 2.0 Plus Чёрный",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 2.0 Plus Синий",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 3.0 Золотой",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 3.0 Серый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 3.0 Синий",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 3.0 Чёрный",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Чёрный (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Бирюзовый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Оранжевый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Розовый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Синий (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Синий (Россия)",
+      "color": "",
+      "price": 2000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil Solid Dual Белый хром",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 3.0 Зелёный",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 2.0 Plus Графит",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Рубиновый красный и стики СОО (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Чёрный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 2.0 Графит",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "lil SOLID 2.0 Синий",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "IQOS 3 Duos Белый",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "MOK FWRD Китайский журавль и стики СОО (Ментол, Черника, Арбуз)",
+      "color": "",
+      "price": 2900.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Нагреватели табака"
+    },
+    {
+      "name": "Glo Hyper Pro Фиолетовый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Чёрно-красный (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Бирюзовый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Оранжевый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Розовый (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Синий (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Чёрный (Польша)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Польша)"
+    },
+    {
+      "name": "Glo Hyper Pro Чёрно-красный (Россия)",
+      "color": "",
+      "price": 2000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Россия)"
+    },
+    {
+      "name": "Glo Hyper Pro Синий (Россия)",
+      "color": "",
+      "price": 2000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "Glo Hyper Pro (Россия)"
+    },
+    {
+      "name": "IQOS Iluma One Azure blue - синий",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma One"
+    },
+    {
+      "name": "IQOS Iluma One Moss green - зелёный",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma One"
+    },
+    {
+      "name": "IQOS Iluma One Pebble beige - бежевый",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma One"
+    },
+    {
+      "name": "IQOS Iluma One Pebble grey - серый",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma One"
+    },
+    {
+      "name": "IQOS Iluma One Sunset red - красный",
+      "color": "",
+      "price": 9000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma One"
+    },
+    {
+      "name": "IQOS Iluma i One Anniversary edition - чёрно-фиолетовый",
+      "color": "",
+      "price": 34000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Breeze blue - бирюзовый (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Digital violet - фиолетовый (Япония)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Digital violet - фиолетовый (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Midnight blue - тёмно-синий (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Vivid terracotta - яркий терракотовый (Польша)",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Breeze blue - бирюзовый (Япония)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma i One Breeze green - светло-зелёный (Япония)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i One"
+    },
+    {
+      "name": "IQOS Iluma Azure blue - синий",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma Moss green - зелёный",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma Pebble beige - бежевый",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma Pebble grey - серый",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma Sunset red - красный",
+      "color": "",
+      "price": 12000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma Bright Limited edition - cалатовый",
+      "color": "",
+      "price": 17000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma Oasis Limited edition - оранжевый",
+      "color": "",
+      "price": 17000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma WE Limited edition - бирюзовый",
+      "color": "",
+      "price": 17000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma"
+    },
+    {
+      "name": "IQOS Iluma i Anniversary edition - багровый",
+      "color": "",
+      "price": 40000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i"
+    },
+    {
+      "name": "IQOS Iluma i Breeze blue - бирюзовый",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i"
+    },
+    {
+      "name": "IQOS Iluma i Digital violet - фиолетовый",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i"
+    },
+    {
+      "name": "IQOS Iluma i Midnight black - полуночный чёрный",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i"
+    },
+    {
+      "name": "IQOS Iluma i Vivid terracotta - яркий терракотовый",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i"
+    },
+    {
+      "name": "IQOS Iluma Prime Bronze taupe - бронзовый",
+      "color": "",
+      "price": 18000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma Prime Gold khaki - золотой",
+      "color": "",
+      "price": 18000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma Prime Jade green - зелёный",
+      "color": "",
+      "price": 18000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma Prime Oasis Limited edition - оранжевый",
+      "color": "",
+      "price": 22000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma Prime Obsidian black - чёрный",
+      "color": "",
+      "price": 19000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma Prime WE Limited edition - бирюзовый",
+      "color": "",
+      "price": 22000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma Prime Bright Limited edition - салатовый",
+      "color": "",
+      "price": 22000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma Prime"
+    },
+    {
+      "name": "IQOS Iluma i Prime Anniversary edition - чёрно-бирюзовый градиент",
+      "color": "",
+      "price": 45000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i Prime"
+    },
+    {
+      "name": "IQOS Iluma i Prime Aspen green - тёмно-зелёный",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i Prime"
+    },
+    {
+      "name": "IQOS Iluma i Prime Breeze blue - бирюзовый",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i Prime"
+    },
+    {
+      "name": "IQOS Iluma i Prime Garnet red - гранатово-красный",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i Prime"
+    },
+    {
+      "name": "IQOS Iluma i Prime Midnight black - полуночный чёрный",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i Prime"
+    },
+    {
+      "name": "IQOS Iluma i Prime Vivid terracotta - яркий терракотовый",
+      "color": "",
+      "price": 24000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS Iluma i Prime"
+    },
+    {
+      "name": "IQOS 3 Duos Белый",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "IQOS 3 Duos Золотой",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "IQOS 3 Duos Красный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "IQOS 3 Duos Синий",
+      "color": "",
+      "price": 8000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "IQOS 3 Duos Фиолетовый - Iridescent purple Limited edition",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "IQOS 3 Duos Графитовый",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "IQOS 3 Duos Чёрный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "IQOS 3 Duos"
+    },
+    {
+      "name": "lil Solid Dual Зелёный кобальт",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid Dual"
+    },
+    {
+      "name": "lil Solid Dual Красная медь",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid Dual"
+    },
+    {
+      "name": "lil Solid Dual Чёрный титан",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid Dual"
+    },
+    {
+      "name": "lil Solid Dual Белый хром",
+      "color": "",
+      "price": 6000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid Dual"
+    },
+    {
+      "name": "lil SOLID Ez Бежевый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid EZ"
+    },
+    {
+      "name": "lil SOLID Ez Белый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid EZ"
+    },
+    {
+      "name": "lil SOLID Ez Зелёный",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid EZ"
+    },
+    {
+      "name": "lil SOLID Ez Розовый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid EZ"
+    },
+    {
+      "name": "lil SOLID Ez Серый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid EZ"
+    },
+    {
+      "name": "lil SOLID Ez Синий",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil Solid EZ"
+    },
+    {
+      "name": "lil SOLID 2.0 Графит",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 2.0"
+    },
+    {
+      "name": "lil SOLID 2.0 Синий",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 2.0"
+    },
+    {
+      "name": "lil SOLID 2.0 Plus Графит",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 2.0 Plus"
+    },
+    {
+      "name": "lil SOLID 2.0 Plus Синий",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 2.0 Plus"
+    },
+    {
+      "name": "lil SOLID 2.0 Plus Чёрный",
+      "color": "",
+      "price": 3000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 2.0 Plus"
+    },
+    {
+      "name": "lil SOLID 3.0 Золотой",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 3.0"
+    },
+    {
+      "name": "lil SOLID 3.0 Серый",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 3.0"
+    },
+    {
+      "name": "lil SOLID 3.0 Синий",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 3.0"
+    },
+    {
+      "name": "lil SOLID 3.0 Чёрный",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 3.0"
+    },
+    {
+      "name": "lil SOLID 3.0 Зелёный",
+      "color": "",
+      "price": 4000.0,
+      "category": "Нагреватели табака",
+      "subcategory": "lil SOLID 3.0"
+    },
+    {
+      "name": "MOK FWRD Лазурный бриз и стики СОО (Ментол, Черника, Арбуз)",
+      "color": "",
+      "price": 2900.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Огненный рассвет и стики СОО (Ментол, Черника, Арбуз)",
+      "color": "",
+      "price": 2900.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Сияющий янтарь и стики СОО (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Электрический синий и стики СОО (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Бронза",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Зелёный бархат",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Розовый шёлк",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Синий",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Фиолетовый",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Чёрный",
+      "color": "",
+      "price": 2100.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Зелёный бархат и стики COO (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Китайский журавль и стики СОО (Ментол, Черника, Арбуз)",
+      "color": "",
+      "price": 2900.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Пепельно-чёрный и стики COO (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK FWRD Рубиновый красный и стики СОО (Ментол, Черника, Дыня)",
+      "color": "",
+      "price": 2700.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK FWRD"
+    },
+    {
+      "name": "MOK Sensio Зелёный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK Sensio"
+    },
+    {
+      "name": "MOK Sensio Синий",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK Sensio"
+    },
+    {
+      "name": "MOK Sensio Чёрный",
+      "color": "",
+      "price": 5500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "MOK Sensio"
+    },
+    {
+      "name": "TEO Синий",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "TEO"
+    },
+    {
+      "name": "TEO Зелёный",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "TEO"
+    },
+    {
+      "name": "TEO Розовый",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "TEO"
+    },
+    {
+      "name": "TEO Серый",
+      "color": "",
+      "price": 2500.0,
+      "category": "Нагреватели табака",
+      "subcategory": "TEO"
+    },
+    {
+      "name": "Стики Ashima Amber (Табак Вирджиния) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Blue (Оригинальный табак) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Blueberry (Черника) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Green (Освежающая мята) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Orange (Апельсин) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Original - оригинальный табак (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Purple (Сочные ягоды) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Red (Древесный восток) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Virginia - табак Вирджиния (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Black Jade (Яблоко с нотками трав) (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Black Platinum (Лесные ягоды) (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Black Ruby (Дуэт малины и клубники) (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Coral (Цитрусовый вкус) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Oriental (Восточный табак) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Russet (Десертный вкус) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Tiramisu (Тирамису) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Ashima Black Gold (Премиальный табак) (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Ashima для IQOS"
+    },
+    {
+      "name": "Стики Baisha Azure - табак (блок - 10 пачек)",
+      "color": "",
+      "price": 2500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Baisha для Glo"
+    },
+    {
+      "name": "Стики Baisha Bronze - сигарный табак c капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Baisha для Glo"
+    },
+    {
+      "name": "Стики Baisha Crimson On - табак с арбузом и капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Baisha для Glo"
+    },
+    {
+      "name": "Стики Baisha Mauve On - табак с ягодами и капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Baisha для Glo"
+    },
+    {
+      "name": "Стики Baisha Neon On - табак с манго, персиком и капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Baisha для Glo"
+    },
+    {
+      "name": "Стики Baisha Scarlet On - табак с клубникой и капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Baisha для Glo"
+    },
+    {
+      "name": "Стики COO BAKHCHA - табак с арбузной капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO BROWN - табак с кофе и нотками шоколада (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO GREEN - ментол и табак (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO ORANGE - табак с апельсином (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO PURPLE - табак с черникой (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO RED - настоящий табак (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO SOLORA - табак с мускусной дыней (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики COO YELLOW - мягкий табак (блок - 10 пачек)",
+      "color": "",
+      "price": 1800.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики COO для IQOS"
+    },
+    {
+      "name": "Стики Delia Classic coral - табак с нотками фруктов (блок - 10 пачек)",
+      "color": "",
+      "price": 3900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Delia для IQOS Iluma"
+    },
+    {
+      "name": "Стики Delia Classic gold - классический табак (блок - 10 пачек)",
+      "color": "",
+      "price": 3900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Delia для IQOS Iluma"
+    },
+    {
+      "name": "Стики Delia Classic green - табак с ментолом (блок - 10 пачек)",
+      "color": "",
+      "price": 3900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Delia для IQOS Iluma"
+    },
+    {
+      "name": "Стики Delia Classic burgundy - табак с нотками ягод (блок - 10 пачек)",
+      "color": "",
+      "price": 3900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Delia для IQOS Iluma"
+    },
+    {
+      "name": "Стики Farstar Amber - табак с янтарными нотками (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Farstar для Rejo и IQOS"
+    },
+    {
+      "name": "Стики Farstar Green - табак с ментолом (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Farstar для Rejo и IQOS"
+    },
+    {
+      "name": "Стики Farstar Mauve - табак с черникой (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Farstar для Rejo и IQOS"
+    },
+    {
+      "name": "Стики Farstar Melony - табак с дыней (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Farstar для Rejo и IQOS"
+    },
+    {
+      "name": "Стики Farstar Regular - классический табак (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Farstar для Rejo и IQOS"
+    },
+    {
+      "name": "Стики Farstar Yellow - табак с лимоном и холодком (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Farstar для Rejo и IQOS"
+    },
+    {
+      "name": "Стики Fiit Tropic - табак и тропические фрукты (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fiit для Lil solid и IQOS - Казахстан"
+    },
+    {
+      "name": "Стики Fiit Viola - табак с ментолом и лесными ягодами (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fiit для Lil solid и IQOS - Казахстан"
+    },
+    {
+      "name": "Стики Fiit Crisp - мягкий табак с ментолом и цитрусом (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fiit для Lil solid и IQOS - Казахстан"
+    },
+    {
+      "name": "Стики Five senses Blueberry - табак с черникой (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Five senses для IQOS Iluma"
+    },
+    {
+      "name": "Стики Five senses Menthol - табак с ментолом (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Five senses для IQOS Iluma"
+    },
+    {
+      "name": "Стики Five senses Silver - мягкий табак с пряно-травяными нотками (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Five senses для IQOS Iluma"
+    },
+    {
+      "name": "Стики Five senses Amber - табак с древесно-ореховыми нотками (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Five senses для IQOS Iluma"
+    },
+    {
+      "name": "Стики Five senses Tobacco - классический табак (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Five senses для IQOS Iluma"
+    },
+    {
+      "name": "Стики Fondz Amber - терпкий табак (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fondz для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Fondz Purple - табак с лесными ягодами и ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fondz для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Fondz Regular - табак с древесно-ореховыми нотками (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fondz для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Fondz Rich regular - классический табак (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fondz для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Fondz Turquoise - табак с ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 3200.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Fondz для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Heets Silver selection - табак с пряными нотками (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Heets для IQOS (Армения)"
+    },
+    {
+      "name": "Стики Heets Turquoise selection - табак с ментолом и нотками цитруса (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Heets для IQOS (Армения)"
+    },
+    {
+      "name": "Стики Kent sticks Берри арома (Berry aroma) - табак с ягодными нотками (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kent Sticks для Glo"
+    },
+    {
+      "name": "Стики Kent sticks Классик тобакко (Classic tobacco) - отборный табак (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kent Sticks для Glo"
+    },
+    {
+      "name": "Стики Kent sticks Рич тобакко (Rich tobacco) - табак с нотками ментола (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kent Sticks для Glo"
+    },
+    {
+      "name": "Стики Kent sticks Тропик клик (Tropic click) - табак с капсулой со вкусом тропических фруктов (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kent Sticks для Glo"
+    },
+    {
+      "name": "Стики Kent sticks Берри клик (Berry click) - табак с ягодной капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kent Sticks для Glo"
+    },
+    {
+      "name": "Стики Kent sticks Руби буст (Ruby boost) - табак с капсулой со вкусом ягод (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kent Sticks для Glo"
+    },
+    {
+      "name": "Стики Kroos Мята (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kroos для IQOS"
+    },
+    {
+      "name": "Стики Kroos Оригинальный (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kroos для IQOS"
+    },
+    {
+      "name": "Стики Kroos Цитрус (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kroos для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Bordeaux - табак с миндалём (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Canary - табак с дыней (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Crimson - табак с арбузом (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Emerald click - табак с мятной капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Rouge - табак с земляникой (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Silvery - лёгкий табак (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики Kuanzhai Sunlight click - табак с апельсиновой капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 2300.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Kuanzhai для IQOS"
+    },
+    {
+      "name": "Стики LONO Лайм 19мг (1,9%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики LONO для IQOS 19мг (1,9%) никотина"
+    },
+    {
+      "name": "Стики LONO Лайм мята 19мг (1,9%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики LONO для IQOS 19мг (1,9%) никотина"
+    },
+    {
+      "name": "Стики LONO Ледяная черника 19мг (1,9%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики LONO для IQOS 19мг (1,9%) никотина"
+    },
+    {
+      "name": "Стики LONO Ледяной зелёный виноград 19мг (1,9%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики LONO для IQOS 19мг (1,9%) никотина"
+    },
+    {
+      "name": "Стики LONO Супер оригинальный 19мг (1,9%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики LONO для IQOS 19мг (1,9%) никотина"
+    },
+    {
+      "name": "Стики LONO Чёрный ментол 19мг (1,9%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики LONO для IQOS 19мг (1,9%) никотина"
+    },
+    {
+      "name": "Стики Marlboro Black menthol - крепкий табак с ментолом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 13000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Marlboro для IQOS - Япония"
+    },
+    {
+      "name": "Стики Marlboro Menthol - табак с ментолом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 13000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Marlboro для IQOS - Япония"
+    },
+    {
+      "name": "Стики Marlboro Mint - табак с мятным холодком (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 13000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Marlboro для IQOS - Япония"
+    },
+    {
+      "name": "Стики Marlboro Tropical menthol - табак с ментолом и фруктами (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 13000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Marlboro для IQOS - Япония"
+    },
+    {
+      "name": "Стики Marlboro Yellow menthol - табак с ментолом и цитрусами (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 13000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Marlboro для IQOS - Япония"
+    },
+    {
+      "name": "Стики Mofee Amber - табак с древесно-ореховыми нотками (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Mofee Bronze - табак с какао и сухофруктами (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Mofee Purple - табак с лесными ягодами и ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Mofee Silver - мягкий табак с пряно-травяными нотками (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Mofee Turquoise - табак с ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Индонезия)"
+    },
+    {
+      "name": "Стики Mofee Brown - табак с древесно-ореховыми нотками (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 6000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Япония)"
+    },
+    {
+      "name": "Стики Mofee Gold - терпкий табак (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 6000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Япония)"
+    },
+    {
+      "name": "Стики Mofee Regular - классический табак (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 6000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Mofee для IQOS Iluma (Япония)"
+    },
+    {
+      "name": "Стики Neafs Клубника 15мг (1,5%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 15мг (1,5%) никотина"
+    },
+    {
+      "name": "Стики Neafs Кофе 15мг (1,5%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 15мг (1,5%) никотина"
+    },
+    {
+      "name": "Стики Neafs Ментол 15мг (1,5%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 15мг (1,5%) никотина"
+    },
+    {
+      "name": "Стики Neafs Мохито 15мг (1,5%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 15мг (1,5%) никотина"
+    },
+    {
+      "name": "Стики Neafs Оригинал 15мг (1,5%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 15мг (1,5%) никотина"
+    },
+    {
+      "name": "Стики Neafs Черника 15мг (1,5%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 15мг (1,5%) никотина"
+    },
+    {
+      "name": "Стики Neafs Ледяной апельсин 0мг (0%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 0% (без никотина)"
+    },
+    {
+      "name": "Стики Neafs Ментол 0мг (0%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 0% (без никотина)"
+    },
+    {
+      "name": "Стики Neafs Черника 0мг (0%) (блок - 10 пачек)",
+      "color": "",
+      "price": 1600.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neafs для IQOS 0% (без никотина)"
+    },
+    {
+      "name": "Стики Neo Demi Ванилла клик (Vanilla click) - табак с кремово-ягодной капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Ванилла минт (Vanilla mint) - табак с ментолом и ванильной капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Брайт тобакко (Bright tobacco) - мягкий табак (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Кофе тобакко (Coffee tobacco) - табак Вирджиния с чёрным кофе (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Крими тобакко (Creamy tobacco) - табак с кремовыми нотками (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Ред мун (Red moon) - табак с вишней и нотками голубики (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Руби буст (Ruby boost) - табак с капсулой со вкусом ягод (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Тропик клик (Tropic click) - табак с капсулой со вкусом тропических фруктов (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Фрут клик (Fruit click) - табак с фруктово-кремовой капсулой (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Чоко тобакко (Chocolate tobacco) - табак Вирджиния с шоколадом (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Санрайз (Sunrise) - табак с арбузом и нотками дыни (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Neo Demi Черри тобакко (Cherry tobacco) - табак Вирджиния с вишней (блок - 10 пачек)",
+      "color": "",
+      "price": 4000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Neo Demi для Glo"
+    },
+    {
+      "name": "Стики Nise+ Sky blue - табак с ментолом (блок - 10 пачек)",
+      "color": "",
+      "price": 2100.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Nise+ для IQOS"
+    },
+    {
+      "name": "Стики Nise+ Sweet blueberry - табак с травяным ароматом, ментолом и черничным соком (блок - 10 пачек)",
+      "color": "",
+      "price": 1900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Nise+ для IQOS"
+    },
+    {
+      "name": "Стики Nise+ Sweet vanilla - табак с ванилью и ягодами (блок - 10 пачек)",
+      "color": "",
+      "price": 1900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Nise+ для IQOS"
+    },
+    {
+      "name": "Стики OCBD Matsutake КБД 250мг Никотин 0мг (0%) (пачка - 20 стиков)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики OCBD для IQOS КБД 250мг 0% никотина"
+    },
+    {
+      "name": "Стики Sentic Dew - табак с дыней и ментолом (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Sentic для MOK Sensio и IQOS Iluma"
+    },
+    {
+      "name": "Стики Sentic Mistral - табак с ментолом (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Sentic для MOK Sensio и IQOS Iluma"
+    },
+    {
+      "name": "Стики Sentic Stretto - табак с кофе и ореховыми нотками (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Sentic для MOK Sensio и IQOS Iluma"
+    },
+    {
+      "name": "Стики Sentic Umber - классический табак (блок - 10 пачек)",
+      "color": "",
+      "price": 3000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Sentic для MOK Sensio и IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Amber табак с древесно-ореховыми нотками (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Amber табак с древесно-ореховыми нотками (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Amber табак с древесно-ореховыми нотками (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Amber - табак с древесно-ореховыми нотками (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Amber табак с древесно-ореховыми нотками (Швейцария) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Anthea blend - табак с розмарином и ментолом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Beige - табак с тёплыми специями и солодом (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Bermin pearl edition - табак с гвоздикой и кнопкой со вкусом лесных ягод (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Black green крепкий табак с ментолом и зелёными фруктами (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Black purple menthol - крепкий табак с ягодами и ментолом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Black ruby - табак с красными ягодами и ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Blue мягкий табак со сливками, ментолом и перечной мятой (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Blue - табак с фруктами, ванилью, карамелью и ментолом (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Blue табак с фруктами, ванилью, карамелью и ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Bright wave табак с зелёными фруктами и ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Bronze табак с какао и сухофруктами (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Bronze табак с какао и сухофруктами (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Cenga blend - табак с гвоздикой (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Green мягкий табак с мятой и лимоном (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Green мягкий табак с мятой и лимоном (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Provence pearl - табак с капсулой с виноградом и ментолом (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Purple табак с лесными ягодами и ментолом (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Purple - табак с лесными ягодами и ментолом (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Russet - обжаренный табак (Швейцария) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sapa blend - табак с анисом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Shine pearl - табак с капсулой со вкусом фруктов и мускатным послевкусием (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sienna табак с чайными и древесными нотками (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sienna табак с чайными и древесными оттенками (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sienna - табак с чайными и древесными оттенками (Швейцария) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Silver - мягкий табак с пряно-травяными нотками (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Silver мягкий табак с пряно-травяными нотками (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Silver - мягкий табак с пряно-травяными нотками (Швейцария) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Starling pearl табак с клубникой, базиликом и ментолом с кнопкой (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Starling pearl - табак с клубникой, базиликом и ментолом с кнопкой (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Summer wave табак-персик и цветочные нотки с ментолом (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Summer wave - табак, персик и цветочные нотки с ментолом (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sun pearl - табак с нотками фруктов и капсулой (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sun pearl - табак с нотками пряных трав и капсулой (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sun pearl - табак с нотками пряных трав и капсулой (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Teak - табак со сливочно-ореховыми нотками (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Tidal pearl - табак с капсулой с ментолом (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Turquoise табак с ментолом (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Turquoise - табак с ментолом (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Turquoise табак с ментолом (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Twilight pearl - табак с ментолом, ягодами и капсулой (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Twilight pearl - табак с ментолом и ягодами, с капсулой (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Yellow мягкий табак с фруктовыми нотками (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Yellow - мягкий табак с фруктовыми нотками (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Yellow мягкий табак с нотками фруктов (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Yellow - мягкий табак с фруктовыми нотками (Швейцария) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Yugen - табак с фруктовыми и цветочными нотками с холодком (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Zing wave (Green zing) табак-цитрусовые-пряные травы и ментол (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Zing wave (Green zing) - табак, цитрусовые, пряные травы и ментол (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Zing wave (Green zing) - табак с цитрусовыми, пряными травами и ментолом (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Abora pearl табак с солодом и капсулой с яблоком (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Black green - крепкий табак с ментолом и зелёными фруктами (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Black purple - крепкий табак с ягодами и ментолом (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Black Sunshine Menthol - мягкий табак с ментолом и дыней (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Bronze - табак с какао и сухофруктами (Узбекистан) (блок - 10 пачек)",
+      "color": "",
+      "price": 5000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Oasis pearl - табак со сливками и орехом с капсулой (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Purple wave табак и лесные ягоды с ментолом (Армения) (блок - 10 пачек)",
+      "color": "",
+      "price": 5500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Purple wave - табак с лесными ягодами и ментолом (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Purple wave табак с лесными ягодами и ментолом (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Purple menthol - табак с лесными ягодами и ментолом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Riviera pearl - табак с капсулой со вкусом малины, розы и ментола (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Ruby fuse мягкий табак с ягодами и цветочными нотками (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 3900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Scarlet edition - табак с корицей и яблоком (Индонезия) (блок - 10 пачек)",
+      "color": "",
+      "price": 9000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Silver мягкий табак с пряно-травяными нотками (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 4500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Silver - мягкий табак с пряно-травянистыми нотками (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Starling pearl - табак с кнопкой со вкусом клубники с базиликом и ментолом (Япония) (блок - 10 пачек)",
+      "color": "",
+      "price": 11000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Summer wave - табак с персиком и цветочными нотками с ментолом (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Sun pearl - табак с нотками фруктов и капсулой (Корея) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Turquoise - табак с ментолом (Швейцария) (блок - 10 пачек)",
+      "color": "",
+      "price": 10000.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики Terea Yellow green табак с цитрусом и травяными нотками (Казахстан) (блок - 10 пачек)",
+      "color": "",
+      "price": 3900.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики Terea для IQOS Iluma"
+    },
+    {
+      "name": "Стики UGare iRod Оригинальный (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики UGare iRod для IQOS"
+    },
+    {
+      "name": "Стики UGare iRod Цитрус (блок - 10 пачек)",
+      "color": "",
+      "price": 1500.0,
+      "category": "Стики для нагревателей",
+      "subcategory": "Стики UGare iRod для IQOS"
+    }
+  ]
+}
