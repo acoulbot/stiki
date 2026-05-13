@@ -6,32 +6,143 @@ import { prisma } from "@/lib/prisma";
 
 export const revalidate = 60;
 
+function getImageSrc(image: string) {
+  if (!image) return "";
+  if (image.startsWith("http")) return image;
+  if (image.startsWith("/api/")) return image;
+  if (image.startsWith("/uploads/")) return `/api${image}`;
+  if (image.startsWith("/")) return `/api/static${image}`;
+  return image;
+}
+
+/** Extract brand display name from subcategory name */
+function extractBrand(subcategoryName: string): string {
+  // "Стики Terea для IQOS Iluma" → "Terea"
+  const stickMatch = subcategoryName.match(/^Стики\s+(.+?)\s+для\s/i);
+  if (stickMatch) return stickMatch[1];
+  return subcategoryName;
+}
+
+/** Group device subcategories by top-level brand */
+function getDeviceBrandKey(name: string): string {
+  if (name.startsWith("IQOS")) return "IQOS";
+  if (name.toLowerCase().startsWith("lil")) return "lil SOLID";
+  if (name.startsWith("MOK")) return "MOK";
+  if (name.startsWith("Glo")) return "Glo";
+  if (name.startsWith("TEO")) return "TEO";
+  return name;
+}
+
+interface BrandGroup {
+  name: string;
+  count: number;
+  image: string;
+  slug: string;
+}
+
 export default async function HomePage() {
-  const [heroBlocks, deviceBlocks, stickBlocks, newsBlocks, devices, sticks, news] = await Promise.all([
+  const [heroBlocks, newsItems] = await Promise.all([
     prisma.homeBlock.findMany({ where: { active: true, blockType: "hero" }, orderBy: { order: "asc" }, take: 1 }),
-    prisma.homeBlock.findMany({ where: { active: true, blockType: "device" }, orderBy: { order: "asc" }, take: 4 }),
-    prisma.homeBlock.findMany({ where: { active: true, blockType: "stick" }, orderBy: { order: "asc" }, take: 3 }),
-    prisma.homeBlock.findMany({ where: { active: true, blockType: "news" }, orderBy: { order: "asc" }, take: 4 }),
-    prisma.product.findMany({
-      take: 4,
-      where: { productType: "device" },
-      orderBy: { createdAt: "desc" },
-      include: { category: true },
-    }),
-    prisma.product.findMany({
-      take: 3,
-      where: { productType: "stick" },
-      orderBy: { createdAt: "desc" },
-      include: { category: true },
-    }),
-    prisma.news.findMany({
-      take: 4,
-      where: { published: true },
-      orderBy: { createdAt: "desc" },
-    }),
+    prisma.news.findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, take: 4 }),
   ]);
 
   const hero = heroBlocks[0] || null;
+
+  // Get top-level categories
+  const topCategories = await prisma.category.findMany({
+    where: { parentId: null },
+    orderBy: { order: "asc" },
+  });
+
+  const deviceCat = topCategories.find((c) => c.name === "Нагреватели табака");
+  const stickCat = topCategories.find((c) => c.name === "Стики для нагревателей");
+
+  // Get subcategories with product counts and representative images
+  const deviceSubcats = deviceCat
+    ? await prisma.category.findMany({
+        where: { parentId: deviceCat.id },
+        include: {
+          products: { take: 1, where: { image: { not: "" } }, orderBy: { createdAt: "desc" }, select: { image: true } },
+          _count: { select: { products: true } },
+        },
+        orderBy: { order: "asc" },
+      })
+    : [];
+
+  const stickSubcats = stickCat
+    ? await prisma.category.findMany({
+        where: { parentId: stickCat.id },
+        include: {
+          products: { take: 1, where: { image: { not: "" } }, orderBy: { createdAt: "desc" }, select: { image: true } },
+          _count: { select: { products: true } },
+        },
+        orderBy: { order: "asc" },
+      })
+    : [];
+
+  // Also get products directly under top-level device category (no subcategory)
+  const directDeviceCount = deviceCat
+    ? await prisma.product.count({ where: { categoryId: deviceCat.id } })
+    : 0;
+
+  // Group device subcategories by brand
+  const deviceBrandsMap = new Map<string, BrandGroup>();
+
+  // Add direct-category products (subcategory == parent category) grouped by brand
+  if (directDeviceCount > 0) {
+    // These are products in the top-level "Нагреватели табака" — we'll distribute them to brand groups
+    const directProducts = await prisma.product.findMany({
+      where: { categoryId: deviceCat!.id },
+      select: { name: true, image: true },
+    });
+    for (const dp of directProducts) {
+      const brandKey = getDeviceBrandKey(dp.name);
+      const existing = deviceBrandsMap.get(brandKey);
+      if (existing) {
+        existing.count++;
+        if (!existing.image && dp.image) existing.image = dp.image;
+      } else {
+        deviceBrandsMap.set(brandKey, {
+          name: brandKey,
+          count: 1,
+          image: dp.image || "",
+          slug: deviceCat!.slug,
+        });
+      }
+    }
+  }
+
+  for (const sc of deviceSubcats) {
+    const brandKey = getDeviceBrandKey(sc.name);
+    const existing = deviceBrandsMap.get(brandKey);
+    const img = sc.products[0]?.image || "";
+    if (existing) {
+      existing.count += sc._count.products;
+      if (!existing.image && img) existing.image = img;
+    } else {
+      deviceBrandsMap.set(brandKey, {
+        name: brandKey,
+        count: sc._count.products,
+        image: img,
+        slug: sc.slug,
+      });
+    }
+  }
+
+  const deviceBrands = Array.from(deviceBrandsMap.values())
+    .filter((b) => b.count > 0)
+    .sort((a, b) => b.count - a.count);
+
+  // For sticks, show subcategories directly (each is already a brand)
+  const stickBrands: BrandGroup[] = stickSubcats
+    .filter((sc) => sc._count.products > 0)
+    .map((sc) => ({
+      name: extractBrand(sc.name),
+      count: sc._count.products,
+      image: sc.products[0]?.image || "",
+      slug: sc.slug,
+    }))
+    .sort((a, b) => b.count - a.count);
 
   const websiteLd = {
     "@context": "https://schema.org",
@@ -45,22 +156,13 @@ export default async function HomePage() {
     },
   };
 
-  function getImageSrc(image: string) {
-    if (!image) return "/placeholder.jpg";
-    if (image.startsWith("http")) return image;
-    if (image.startsWith("/api/")) return image;
-    if (image.startsWith("/uploads/")) return `/api${image}`;
-    if (image.startsWith("/")) return `/api/static${image}`;
-    return image;
-  }
-
   return (
     <>
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
       <main className="flex-1 pb-16 lg:pb-0">
 
-        {/* 1. Hero Block — neon diamond gradient */}
+        {/* 1. Hero */}
         <section className="relative overflow-hidden" style={{ minHeight: "580px" }}>
           <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#2a1015]" />
           <div className="absolute inset-0 overflow-hidden">
@@ -105,205 +207,155 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 2. Products Grid — 1 big + 1 medium + 2 small */}
+        {/* 2. Нагреватели табака — brand cards */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-4 py-10">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все продукты hittabak</h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[280px] md:auto-rows-[340px]">
-              {(deviceBlocks.length > 0 ? deviceBlocks : devices.slice(0, 4)).map((item, idx) => {
-                const isBlock = "blockType" in item;
-                const title = isBlock ? item.title : item.name;
-                const subtitle = isBlock ? item.subtitle : item.brand;
-                const image = isBlock ? item.image : item.image;
-                const link = isBlock ? item.buttonLink : `/product/${item.slug}`;
-                const isBig = idx === 0;
-                const isMedium = idx === 1;
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={link || "/catalog/devices"}
-                    className={`group relative overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-[1.02] ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rotate-45 border border-[#E8403A]/40 rounded-[15px]" />
-                    </div>
-                    <div className="relative h-full flex flex-col justify-between p-5 z-10">
-                      <div>
-                        <h3 className={`font-bold text-white ${isBig ? "text-xl md:text-2xl" : "text-sm md:text-base"} mb-1`}>
-                          {title}
-                        </h3>
-                        {subtitle && (
-                          <p className={`text-gray-400 ${isBig ? "text-sm" : "text-xs"}`}>{subtitle}</p>
-                        )}
-                      </div>
-                      <div className="flex justify-center items-end flex-1 pt-4">
-                        {image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={getImageSrc(image)}
-                            alt={title}
-                            className={`object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_20px_rgba(232,64,58,0.25)] ${isBig ? "max-h-[300px]" : isMedium ? "max-h-[180px]" : "max-h-[140px]"}`}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className={`bg-[#222] rounded-xl flex items-center justify-center ${isBig ? "w-40 h-40" : "w-20 h-20"}`}>
-                            <span className="text-gray-500 text-xs">Фото</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 group-hover:scale-110 z-10">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-            <div className="text-center mt-6">
-              <Link
-                href="/catalog/devices"
-                className="inline-block bg-[#1A1A1A] hover:bg-[#333] text-white font-bold px-8 py-3 rounded-lg transition-colors text-sm uppercase tracking-wider"
-              >
-                Весь каталог устройств
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Нагреватели табака</h2>
+              <Link href="/catalog/devices" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
+                Все устройства &rarr;
               </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              {deviceBrands.map((brand) => (
+                <Link
+                  key={brand.name}
+                  href={`/catalog/devices`}
+                  className="group relative overflow-hidden rounded-2xl aspect-[3/4] transition-transform duration-300 hover:scale-[1.02]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[160px] rotate-45 border border-[#E8403A]/40 rounded-[12px]" />
+                  </div>
+                  <div className="relative h-full flex flex-col justify-between p-4 z-10">
+                    <div>
+                      <h3 className="font-bold text-white text-base md:text-lg">{brand.name}</h3>
+                      <p className="text-gray-400 text-xs mt-1">{brand.count} {brand.count === 1 ? "товар" : brand.count < 5 ? "товара" : "товаров"}</p>
+                    </div>
+                    <div className="flex justify-center items-end flex-1 pt-3">
+                      {brand.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getImageSrc(brand.image)}
+                          alt={brand.name}
+                          className="max-h-[140px] object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_20px_rgba(232,64,58,0.25)]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-[#222] rounded-xl flex items-center justify-center">
+                          <span className="text-gray-500 text-xs">Фото</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 z-10">
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </Link>
+              ))}
             </div>
           </section>
         </ScrollReveal>
 
-        {/* 3. Sticks Grid — 3 cards + full catalog link */}
+        {/* 3. Стики — brand cards */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-4 py-10">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все стики</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {(stickBlocks.length > 0 ? stickBlocks : sticks.slice(0, 3)).map((item) => {
-                const isBlock = "blockType" in item;
-                const title = isBlock ? item.title : item.name;
-                const subtitle = isBlock ? item.subtitle : item.description;
-                const image = isBlock ? item.image : item.image;
-                const link = isBlock ? item.buttonLink : `/product/${item.slug}`;
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={link || "/catalog/sticks"}
-                    className="group relative overflow-hidden rounded-2xl aspect-[4/5] transition-transform duration-300 hover:scale-[1.02]"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rotate-45 border border-[#E8403A]/30 rounded-[12px]" />
-                    </div>
-                    <div className="relative h-full flex flex-col p-5 z-10">
-                      <div>
-                        <h3 className="font-bold text-white text-base md:text-lg mb-1">{title}</h3>
-                        {subtitle && <p className="text-gray-400 text-xs line-clamp-2">{subtitle}</p>}
-                      </div>
-                      <div className="flex-1 flex items-center justify-center pt-4">
-                        {image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={getImageSrc(image)}
-                            alt={title}
-                            className="max-h-[220px] object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(232,64,58,0.2)]"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-24 h-32 bg-[#222] rounded-xl flex items-center justify-center">
-                            <span className="text-gray-500 text-xs">Фото</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 group-hover:scale-110 z-10">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-            <div className="text-center mt-6">
-              <Link
-                href="/catalog/sticks"
-                className="inline-block bg-[#1A1A1A] hover:bg-[#333] text-white font-bold px-8 py-3 rounded-lg transition-colors text-sm uppercase tracking-wider"
-              >
-                Весь каталог стиков
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Стики для нагревателей</h2>
+              <Link href="/catalog/sticks" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
+                Все стики &rarr;
               </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {stickBrands.map((brand) => (
+                <Link
+                  key={brand.name}
+                  href={`/catalog/${brand.slug}`}
+                  className="group relative overflow-hidden rounded-2xl aspect-[3/4] transition-transform duration-300 hover:scale-[1.02]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120px] h-[120px] rotate-45 border border-[#E8403A]/30 rounded-[10px]" />
+                  </div>
+                  <div className="relative h-full flex flex-col justify-between p-3 z-10">
+                    <div>
+                      <h3 className="font-bold text-white text-sm md:text-base">{brand.name}</h3>
+                      <p className="text-gray-400 text-[10px] mt-0.5">{brand.count} {brand.count === 1 ? "вкус" : brand.count < 5 ? "вкуса" : "вкусов"}</p>
+                    </div>
+                    <div className="flex justify-center items-end flex-1 pt-2">
+                      {brand.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getImageSrc(brand.image)}
+                          alt={brand.name}
+                          className="max-h-[110px] object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(232,64,58,0.2)]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-12 h-16 bg-[#222] rounded-lg flex items-center justify-center">
+                          <span className="text-gray-500 text-[10px]">Фото</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 z-10">
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </Link>
+              ))}
             </div>
           </section>
         </ScrollReveal>
 
-        {/* 4. News Block — 4 cards */}
+        {/* 4. Новости */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-4 py-10">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Наши новости</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Новости</h2>
               <Link href="/news" className="text-accent hover:text-accent-dark text-sm font-medium transition-colors">
                 Все новости &rarr;
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {(newsBlocks.length > 0 ? newsBlocks : news).map((item) => {
-                const isBlock = "blockType" in item;
-                const title = isBlock ? item.title : item.title;
-                const desc = isBlock ? item.subtitle : item.excerpt;
-                const image = isBlock ? item.image : item.image;
-                const link = isBlock ? (item.buttonLink || "/news") : `/news/${item.slug}`;
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={link}
-                    className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-                  >
-                    <div className="aspect-video bg-bg-light overflow-hidden">
-                      {image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={getImageSrc(image)}
-                          alt={title}
-                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#2a1015] flex items-center justify-center">
-                          <span className="text-[#E8403A]/40 text-2xl font-bold">hit</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-sm font-semibold text-text-dark line-clamp-2 group-hover:text-accent transition-colors">
-                        {title}
-                      </h3>
-                      {desc && (
-                        <p className="text-xs text-text-gray mt-2 line-clamp-2">{desc}</p>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
-              {newsBlocks.length === 0 && news.length === 0 && (
-                <>
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
-                      <div className="aspect-video bg-gradient-to-br from-[#1a1a1a] to-[#2a1015] flex items-center justify-center">
-                        <span className="text-[#E8403A]/30 text-xl font-bold">hit</span>
+              {newsItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/news/${item.slug}`}
+                  className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+                >
+                  <div className="aspect-video bg-bg-light overflow-hidden">
+                    {item.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={getImageSrc(item.image)}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#2a1015] flex items-center justify-center">
+                        <span className="text-[#E8403A]/40 text-2xl font-bold">hit</span>
                       </div>
-                      <div className="p-4">
-                        <div className="h-4 bg-bg-light rounded w-3/4 mb-2" />
-                        <div className="h-3 bg-bg-light rounded w-full" />
-                      </div>
-                    </div>
-                  ))}
-                </>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-text-dark line-clamp-2 group-hover:text-accent transition-colors">
+                      {item.title}
+                    </h3>
+                    {item.excerpt && (
+                      <p className="text-xs text-text-gray mt-2 line-clamp-2">{item.excerpt}</p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+              {newsItems.length === 0 && (
+                <div className="col-span-full text-center py-10">
+                  <p className="text-text-gray">Новости скоро появятся</p>
+                </div>
               )}
             </div>
           </section>

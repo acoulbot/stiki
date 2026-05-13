@@ -25,6 +25,8 @@ export default function Footer() {
               <li><Link href="/returns" className="hover:text-white transition-colors">Обмен и возврат</Link></li>
               <li><Link href="/contacts" className="hover:text-white transition-colors">Контакты</Link></li>
               <li><Link href="/stores" className="hover:text-white transition-colors">Где купить</Link></li>
+              <li><Link href="/news" className="hover:text-white transition-colors">Новости</Link></li>
+              <li><Link href="/about" className="hover:text-white transition-colors">О нас</Link></li>
             </ul>
           </div>
 
