@@ -839,9 +839,8 @@ export default function AdminPage() {
       <div className="min-h-screen bg-bg-light flex items-center justify-center px-4">
         <div className="bg-bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
           <div className="text-center mb-6">
-            <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mx-auto mb-3">
-              <span className="text-white font-bold text-2xl">Т</span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="hittabak" className="w-14 h-14 rounded-xl mx-auto mb-3" />
             <h1 className="text-xl font-bold text-text-dark">Админ-панель hittabak</h1>
             <p className="text-sm text-text-gray mt-1">Введите данные для входа</p>
           </div>
