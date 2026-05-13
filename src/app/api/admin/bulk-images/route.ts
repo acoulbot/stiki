@@ -10,10 +10,12 @@ function checkAdmin(request: Request): boolean {
   return !!payload && payload.role === "admin";
 }
 
-/** Normalize a string for fuzzy matching: lowercase, replace separators with spaces, collapse whitespace, trim */
+/** Normalize a string for fuzzy matching */
 function normalize(s: string): string {
   return s
+    .normalize("NFC")
     .toLowerCase()
+    .replace(/ё/g, "е")
     .replace(/[_\-–—.,()\[\]{}]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -22,9 +24,41 @@ function normalize(s: string): string {
 /** Remove all non-alphanumeric (keeping cyrillic) for strict comparison */
 function strictNormalize(s: string): string {
   return s
+    .normalize("NFC")
     .toLowerCase()
-    .replace(/[^a-zа-яё0-9]/g, "")
+    .replace(/ё/g, "е")
+    .replace(/[^a-zа-яе0-9]/g, "")
     .trim();
+}
+
+/** Strip trailing Latin-only slug suffix from a normalized filename.
+ *  Image files often have a transliterated category slug appended,
+ *  e.g. "iqos iluma prime синий nagrevateli tabaka" → "iqos iluma prime синий" */
+function stripSlugSuffix(normalized: string): string {
+  const words = normalized.split(" ");
+  let lastCyrIdx = -1;
+  for (let i = words.length - 1; i >= 0; i--) {
+    if (/[а-яе]/.test(words[i])) {
+      lastCyrIdx = i;
+      break;
+    }
+  }
+  if (lastCyrIdx >= 0 && lastCyrIdx < words.length - 1) {
+    return words.slice(0, lastCyrIdx + 1).join(" ");
+  }
+  return normalized;
+}
+
+/** Calculate token (word) overlap ratio between two normalized strings */
+function tokenScore(a: string, b: string): number {
+  const tokA = a.split(" ").filter((w) => w.length > 1);
+  const tokB = new Set(b.split(" ").filter((w) => w.length > 1));
+  if (tokA.length === 0 || tokB.size === 0) return 0;
+  let overlap = 0;
+  for (const t of tokA) {
+    if (tokB.has(t)) overlap++;
+  }
+  return overlap / Math.max(tokA.length, tokB.size);
 }
 
 const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
@@ -72,19 +106,15 @@ export async function POST(request: Request) {
   });
 
   // Build lookup maps
-  const normalizedMap = new Map<string, { id: string; name: string }>();
-  const strictMap = new Map<string, { id: string; name: string }>();
-  const colorMap = new Map<string, { id: string; name: string }>();
+  type Ref = { id: string; name: string };
+  const normalizedMap = new Map<string, Ref>();
+  const strictMap = new Map<string, Ref>();
   for (const p of products) {
     const norm = normalize(p.name);
     const strict = strictNormalize(p.name);
-    if (!normalizedMap.has(norm)) normalizedMap.set(norm, { id: p.id, name: p.name });
-    if (!strictMap.has(strict)) strictMap.set(strict, { id: p.id, name: p.name });
-    // Also index by "name - color" pattern for files like "IQOS Iluma - синий.jpg"
-    if (p.color) {
-      const nameColor = normalize(`${p.name} ${p.color}`);
-      if (!colorMap.has(nameColor)) colorMap.set(nameColor, { id: p.id, name: p.name });
-    }
+    const ref: Ref = { id: p.id, name: p.name };
+    if (!normalizedMap.has(norm)) normalizedMap.set(norm, ref);
+    if (!strictMap.has(strict)) strictMap.set(strict, ref);
   }
 
   const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
@@ -98,30 +128,73 @@ export async function POST(request: Request) {
     const ext = path.extname(file.name).toLowerCase();
     const baseName = path.basename(file.name, ext);
 
-    // Try matching: first normalized, then strict
     const normName = normalize(baseName);
     const strictName = strictNormalize(baseName);
+    const strippedName = stripSlugSuffix(normName);
 
-    let matched = normalizedMap.get(normName) || strictMap.get(strictName) || colorMap.get(normName);
+    // 1) Exact maps (normalized / strict / suffix-stripped)
+    let matched: Ref | undefined =
+      normalizedMap.get(normName) ??
+      normalizedMap.get(strippedName) ??
+      strictMap.get(strictName);
 
-    // If no match, try partial match (file name contains product name or vice versa)
+    // 2) Substring match — filename contains product name or vice-versa
     if (!matched) {
-      let bestScore = 0;
+      let bestLen = 0;
       for (const p of products) {
         const pNorm = normalize(p.name);
+        if (
+          strippedName === pNorm ||
+          strippedName.includes(pNorm) ||
+          pNorm.includes(strippedName) ||
+          normName.includes(pNorm) ||
+          pNorm.includes(normName)
+        ) {
+          if (pNorm.length > bestLen) {
+            matched = { id: p.id, name: p.name };
+            bestLen = pNorm.length;
+          }
+        }
+      }
+    }
+
+    // 3) Strict substring match
+    if (!matched) {
+      let bestLen = 0;
+      for (const p of products) {
         const pStrict = strictNormalize(p.name);
-        if (normName === pNorm || normName.includes(pNorm) || pNorm.includes(normName)) {
-          const score = pNorm.length;
-          if (score > bestScore) {
+        if (strictName.includes(pStrict) || pStrict.includes(strictName)) {
+          if (pStrict.length > bestLen) {
             matched = { id: p.id, name: p.name };
-            bestScore = score;
+            bestLen = pStrict.length;
           }
-        } else if (strictName.includes(pStrict) || pStrict.includes(strictName)) {
-          const score = pStrict.length;
-          if (score > bestScore) {
+        }
+      }
+    }
+
+    // 4) Prefix match — for truncated filenames where the name got cut off
+    if (!matched) {
+      let bestLen = 0;
+      for (const p of products) {
+        const pNorm = normalize(p.name);
+        if (pNorm.startsWith(strippedName) || strippedName.startsWith(pNorm)) {
+          if (pNorm.length > bestLen) {
             matched = { id: p.id, name: p.name };
-            bestScore = score;
+            bestLen = pNorm.length;
           }
+        }
+      }
+    }
+
+    // 5) Token overlap — fuzzy fallback (≥70% word overlap)
+    if (!matched) {
+      let bestTs = 0;
+      for (const p of products) {
+        const pNorm = normalize(p.name);
+        const ts = tokenScore(strippedName, pNorm);
+        if (ts >= 0.7 && ts > bestTs) {
+          matched = { id: p.id, name: p.name };
+          bestTs = ts;
         }
       }
     }
