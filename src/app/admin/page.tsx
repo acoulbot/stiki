@@ -691,45 +691,71 @@ export default function AdminPage() {
     window.open(`https://www.google.com/search?q=${encodeURIComponent(name + " товар описание фото")}&tbm=isch`, "_blank");
   };
 
-  // Bulk image upload
+  // Bulk image upload — sends files in batches to handle large volumes (500MB+)
   const handleBulkImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
     if (!fileList || fileList.length === 0) return;
     setBulkImgLoading(true);
-    setBulkImgStatus(`Загрузка ${fileList.length} файлов...`);
     setBulkImgResults(null);
 
-    const formData = new FormData();
-    for (let i = 0; i < fileList.length; i++) {
-      formData.append("files", fileList[i]);
+    const BATCH_SIZE_LIMIT = 50 * 1024 * 1024; // 50 MB per batch
+    const MAX_FILES_PER_BATCH = 50;
+    const allFiles = Array.from(fileList);
+    const allResults: { fileName: string; matched: boolean; productName?: string }[] = [];
+    let totalMatched = 0;
+    let totalUnmatched = 0;
+
+    // Split files into batches
+    const batches: File[][] = [];
+    let currentBatch: File[] = [];
+    let currentSize = 0;
+    for (const file of allFiles) {
+      if (currentBatch.length >= MAX_FILES_PER_BATCH || (currentSize + file.size > BATCH_SIZE_LIMIT && currentBatch.length > 0)) {
+        batches.push(currentBatch);
+        currentBatch = [];
+        currentSize = 0;
+      }
+      currentBatch.push(file);
+      currentSize += file.size;
+    }
+    if (currentBatch.length > 0) batches.push(currentBatch);
+
+    for (let i = 0; i < batches.length; i++) {
+      setBulkImgStatus(`Загрузка пакета ${i + 1} из ${batches.length} (${allFiles.length} файлов)...`);
+      const formData = new FormData();
+      for (const file of batches[i]) {
+        formData.append("files", file);
+      }
+      try {
+        const res = await fetch("/api/admin/bulk-images", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch {
+          allResults.push(...batches[i].map(f => ({ fileName: f.name, matched: false })));
+          totalUnmatched += batches[i].length;
+          continue;
+        }
+        if (!res.ok) {
+          allResults.push(...batches[i].map(f => ({ fileName: f.name, matched: false })));
+          totalUnmatched += batches[i].length;
+        } else {
+          totalMatched += data.matched || 0;
+          totalUnmatched += data.unmatched || 0;
+          if (data.results) allResults.push(...data.results);
+        }
+      } catch {
+        allResults.push(...batches[i].map(f => ({ fileName: f.name, matched: false })));
+        totalUnmatched += batches[i].length;
+      }
     }
 
-    try {
-      const res = await fetch("/api/admin/bulk-images", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        setBulkImgStatus("Ошибка: файлы слишком большие или сервер не ответил.");
-        setBulkImgLoading(false);
-        e.target.value = "";
-        return;
-      }
-      if (!res.ok) {
-        setBulkImgStatus(`Ошибка: ${data.error || "Не удалось загрузить"}`);
-      } else {
-        setBulkImgStatus(`Привязано: ${data.matched} из ${data.total}${data.unmatched > 0 ? `, не найдено: ${data.unmatched}` : ""}`);
-        setBulkImgResults(data.results || []);
-        fetchData();
-      }
-    } catch (err) {
-      setBulkImgStatus(`Ошибка: ${err instanceof Error ? err.message : "неизвестная ошибка"}`);
-    }
+    setBulkImgStatus(`Привязано: ${totalMatched} из ${allFiles.length}${totalUnmatched > 0 ? `, не найдено: ${totalUnmatched}` : ""}`);
+    setBulkImgResults(allResults);
+    fetchData();
     setBulkImgLoading(false);
     e.target.value = "";
   };
@@ -1041,8 +1067,8 @@ export default function AdminPage() {
             <div className="bg-bg-white rounded-xl border border-border p-5">
               <h2 className="font-bold text-text-dark mb-3">Загрузить пак изображений</h2>
               <p className="text-sm text-text-gray mb-3">
-                Выберите несколько изображений (PNG, JPG, WEBP). Имя файла = название товара. Система автоматически сопоставит файлы с товарами.
-                Знаки препинания, дефисы, подчёркивания игнорируются при поиске.
+                Выберите изображения (PNG, JPG, WEBP, до 600 МБ общий объём). Имя файла = название товара. Система автоматически сопоставит файлы с товарами.
+                Загрузка идёт пакетами — можно загружать сотни файлов за раз. Знаки препинания, дефисы, подчёркивания игнорируются при поиске.
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <label className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg cursor-pointer transition-colors">
