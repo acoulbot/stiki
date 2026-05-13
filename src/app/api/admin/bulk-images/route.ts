@@ -16,7 +16,7 @@ function normalize(s: string): string {
     .normalize("NFC")
     .toLowerCase()
     .replace(/ё/g, "е")
-    .replace(/[_\-–—.,()\[\]{}]/g, " ")
+    .replace(/[_\-–—.,()\[\]{}'"`«»]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -31,9 +31,7 @@ function strictNormalize(s: string): string {
     .trim();
 }
 
-/** Strip trailing Latin-only slug suffix from a normalized filename.
- *  Image files often have a transliterated category slug appended,
- *  e.g. "iqos iluma prime синий nagrevateli tabaka" → "iqos iluma prime синий" */
+/** Strip trailing Latin-only slug suffix from a normalized filename */
 function stripSlugSuffix(normalized: string): string {
   const words = normalized.split(" ");
   let lastCyrIdx = -1;
@@ -61,11 +59,30 @@ function tokenScore(a: string, b: string): number {
   return overlap / Math.max(tokA.length, tokB.size);
 }
 
+/** Length of common prefix between two strings */
+function commonPrefixLen(a: string, b: string): number {
+  const len = Math.min(a.length, b.length);
+  let i = 0;
+  while (i < len && a[i] === b[i]) i++;
+  return i;
+}
+
+/** Extract leaf filename — handle both / and \ separators */
+function leafName(fileName: string): string {
+  const slashIdx = fileName.lastIndexOf("/");
+  const backIdx = fileName.lastIndexOf("\\");
+  const idx = Math.max(slashIdx, backIdx);
+  return idx >= 0 ? fileName.slice(idx + 1) : fileName;
+}
+
 const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB per file
-const MAX_TOTAL_SIZE = 600 * 1024 * 1024; // 600 MB total
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 600 * 1024 * 1024;
 
 export const maxDuration = 300;
+
+type Ref = { id: string; name: string };
+type IndexedProduct = Ref & { norm: string; strict: string };
 
 export async function POST(request: Request) {
   if (!checkAdmin(request)) {
@@ -76,7 +93,10 @@ export async function POST(request: Request) {
   try {
     formData = await request.formData();
   } catch {
-    return Response.json({ error: "Ошибка загрузки. Возможно, файлы слишком большие." }, { status: 413 });
+    return Response.json(
+      { error: "Ошибка загрузки. Возможно, файлы слишком большие." },
+      { status: 413 },
+    );
   }
 
   const files = formData.getAll("files") as File[];
@@ -84,75 +104,93 @@ export async function POST(request: Request) {
     return Response.json({ error: "Файлы не выбраны" }, { status: 400 });
   }
 
-  // Validate files
   let totalSize = 0;
   for (const file of files) {
     const ext = path.extname(file.name).toLowerCase();
     if (!ALLOWED_EXT.includes(ext)) {
-      return Response.json({ error: `Неподдерживаемый формат: ${file.name}` }, { status: 400 });
+      return Response.json(
+        { error: `Неподдерживаемый формат: ${file.name}` },
+        { status: 400 },
+      );
     }
     if (file.size > MAX_FILE_SIZE) {
-      return Response.json({ error: `Файл слишком большой: ${file.name} (макс 20 МБ)` }, { status: 400 });
+      return Response.json(
+        { error: `Файл слишком большой: ${file.name} (макс 20 МБ)` },
+        { status: 400 },
+      );
     }
     totalSize += file.size;
     if (totalSize > MAX_TOTAL_SIZE) {
-      return Response.json({ error: "Общий размер файлов превышает 600 МБ" }, { status: 413 });
+      return Response.json(
+        { error: "Общий размер файлов превышает 600 МБ" },
+        { status: 413 },
+      );
     }
   }
 
-  // Load all products for matching
   const products = await prisma.product.findMany({
     select: { id: true, name: true, color: true, image: true },
   });
 
-  // Build lookup maps
-  type Ref = { id: string; name: string };
+  // Precompute normalized forms for all products
+  const indexed: IndexedProduct[] = products.map((p) => ({
+    id: p.id,
+    name: p.name,
+    norm: normalize(p.name),
+    strict: strictNormalize(p.name),
+  }));
+
   const normalizedMap = new Map<string, Ref>();
   const strictMap = new Map<string, Ref>();
-  for (const p of products) {
-    const norm = normalize(p.name);
-    const strict = strictNormalize(p.name);
+  for (const p of indexed) {
     const ref: Ref = { id: p.id, name: p.name };
-    if (!normalizedMap.has(norm)) normalizedMap.set(norm, ref);
-    if (!strictMap.has(strict)) strictMap.set(strict, ref);
+    if (!normalizedMap.has(p.norm)) normalizedMap.set(p.norm, ref);
+    if (!strictMap.has(p.strict)) strictMap.set(p.strict, ref);
   }
 
   const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
   await mkdir(uploadDir, { recursive: true });
 
-  const results: { fileName: string; matched: boolean; productName?: string; error?: string }[] = [];
+  const results: {
+    fileName: string;
+    matched: boolean;
+    productName?: string;
+    error?: string;
+  }[] = [];
   let matchedCount = 0;
   let unmatchedCount = 0;
 
   for (const file of files) {
-    const ext = path.extname(file.name).toLowerCase();
-    const baseName = path.basename(file.name, ext);
+    const leaf = leafName(file.name);
+    const ext = path.extname(leaf).toLowerCase();
+    const baseName = ext ? leaf.slice(0, -ext.length) : leaf;
 
     const normName = normalize(baseName);
     const strictName = strictNormalize(baseName);
     const strippedName = stripSlugSuffix(normName);
 
-    // 1) Exact maps (normalized / strict / suffix-stripped)
-    let matched: Ref | undefined =
+    let matched: Ref | undefined;
+
+    // 1) Exact map lookup
+    matched =
       normalizedMap.get(normName) ??
       normalizedMap.get(strippedName) ??
-      strictMap.get(strictName);
+      strictMap.get(strictName) ??
+      strictMap.get(strictNormalize(strippedName));
 
     // 2) Substring match — filename contains product name or vice-versa
     if (!matched) {
       let bestLen = 0;
-      for (const p of products) {
-        const pNorm = normalize(p.name);
+      for (const p of indexed) {
         if (
-          strippedName === pNorm ||
-          strippedName.includes(pNorm) ||
-          pNorm.includes(strippedName) ||
-          normName.includes(pNorm) ||
-          pNorm.includes(normName)
+          strippedName.includes(p.norm) ||
+          p.norm.includes(strippedName) ||
+          normName.includes(p.norm) ||
+          p.norm.includes(normName)
         ) {
-          if (pNorm.length > bestLen) {
+          if (p.norm.length > bestLen) {
             matched = { id: p.id, name: p.name };
-            bestLen = pNorm.length;
+            bestLen = p.norm.length;
           }
         }
       }
@@ -161,38 +199,38 @@ export async function POST(request: Request) {
     // 3) Strict substring match
     if (!matched) {
       let bestLen = 0;
-      for (const p of products) {
-        const pStrict = strictNormalize(p.name);
-        if (strictName.includes(pStrict) || pStrict.includes(strictName)) {
-          if (pStrict.length > bestLen) {
+      for (const p of indexed) {
+        if (strictName.includes(p.strict) || p.strict.includes(strictName)) {
+          if (p.strict.length > bestLen) {
             matched = { id: p.id, name: p.name };
-            bestLen = pStrict.length;
+            bestLen = p.strict.length;
           }
         }
       }
     }
 
-    // 4) Prefix match — for truncated filenames where the name got cut off
+    // 4) Character-level prefix match — for truncated filenames
     if (!matched) {
-      let bestLen = 0;
-      for (const p of products) {
-        const pNorm = normalize(p.name);
-        if (pNorm.startsWith(strippedName) || strippedName.startsWith(pNorm)) {
-          if (pNorm.length > bestLen) {
-            matched = { id: p.id, name: p.name };
-            bestLen = pNorm.length;
-          }
+      let bestPrefixLen = 0;
+      for (const p of indexed) {
+        const prefixLen = commonPrefixLen(normName, p.norm);
+        const minRequired = Math.min(normName.length, p.norm.length) * 0.6;
+        if (prefixLen >= 15 && prefixLen >= minRequired && prefixLen > bestPrefixLen) {
+          matched = { id: p.id, name: p.name };
+          bestPrefixLen = prefixLen;
         }
       }
     }
 
-    // 5) Token overlap — fuzzy fallback (≥70% word overlap)
+    // 5) Token overlap — fuzzy fallback (≥50% word overlap)
     if (!matched) {
       let bestTs = 0;
-      for (const p of products) {
-        const pNorm = normalize(p.name);
-        const ts = tokenScore(strippedName, pNorm);
-        if (ts >= 0.7 && ts > bestTs) {
+      for (const p of indexed) {
+        const ts = Math.max(
+          tokenScore(strippedName, p.norm),
+          tokenScore(normName, p.norm),
+        );
+        if (ts >= 0.5 && ts > bestTs) {
           matched = { id: p.id, name: p.name };
           bestTs = ts;
         }
@@ -210,7 +248,11 @@ export async function POST(request: Request) {
           where: { id: matched.id },
           data: { image: imageUrl },
         });
-        results.push({ fileName: file.name, matched: true, productName: matched.name });
+        results.push({
+          fileName: file.name,
+          matched: true,
+          productName: matched.name,
+        });
         matchedCount++;
       } else {
         results.push({ fileName: file.name, matched: false });
