@@ -10,7 +10,7 @@ function checkAdmin(request: Request): boolean {
   return !!payload && payload.role === "admin";
 }
 
-/** Normalize a string for fuzzy matching */
+/** Normalize: NFC, lowercase, ё→е, separators→space, collapse, trim */
 function normalize(s: string): string {
   return s
     .normalize("NFC")
@@ -21,58 +21,15 @@ function normalize(s: string): string {
     .trim();
 }
 
-/** Remove all non-alphanumeric (keeping cyrillic) for strict comparison */
-function strictNormalize(s: string): string {
-  return s
-    .normalize("NFC")
-    .toLowerCase()
-    .replace(/ё/g, "е")
-    .replace(/[^a-zа-яе0-9]/g, "")
-    .trim();
-}
-
-/** Strip trailing Latin-only slug suffix from a normalized filename */
-function stripSlugSuffix(normalized: string): string {
-  const words = normalized.split(" ");
-  let lastCyrIdx = -1;
-  for (let i = words.length - 1; i >= 0; i--) {
-    if (/[а-яе]/.test(words[i])) {
-      lastCyrIdx = i;
-      break;
-    }
-  }
-  if (lastCyrIdx >= 0 && lastCyrIdx < words.length - 1) {
-    return words.slice(0, lastCyrIdx + 1).join(" ");
-  }
-  return normalized;
-}
-
-/** Calculate token (word) overlap ratio between two normalized strings */
-function tokenScore(a: string, b: string): number {
-  const tokA = a.split(" ").filter((w) => w.length > 1);
-  const tokB = new Set(b.split(" ").filter((w) => w.length > 1));
-  if (tokA.length === 0 || tokB.size === 0) return 0;
-  let overlap = 0;
-  for (const t of tokA) {
-    if (tokB.has(t)) overlap++;
-  }
-  return overlap / Math.max(tokA.length, tokB.size);
-}
-
-/** Length of common prefix between two strings */
-function commonPrefixLen(a: string, b: string): number {
-  const len = Math.min(a.length, b.length);
-  let i = 0;
-  while (i < len && a[i] === b[i]) i++;
-  return i;
-}
-
-/** Extract leaf filename — handle both / and \ separators */
+/** Extract leaf filename — handle both / and \ */
 function leafName(fileName: string): string {
-  const slashIdx = fileName.lastIndexOf("/");
-  const backIdx = fileName.lastIndexOf("\\");
-  const idx = Math.max(slashIdx, backIdx);
+  const idx = Math.max(fileName.lastIndexOf("/"), fileName.lastIndexOf("\\"));
   return idx >= 0 ? fileName.slice(idx + 1) : fileName;
+}
+
+/** Split normalized string into a word set */
+function wordSet(s: string): Set<string> {
+  return new Set(s.split(" ").filter((w) => w.length > 0));
 }
 
 const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
@@ -82,7 +39,7 @@ const MAX_TOTAL_SIZE = 600 * 1024 * 1024;
 export const maxDuration = 300;
 
 type Ref = { id: string; name: string };
-type IndexedProduct = Ref & { norm: string; strict: string };
+type IndexedProduct = Ref & { norm: string; words: Set<string> };
 
 export async function POST(request: Request) {
   if (!checkAdmin(request)) {
@@ -132,20 +89,18 @@ export async function POST(request: Request) {
     select: { id: true, name: true, color: true, image: true },
   });
 
-  // Precompute normalized forms for all products
+  // Precompute normalized forms and word sets
   const indexed: IndexedProduct[] = products.map((p) => ({
     id: p.id,
     name: p.name,
     norm: normalize(p.name),
-    strict: strictNormalize(p.name),
+    words: wordSet(normalize(p.name)),
   }));
 
-  const normalizedMap = new Map<string, Ref>();
-  const strictMap = new Map<string, Ref>();
+  // Exact map for fast-path (file name === product name after normalization)
+  const exactMap = new Map<string, Ref>();
   for (const p of indexed) {
-    const ref: Ref = { id: p.id, name: p.name };
-    if (!normalizedMap.has(p.norm)) normalizedMap.set(p.norm, ref);
-    if (!strictMap.has(p.strict)) strictMap.set(p.strict, ref);
+    if (!exactMap.has(p.norm)) exactMap.set(p.norm, { id: p.id, name: p.name });
   }
 
   const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
@@ -166,73 +121,32 @@ export async function POST(request: Request) {
     const baseName = ext ? leaf.slice(0, -ext.length) : leaf;
 
     const normName = normalize(baseName);
-    const strictName = strictNormalize(baseName);
-    const strippedName = stripSlugSuffix(normName);
+    const fileWords = wordSet(normName);
 
-    let matched: Ref | undefined;
+    // 1) Fast path — exact normalized match
+    let matched: Ref | undefined = exactMap.get(normName);
 
-    // 1) Exact map lookup
-    matched =
-      normalizedMap.get(normName) ??
-      normalizedMap.get(strippedName) ??
-      strictMap.get(strictName) ??
-      strictMap.get(strictNormalize(strippedName));
+    // 2) Word-based matching — find product with highest word overlap
+    if (!matched && fileWords.size >= 2) {
+      let bestOverlap = 0;
+      let bestCoverage = 0;
 
-    // 2) Substring match — filename contains product name or vice-versa
-    if (!matched) {
-      let bestLen = 0;
       for (const p of indexed) {
+        let overlap = 0;
+        for (const w of fileWords) {
+          if (p.words.has(w)) overlap++;
+        }
+        if (overlap < 2) continue;
+
+        const coverage = p.words.size > 0 ? overlap / p.words.size : 0;
+
         if (
-          strippedName.includes(p.norm) ||
-          p.norm.includes(strippedName) ||
-          normName.includes(p.norm) ||
-          p.norm.includes(normName)
+          overlap > bestOverlap ||
+          (overlap === bestOverlap && coverage > bestCoverage)
         ) {
-          if (p.norm.length > bestLen) {
-            matched = { id: p.id, name: p.name };
-            bestLen = p.norm.length;
-          }
-        }
-      }
-    }
-
-    // 3) Strict substring match
-    if (!matched) {
-      let bestLen = 0;
-      for (const p of indexed) {
-        if (strictName.includes(p.strict) || p.strict.includes(strictName)) {
-          if (p.strict.length > bestLen) {
-            matched = { id: p.id, name: p.name };
-            bestLen = p.strict.length;
-          }
-        }
-      }
-    }
-
-    // 4) Character-level prefix match — for truncated filenames
-    if (!matched) {
-      let bestPrefixLen = 0;
-      for (const p of indexed) {
-        const prefixLen = commonPrefixLen(normName, p.norm);
-        const minRequired = Math.min(normName.length, p.norm.length) * 0.6;
-        if (prefixLen >= 15 && prefixLen >= minRequired && prefixLen > bestPrefixLen) {
+          bestOverlap = overlap;
+          bestCoverage = coverage;
           matched = { id: p.id, name: p.name };
-          bestPrefixLen = prefixLen;
-        }
-      }
-    }
-
-    // 5) Token overlap — fuzzy fallback (≥50% word overlap)
-    if (!matched) {
-      let bestTs = 0;
-      for (const p of indexed) {
-        const ts = Math.max(
-          tokenScore(strippedName, p.norm),
-          tokenScore(normName, p.norm),
-        );
-        if (ts >= 0.5 && ts > bestTs) {
-          matched = { id: p.id, name: p.name };
-          bestTs = ts;
         }
       }
     }
