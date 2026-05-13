@@ -20,6 +20,7 @@ export default async function BlogPage() {
   function getImageSrc(image: string) {
     if (!image) return "";
     if (image.startsWith("http")) return image;
+    if (image.startsWith("/api/")) return image;
     if (image.startsWith("/uploads/")) return `/api${image}`;
     if (image.startsWith("/")) return `/api/static${image}`;
     return image;

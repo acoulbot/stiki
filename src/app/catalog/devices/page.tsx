@@ -21,6 +21,7 @@ export default async function DevicesPage() {
   function getImageSrc(image: string) {
     if (!image) return "/placeholder.jpg";
     if (image.startsWith("http")) return image;
+    if (image.startsWith("/api/")) return image;
     if (image.startsWith("/uploads/")) return `/api${image}`;
     if (image.startsWith("/")) return `/api/static${image}`;
     return image;

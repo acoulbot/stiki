@@ -2142,7 +2142,7 @@ function ConstructorPanel({ token }: { token: string }) {
                 <div className="flex items-center gap-4">
                   {block.image && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={block.image.startsWith("/uploads/") ? `/api${block.image}` : block.image} alt="" className="w-16 h-16 object-contain rounded bg-white p-1" />
+                    <img src={block.image.startsWith("/api/") ? block.image : block.image.startsWith("/uploads/") ? `/api${block.image}` : block.image} alt="" className="w-16 h-16 object-contain rounded bg-white p-1" />
                   )}
                   <div>
                     <div className="flex items-center gap-2">
