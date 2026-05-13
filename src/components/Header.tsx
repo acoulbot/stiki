@@ -32,15 +32,14 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "Где купить", href: "/stores" },
-  { label: "Блог", href: "/blog" },
+  { label: "Новости", href: "/news" },
   {
-    label: "О бренде",
+    label: "О нас",
     href: "/about",
     children: [
+      { label: "О компании", href: "/about" },
       { label: "История бренда", href: "/about/history" },
-      { label: "Наука", href: "/science" },
-      { label: "Что такое продукт", href: "/about" },
-      { label: "Открыто о нас", href: "/about" },
+      { label: "Наука и технологии", href: "/science" },
     ],
   },
   {

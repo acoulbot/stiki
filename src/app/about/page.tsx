@@ -4,8 +4,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "О бренде — hittabak",
-  description: "Узнайте о бренде hittabak. Наша миссия, ценности и подход к созданию устройств нагревания табака.",
+  title: "О нас — hittabak",
+  description: "Узнайте о компании hittabak. Наша миссия, ценности и подход к созданию устройств нагревания табака.",
 };
 
 export default function AboutPage() {
@@ -14,7 +14,7 @@ export default function AboutPage() {
       <Header />
       <main className="flex-1 pb-16 lg:pb-0">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <h1 className="font-heading text-3xl sm:text-4xl font-extrabold text-text-dark mb-6">О бренде hittabak</h1>
+          <h1 className="font-heading text-3xl sm:text-4xl font-extrabold text-text-dark mb-6">О нас</h1>
 
           <div className="space-y-8">
             <section className="bg-white rounded-xl border border-border p-6">
