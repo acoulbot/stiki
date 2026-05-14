@@ -198,16 +198,18 @@ export default function Header() {
                     Все устройства
                   </Link>
                   {deviceBrands.map((brand) => (
-                    <div
+                    <Link
                       key={brand.name}
+                      href={`/catalog/nagrevateli-tabaka?brands=${encodeURIComponent(brand.name)}`}
                       className={`px-4 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between ${activeBrand === brand.name ? "bg-bg-light font-semibold" : "hover:bg-bg-light"}`}
                       onMouseEnter={() => handleBrandEnter(brand.name)}
+                      onClick={closeAll}
                     >
                       {brand.name}
                       <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </div>
+                    </Link>
                   ))}
                 </div>
 
@@ -215,14 +217,16 @@ export default function Header() {
                 {currentDeviceBrand && (
                   <div className="py-2 min-w-[200px] border-r border-border">
                     {currentDeviceBrand.models.map((model) => (
-                      <div
+                      <Link
                         key={model.name}
+                        href={`/catalog/nagrevateli-tabaka/${model.slug}`}
                         className={`px-4 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between ${activeModel === model.name ? "bg-bg-light font-semibold" : "hover:bg-bg-light"}`}
                         onMouseEnter={() => handleModelEnter(model.name)}
+                        onClick={closeAll}
                       >
                         <span className="truncate">{model.name}</span>
                         <span className="text-xs text-gray-400 ml-2 flex-shrink-0">{model.products.length}</span>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -286,7 +290,7 @@ export default function Header() {
                 {stickBrands.map((brand) => (
                   <Link
                     key={brand.slug}
-                    href={`/catalog/${brand.slug}`}
+                    href={`/catalog/stiki-dlya-nagrevatelej/${brand.slug}`}
                     className="flex items-center justify-between px-4 py-2 text-sm hover:bg-bg-light transition-colors"
                     onClick={closeAll}
                   >
@@ -414,26 +418,42 @@ export default function Header() {
                   </Link>
                   {deviceBrands.map((brand) => (
                     <div key={brand.name}>
-                      <button
-                        className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded transition-colors ${mobileBrand === brand.name ? "bg-white/10 text-white" : "text-white/70 hover:text-white"}`}
-                        onClick={() => { setMobileBrand(mobileBrand === brand.name ? null : brand.name); setMobileModel(null); }}
-                      >
-                        {brand.name}
-                        <svg className={`w-3 h-3 transition-transform ${mobileBrand === brand.name ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <Link
+                          href={`/catalog/nagrevateli-tabaka?brands=${encodeURIComponent(brand.name)}`}
+                          className={`flex-1 px-3 py-2 text-xs rounded transition-colors ${mobileBrand === brand.name ? "bg-white/10 text-white" : "text-white/70 hover:text-white"}`}
+                          onClick={closeAll}
+                        >
+                          {brand.name}
+                        </Link>
+                        <button
+                          className="px-2 py-2 text-white/50 hover:text-white"
+                          onClick={() => { setMobileBrand(mobileBrand === brand.name ? null : brand.name); setMobileModel(null); }}
+                        >
+                          <svg className={`w-3 h-3 transition-transform ${mobileBrand === brand.name ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
                       {mobileBrand === brand.name && (
                         <div className="ml-3 space-y-0.5">
                           {brand.models.map((model) => (
                             <div key={model.name}>
-                              <button
-                                className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded transition-colors ${mobileModel === model.name ? "bg-white/5 text-white" : "text-white/60 hover:text-white"}`}
-                                onClick={() => setMobileModel(mobileModel === model.name ? null : model.name)}
-                              >
-                                <span className="truncate">{model.name}</span>
-                                <span className="text-white/30 ml-1">{model.products.length}</span>
-                              </button>
+                              <div className="flex items-center gap-1">
+                                <Link
+                                  href={`/catalog/nagrevateli-tabaka/${model.slug}`}
+                                  className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors truncate ${mobileModel === model.name ? "bg-white/5 text-white" : "text-white/60 hover:text-white"}`}
+                                  onClick={closeAll}
+                                >
+                                  {model.name}
+                                </Link>
+                                <button
+                                  className="px-2 py-1.5 text-white/30 hover:text-white"
+                                  onClick={() => setMobileModel(mobileModel === model.name ? null : model.name)}
+                                >
+                                  <span className="text-white/30 text-xs">{model.products.length}</span>
+                                </button>
+                              </div>
                               {mobileModel === model.name && (
                                 <div className="ml-3 space-y-0.5">
                                   {model.products.map((p) => (
@@ -477,7 +497,7 @@ export default function Header() {
                   {stickBrands.map((brand) => (
                     <Link
                       key={brand.slug}
-                      href={`/catalog/${brand.slug}`}
+                      href={`/catalog/stiki-dlya-nagrevatelej/${brand.slug}`}
                       className="flex items-center justify-between px-3 py-2 text-xs text-white/70 hover:text-white transition-colors"
                       onClick={closeAll}
                     >
