@@ -95,8 +95,7 @@ export default function RootLayout({
                 availableLanguage: "Russian",
               },
               sameAs: [
-                "https://t.me/hittabak",
-                "https://vk.com/hittabak",
+                "https://t.me/tophit_new",
               ],
             }),
           }}

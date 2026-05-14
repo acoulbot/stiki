@@ -78,7 +78,7 @@ export default function SupportPage() {
             <h2 className="text-lg font-bold text-text-dark mb-2">Нужна срочная помощь?</h2>
             <p className="text-sm text-text-gray mb-4">Напишите нам в Telegram и получите ответ в течение нескольких минут</p>
             <a
-              href="https://t.me/hittabak"
+              href="https://t.me/tophit_new"
               target="_blank"
               rel="nofollow noopener noreferrer"
               className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold px-6 py-3 rounded-xl transition-colors"

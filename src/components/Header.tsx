@@ -14,26 +14,8 @@ interface SimpleNavItem {
 const staticNavItems: SimpleNavItem[] = [
   { label: "Где купить", href: "/stores" },
   { label: "Новости", href: "/news" },
-  {
-    label: "О нас",
-    href: "/about",
-    children: [
-      { label: "О компании", href: "/about" },
-      { label: "История бренда", href: "/about/history" },
-      { label: "Наука и технологии", href: "/science" },
-    ],
-  },
-  {
-    label: "Поддержка",
-    href: "/support",
-    children: [
-      { label: "Контакты", href: "/contacts" },
-      { label: "Онлайн-диагностика", href: "/support/diagnostics" },
-      { label: "Техподдержка", href: "/support" },
-      { label: "Обмен и возврат", href: "/returns" },
-      { label: "FAQ", href: "/faq" },
-    ],
-  },
+  { label: "О нас", href: "/about" },
+  { label: "Контакты", href: "/contacts" },
 ];
 
 /* ── nav data types from API ── */
