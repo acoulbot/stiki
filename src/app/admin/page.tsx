@@ -2028,7 +2028,7 @@ function ConstructorPanel({ token }: { token: string }) {
   const uploadImage = async (field: "image" | "bgImage") => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
+    input.accept = "image/*,video/webm,video/mp4";
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
@@ -2098,10 +2098,10 @@ function ConstructorPanel({ token }: { token: string }) {
               className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="/catalog/devices" />
           </div>
           <div>
-            <label className="text-sm text-text-gray mb-1 block">Изображение продукта (PNG)</label>
+            <label className="text-sm text-text-gray mb-1 block">Изображение / анимация (PNG, WebM)</label>
             <div className="flex items-center gap-2">
               <button onClick={() => uploadImage("image")} className="bg-bg-light hover:bg-border text-text-dark px-4 py-2.5 rounded-lg text-sm transition-colors border border-border">
-                Загрузить PNG
+                Загрузить файл
               </button>
               {form.image && <span className="text-xs text-success truncate max-w-[200px]">{form.image}</span>}
             </div>
@@ -2141,8 +2141,14 @@ function ConstructorPanel({ token }: { token: string }) {
               <div key={block.id} className="flex items-center justify-between p-4 bg-bg-light rounded-lg">
                 <div className="flex items-center gap-4">
                   {block.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={block.image.startsWith("/api/") ? block.image : block.image.startsWith("/uploads/") ? `/api${block.image}` : block.image} alt="" className="w-16 h-16 object-contain rounded bg-white p-1" />
+                    /\.(webm|mp4)$/i.test(block.image) ? (
+                      <video autoPlay loop muted playsInline className="w-16 h-16 object-contain rounded bg-white p-1">
+                        <source src={block.image.startsWith("/api/") ? block.image : block.image.startsWith("/uploads/") ? `/api${block.image}` : block.image} />
+                      </video>
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={block.image.startsWith("/api/") ? block.image : block.image.startsWith("/uploads/") ? `/api${block.image}` : block.image} alt="" className="w-16 h-16 object-contain rounded bg-white p-1" />
+                    )
                   )}
                   <div>
                     <div className="flex items-center gap-2">
