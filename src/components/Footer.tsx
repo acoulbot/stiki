@@ -10,8 +10,8 @@ export default function Footer() {
           <div>
             <h3 className="font-bold mb-4 text-sm">Продукты</h3>
             <ul className="space-y-2 text-xs text-white/70">
-              <li><Link href="/catalog/devices" className="hover:text-white transition-colors">Устройства</Link></li>
-              <li><Link href="/catalog/sticks" className="hover:text-white transition-colors">Стики</Link></li>
+              <li><Link href="/catalog/nagrevateli-tabaka" className="hover:text-white transition-colors">Устройства</Link></li>
+              <li><Link href="/catalog/stiki-dlya-nagrevatelej" className="hover:text-white transition-colors">Стики</Link></li>
               <li><Link href="/catalog" className="hover:text-white transition-colors">Весь каталог</Link></li>
             </ul>
           </div>
