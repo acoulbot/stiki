@@ -55,7 +55,9 @@ export default async function HomePage() {
   }
 
   function isVideo(src: string) {
-    return /\.(webm|mp4)$/i.test(src);
+    if (!src) return false;
+    const resolved = getImageSrc(src);
+    return /\.(webm|mp4)(\?|$)/i.test(src) || /\.(webm|mp4)(\?|$)/i.test(resolved);
   }
 
   return (
@@ -122,7 +124,7 @@ export default async function HomePage() {
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-4 py-10">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Все продукты hittabak</h2>
+              <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-text-dark">Наши новинки</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[280px] md:auto-rows-[340px]">
               {(deviceBlocks.length > 0 ? deviceBlocks : devices.slice(0, 4)).map((item, idx) => {
@@ -142,12 +144,15 @@ export default async function HomePage() {
                   >
                     {image ? (
                       isVideo(image) ? (
-                        <video
-                          autoPlay loop muted playsInline
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        >
-                          <source src={getImageSrc(image)} type={image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
-                        </video>
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                          <video
+                            autoPlay loop muted playsInline
+                            className={`absolute inset-0 w-full h-full object-contain transition-transform duration-500 group-hover:scale-110 ${isBig ? "p-4" : "p-2"}`}
+                          >
+                            <source src={getImageSrc(image)} type={image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
+                          </video>
+                        </>
                       ) : (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -214,12 +219,15 @@ export default async function HomePage() {
                   >
                     {image ? (
                       isVideo(image) ? (
-                        <video
-                          autoPlay loop muted playsInline
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        >
-                          <source src={getImageSrc(image)} type={image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
-                        </video>
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                          <video
+                            autoPlay loop muted playsInline
+                            className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
+                          >
+                            <source src={getImageSrc(image)} type={image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
+                          </video>
+                        </>
                       ) : (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
