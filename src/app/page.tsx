@@ -94,7 +94,7 @@ export default async function HomePage() {
                 <img
                   src={getImageSrc(hero.image)}
                   alt={hero.title}
-                  className="max-h-[420px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-fade-in-up"
+                  className="w-full max-h-[520px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-fade-in-up"
                 />
               ) : (
                 <div className="w-64 h-80 rounded-2xl bg-gradient-to-b from-[#333] to-[#1a1a1a] border border-[#E8403A]/20 flex items-center justify-center shadow-[0_0_40px_rgba(232,64,58,0.2)]">
@@ -127,34 +127,28 @@ export default async function HomePage() {
                     href={link || "/catalog/devices"}
                     className={`group relative overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-[1.02] ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                    {image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={getImageSrc(image)}
+                        alt={title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rotate-45 border border-[#E8403A]/40 rounded-[15px]" />
                     </div>
-                    <div className="relative h-full flex flex-col justify-between p-5 z-10">
-                      <div>
-                        <h3 className={`font-bold text-white ${isBig ? "text-xl md:text-2xl" : "text-sm md:text-base"} mb-1`}>
-                          {title}
-                        </h3>
-                        {subtitle && (
-                          <p className={`text-gray-400 ${isBig ? "text-sm" : "text-xs"}`}>{subtitle}</p>
-                        )}
-                      </div>
-                      <div className="flex justify-center items-end flex-1 pt-4">
-                        {image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={getImageSrc(image)}
-                            alt={title}
-                            className={`object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_20px_rgba(232,64,58,0.25)] ${isBig ? "max-h-[300px]" : isMedium ? "max-h-[180px]" : "max-h-[140px]"}`}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className={`bg-[#222] rounded-xl flex items-center justify-center ${isBig ? "w-40 h-40" : "w-20 h-20"}`}>
-                            <span className="text-gray-500 text-xs">Фото</span>
-                          </div>
-                        )}
-                      </div>
+                    <div className="relative h-full flex flex-col justify-end p-5 z-10">
+                      <h3 className={`font-bold text-white ${isBig ? "text-xl md:text-2xl" : "text-sm md:text-base"} mb-1`}>
+                        {title}
+                      </h3>
+                      {subtitle && (
+                        <p className={`text-gray-300 ${isBig ? "text-sm" : "text-xs"}`}>{subtitle}</p>
+                      )}
                     </div>
                     <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 group-hover:scale-110 z-10">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,30 +190,24 @@ export default async function HomePage() {
                     href={link || "/catalog/sticks"}
                     className="group relative overflow-hidden rounded-2xl aspect-[4/5] transition-transform duration-300 hover:scale-[1.02]"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                    {image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={getImageSrc(image)}
+                        alt={title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] rotate-45 border border-[#E8403A]/30 rounded-[12px]" />
                     </div>
-                    <div className="relative h-full flex flex-col p-5 z-10">
-                      <div>
-                        <h3 className="font-bold text-white text-base md:text-lg mb-1">{title}</h3>
-                        {subtitle && <p className="text-gray-400 text-xs line-clamp-2">{subtitle}</p>}
-                      </div>
-                      <div className="flex-1 flex items-center justify-center pt-4">
-                        {image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={getImageSrc(image)}
-                            alt={title}
-                            className="max-h-[220px] object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(232,64,58,0.2)]"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-24 h-32 bg-[#222] rounded-xl flex items-center justify-center">
-                            <span className="text-gray-500 text-xs">Фото</span>
-                          </div>
-                        )}
-                      </div>
+                    <div className="relative h-full flex flex-col justify-end p-5 z-10">
+                      <h3 className="font-bold text-white text-base md:text-lg mb-1">{title}</h3>
+                      {subtitle && <p className="text-gray-300 text-xs line-clamp-2">{subtitle}</p>}
                     </div>
                     <div className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#E8403A] transition-all duration-300 group-hover:scale-110 z-10">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

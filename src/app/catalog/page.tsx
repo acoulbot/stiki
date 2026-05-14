@@ -15,12 +15,12 @@ import { SkeletonProductGrid } from "@/components/Skeleton";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Каталог товаров — hittabak | Опт и розница по ценам от производителя",
-  description: "Каталог hittabak — продукты, бытовая химия, товары для дома оптом и в розницу. Скидка 10% при покупке упаковкой. Доставка по Москве и МО, самовывоз со склада.",
+  title: "Каталог товаров — hittabak | Устройства и стики по выгодным ценам",
+  description: "Каталог hittabak — устройства нагревания табака и стики. Широкий ассортимент IQOS, lil SOLID, MOK, Glo, TEO. Доставка по Москве и МО.",
   alternates: { canonical: "https://hittabak.ru/catalog" },
   openGraph: {
-    title: "Каталог товаров — hittabak | Опт и розница",
-    description: "Продукты, бытовая химия, товары для дома — от 1 штуки или упаковками со скидкой 10%",
+    title: "Каталог товаров — hittabak | Устройства и стики",
+    description: "Устройства нагревания табака и стики — широкий ассортимент IQOS, lil SOLID, MOK, Glo, TEO",
     locale: "ru_RU",
     type: "website",
   },
