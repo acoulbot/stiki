@@ -52,6 +52,51 @@ interface PageProps {
   searchParams: Promise<Record<string, string | undefined>>;
 }
 
+const DEVICE_MODELS = [
+  "IQOS Iluma i Prime", "IQOS Iluma i One", "IQOS Iluma i",
+  "IQOS Iluma Prime", "IQOS Iluma One", "IQOS Iluma",
+  "IQOS 3 Duos",
+  "lil Solid Dual", "lil Solid EZ", "lil SOLID 3.0", "lil SOLID 2.0 Plus", "lil SOLID 2.0",
+  "MOK FWRD", "MOK Sensio",
+  "Glo Hyper Pro",
+  "TEO",
+];
+
+function getModelKey(productName: string): string {
+  for (const m of DEVICE_MODELS) {
+    if (productName.toLowerCase().startsWith(m.toLowerCase())) return m;
+  }
+  return productName.split(" - ")[0];
+}
+
+function matchProductsForCategory(
+  products: { id: string; name: string }[],
+  categoryName: string,
+): string[] {
+  if (DEVICE_MODELS.some((m) => m === categoryName)) {
+    return products
+      .filter((p) => getModelKey(p.name) === categoryName)
+      .map((p) => p.id);
+  }
+  const countryMatch = categoryName.match(/^(.+?)\s*\((.+?)\)\s*$/);
+  if (countryMatch) {
+    const model = countryMatch[1].trim();
+    const country = countryMatch[2];
+    return products
+      .filter(
+        (p) =>
+          p.name.toLowerCase().startsWith(model.toLowerCase()) &&
+          p.name.includes(`(${country})`),
+      )
+      .map((p) => p.id);
+  }
+  return products
+    .filter((p) =>
+      p.name.toLowerCase().startsWith(categoryName.toLowerCase()),
+    )
+    .map((p) => p.id);
+}
+
 async function CategoryContent({
   slugSegments,
   searchParams,
@@ -72,16 +117,42 @@ async function CategoryContent({
   const colors = searchParams.colors?.split(",").filter(Boolean);
 
   const childIds = category.children.map((c) => c.id);
-  const catIds = [category.id, ...childIds];
-  const where: Record<string, unknown> = { categoryId: { in: catIds } };
-  if (priceFrom !== undefined || priceTo !== undefined) {
-    where.price = {};
-    if (priceFrom !== undefined) (where.price as Record<string, number>).gte = priceFrom;
-    if (priceTo !== undefined) (where.price as Record<string, number>).lte = priceTo;
+  let baseWhere: Record<string, unknown> = { categoryId: { in: [category.id, ...childIds] } };
+
+  // Auto-matching: if leaf subcategory has 0 products, match from parent by model name
+  if (category.parentId && childIds.length === 0) {
+    const ownCount = await prisma.product.count({ where: { categoryId: category.id } });
+    if (ownCount === 0) {
+      const parentProducts = await prisma.product.findMany({
+        where: { categoryId: category.parentId },
+        select: { id: true, name: true },
+      });
+      const matchingIds = matchProductsForCategory(parentProducts, category.name);
+      if (matchingIds.length > 0) {
+        baseWhere = { id: { in: matchingIds } };
+      }
+    }
   }
-  if (brands && brands.length > 0) where.brand = { in: brands };
-  if (types && types.length > 0) where.productType = { in: types };
-  if (colors && colors.length > 0) where.color = { in: colors };
+
+  const where: Record<string, unknown> = { ...baseWhere };
+  const andFilters: Record<string, unknown>[] = [];
+  if (priceFrom !== undefined || priceTo !== undefined) {
+    const priceFilter: Record<string, number> = {};
+    if (priceFrom !== undefined) priceFilter.gte = priceFrom;
+    if (priceTo !== undefined) priceFilter.lte = priceTo;
+    andFilters.push({ price: priceFilter });
+  }
+  if (brands && brands.length > 0) {
+    andFilters.push({
+      OR: [
+        { brand: { in: brands } },
+        ...brands.map((b: string) => ({ name: { startsWith: b } })),
+      ],
+    });
+  }
+  if (types && types.length > 0) andFilters.push({ productType: { in: types } });
+  if (colors && colors.length > 0) andFilters.push({ color: { in: colors } });
+  if (andFilters.length > 0) where.AND = andFilters;
 
   let orderBy: Record<string, string> = {};
   switch (sort) {
@@ -98,7 +169,7 @@ async function CategoryContent({
     prisma.product.count({ where }),
     prisma.product.findMany({ where, orderBy, include: { category: { include: { parent: true } } }, take: PER_PAGE, skip }),
     prisma.product.findMany({
-      where: { categoryId: { in: catIds } },
+      where: baseWhere,
       select: { brand: true, productType: true, color: true, price: true },
     }),
   ]);
