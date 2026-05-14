@@ -2095,7 +2095,7 @@ function ConstructorPanel({ token }: { token: string }) {
           <div>
             <label className="text-sm text-text-gray mb-1 block">Ссылка кнопки</label>
             <input type="text" value={form.buttonLink} onChange={(e) => setForm({ ...form, buttonLink: e.target.value })}
-              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="/catalog/devices" />
+              className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" placeholder="/catalog/nagrevateli-tabaka" />
           </div>
           <div>
             <label className="text-sm text-text-gray mb-1 block">Изображение / анимация (PNG, WebM)</label>

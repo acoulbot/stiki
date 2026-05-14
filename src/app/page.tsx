@@ -68,7 +68,15 @@ export default async function HomePage() {
 
         {/* 1. Hero Block — neon diamond gradient */}
         <section className="relative overflow-hidden" style={{ minHeight: "580px" }}>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#2a1015]" />
+          {hero?.bgImage ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={getImageSrc(hero.bgImage)} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/40" />
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#2a1015]" />
+          )}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] animate-float-slow border border-[#E8403A]/20 rounded-[40px]" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rotate-45 border border-[#E8403A]/15 rounded-[30px]" />
@@ -87,7 +95,7 @@ export default async function HomePage() {
               </p>
               {(hero?.buttonText || true) && (
                 <Link
-                  href={hero?.buttonLink || "/catalog/devices"}
+                  href={hero?.buttonLink || "/catalog/nagrevateli-tabaka"}
                   className="inline-block bg-[#E8403A] hover:bg-[#d63530] text-white font-bold px-8 py-3.5 rounded-lg transition-all hover:shadow-[0_0_20px_rgba(232,64,58,0.4)] text-sm uppercase tracking-wider"
                 >
                   {hero?.buttonText || "Смотреть каталог"}
@@ -132,6 +140,7 @@ export default async function HomePage() {
                 const title = isBlock ? item.title : item.name;
                 const subtitle = isBlock ? item.subtitle : item.brand;
                 const image = isBlock ? item.image : item.image;
+                const bgImage = isBlock ? (item as { bgImage?: string }).bgImage : undefined;
                 const link = isBlock ? item.buttonLink : `/product/${item.slug}`;
                 const isBig = idx === 0;
                 const isMedium = idx === 1;
@@ -139,13 +148,19 @@ export default async function HomePage() {
                 return (
                   <Link
                     key={item.id}
-                    href={link || "/catalog/devices"}
+                    href={link || "/catalog/nagrevateli-tabaka"}
                     className={`group relative overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-[1.02] ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
                   >
+                    {bgImage && (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={getImageSrc(bgImage)} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      </>
+                    )}
                     {image ? (
                       isVideo(image) ? (
                         <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                          {!bgImage && <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />}
                           <video
                             autoPlay loop muted playsInline
                             className={`absolute inset-0 w-full h-full object-contain transition-transform duration-500 group-hover:scale-110 ${isBig ? "p-4" : "p-2"}`}
@@ -163,7 +178,7 @@ export default async function HomePage() {
                         />
                       )
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
+                      !bgImage && <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
@@ -188,7 +203,7 @@ export default async function HomePage() {
             </div>
             <div className="text-center mt-6">
               <Link
-                href="/catalog/devices"
+                href="/catalog/nagrevateli-tabaka"
                 className="inline-block bg-[#1A1A1A] hover:bg-[#333] text-white font-bold px-8 py-3 rounded-lg transition-colors text-sm uppercase tracking-wider"
               >
                 Весь каталог устройств
@@ -209,18 +224,25 @@ export default async function HomePage() {
                 const title = isBlock ? item.title : item.name;
                 const subtitle = isBlock ? item.subtitle : item.description;
                 const image = isBlock ? item.image : item.image;
+                const bgImage = isBlock ? (item as { bgImage?: string }).bgImage : undefined;
                 const link = isBlock ? item.buttonLink : `/product/${item.slug}`;
 
                 return (
                   <Link
                     key={item.id}
-                    href={link || "/catalog/sticks"}
+                    href={link || "/catalog/stiki-dlya-nagrevatelej"}
                     className="group relative overflow-hidden rounded-2xl aspect-[4/5] transition-transform duration-300 hover:scale-[1.02]"
                   >
+                    {bgImage && (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={getImageSrc(bgImage)} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      </>
+                    )}
                     {image ? (
                       isVideo(image) ? (
                         <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                          {!bgImage && <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />}
                           <video
                             autoPlay loop muted playsInline
                             className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
@@ -238,7 +260,7 @@ export default async function HomePage() {
                         />
                       )
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
+                      !bgImage && <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
@@ -259,7 +281,7 @@ export default async function HomePage() {
             </div>
             <div className="text-center mt-6">
               <Link
-                href="/catalog/sticks"
+                href="/catalog/stiki-dlya-nagrevatelej"
                 className="inline-block bg-[#1A1A1A] hover:bg-[#333] text-white font-bold px-8 py-3 rounded-lg transition-colors text-sm uppercase tracking-wider"
               >
                 Весь каталог стиков

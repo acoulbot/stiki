@@ -195,7 +195,7 @@ export default function Header() {
             onMouseLeave={handleMouseLeave}
           >
             <Link
-              href="/catalog/devices"
+              href="/catalog/nagrevateli-tabaka"
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-white/10 ${openDropdown === "Устройства" ? "bg-white/10" : ""}`}
             >
               Устройства
@@ -209,7 +209,7 @@ export default function Header() {
                 {/* Column 1: Brands */}
                 <div className="py-2 min-w-[180px] border-r border-border">
                   <Link
-                    href="/catalog/devices"
+                    href="/catalog/nagrevateli-tabaka"
                     className="block px-4 py-2 text-sm font-semibold text-accent hover:bg-bg-light transition-colors"
                     onClick={closeAll}
                   >
@@ -283,7 +283,7 @@ export default function Header() {
             onMouseLeave={handleMouseLeave}
           >
             <Link
-              href="/catalog/sticks"
+              href="/catalog/stiki-dlya-nagrevatelej"
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-white/10 ${openDropdown === "Стики" ? "bg-white/10" : ""}`}
             >
               Стики
@@ -295,7 +295,7 @@ export default function Header() {
             {openDropdown === "Стики" && (
               <div className="absolute top-full left-0 mt-1 bg-white text-text-dark rounded-xl shadow-2xl border border-border py-2 min-w-[240px] max-h-[500px] overflow-y-auto animate-scale-in z-50">
                 <Link
-                  href="/catalog/sticks"
+                  href="/catalog/stiki-dlya-nagrevatelej"
                   className="block px-4 py-2 text-sm font-semibold text-accent hover:bg-bg-light transition-colors"
                   onClick={closeAll}
                 >
@@ -427,7 +427,7 @@ export default function Header() {
               </button>
               {mobileExpanded === "devices" && (
                 <div className="ml-3 space-y-0.5">
-                  <Link href="/catalog/devices" className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
+                  <Link href="/catalog/nagrevateli-tabaka" className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
                     Все устройства
                   </Link>
                   {deviceBrands.map((brand) => (
@@ -489,7 +489,7 @@ export default function Header() {
               </button>
               {mobileExpanded === "sticks" && (
                 <div className="ml-3 space-y-0.5">
-                  <Link href="/catalog/sticks" className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
+                  <Link href="/catalog/stiki-dlya-nagrevatelej" className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
                     Все стики
                   </Link>
                   {stickBrands.map((brand) => (
