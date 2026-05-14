@@ -54,6 +54,10 @@ export default async function HomePage() {
     return image;
   }
 
+  function isVideo(src: string) {
+    return /\.(webm|mp4)$/i.test(src);
+  }
+
   return (
     <>
       <Header />
@@ -90,12 +94,21 @@ export default async function HomePage() {
             </div>
             <div className="flex-1 flex justify-center z-10">
               {hero?.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={getImageSrc(hero.image)}
-                  alt={hero.title}
-                  className="w-full max-h-[520px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-fade-in-up"
-                />
+                isVideo(hero.image) ? (
+                  <video
+                    autoPlay loop muted playsInline
+                    className="w-full max-h-[520px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-fade-in-up"
+                  >
+                    <source src={getImageSrc(hero.image)} type={hero.image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
+                  </video>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={getImageSrc(hero.image)}
+                    alt={hero.title}
+                    className="w-full max-h-[520px] object-contain drop-shadow-[0_0_40px_rgba(232,64,58,0.3)] animate-fade-in-up"
+                  />
+                )
               ) : (
                 <div className="w-64 h-80 rounded-2xl bg-gradient-to-b from-[#333] to-[#1a1a1a] border border-[#E8403A]/20 flex items-center justify-center shadow-[0_0_40px_rgba(232,64,58,0.2)]">
                   <span className="text-[#E8403A] text-4xl font-bold">hit</span>
@@ -128,13 +141,22 @@ export default async function HomePage() {
                     className={`group relative overflow-hidden rounded-2xl transition-transform duration-300 hover:scale-[1.02] ${isBig ? "col-span-2 row-span-2" : isMedium ? "col-span-2 row-span-1" : "col-span-1 row-span-1"}`}
                   >
                     {image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={getImageSrc(image)}
-                        alt={title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
+                      isVideo(image) ? (
+                        <video
+                          autoPlay loop muted playsInline
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        >
+                          <source src={getImageSrc(image)} type={image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
+                        </video>
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getImageSrc(image)}
+                          alt={title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                      )
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#251015]" />
                     )}
@@ -191,13 +213,22 @@ export default async function HomePage() {
                     className="group relative overflow-hidden rounded-2xl aspect-[4/5] transition-transform duration-300 hover:scale-[1.02]"
                   >
                     {image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={getImageSrc(image)}
-                        alt={title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
+                      isVideo(image) ? (
+                        <video
+                          autoPlay loop muted playsInline
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        >
+                          <source src={getImageSrc(image)} type={image.endsWith(".mp4") ? "video/mp4" : "video/webm"} />
+                        </video>
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getImageSrc(image)}
+                          alt={title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                      )
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d0d] via-[#1a1a1a] to-[#1a1020]" />
                     )}

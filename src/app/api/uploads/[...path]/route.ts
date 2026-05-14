@@ -8,6 +8,8 @@ const MIME_TYPES: Record<string, string> = {
   ".gif": "image/gif",
   ".webp": "image/webp",
   ".svg": "image/svg+xml",
+  ".webm": "video/webm",
+  ".mp4": "video/mp4",
 };
 
 export async function GET(

@@ -23,9 +23,9 @@ export async function POST(request: Request) {
     }
 
     const ext = path.extname(file.name).toLowerCase();
-    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
+    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".webm", ".mp4"];
     if (!allowed.includes(ext)) {
-      return Response.json({ error: "Поддерживаемые форматы: JPG, PNG, GIF, WEBP, SVG" }, { status: 400 });
+      return Response.json({ error: "Поддерживаемые форматы: JPG, PNG, GIF, WEBP, SVG, WEBM, MP4" }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
