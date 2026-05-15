@@ -5,6 +5,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Реферальная программа — hittabak",
   description: "Приглашайте друзей и получайте бонусы от hittabak. Узнайте условия реферальной программы.",
+  alternates: { canonical: "https://hittabak.ru/referral" },
+  openGraph: {
+    title: "Реферальная программа — hittabak",
+    description: "Приглашайте друзей и получайте бонусы от hittabak.",
+    locale: "ru_RU",
+    type: "website",
+    url: "https://hittabak.ru/referral",
+  },
 };
 
 export default function ReferralPage() {

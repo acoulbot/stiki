@@ -6,6 +6,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "О нас — hittabak",
   description: "hittabak — официальный реселлер устройств нагревания табака и аксессуаров. Широкий ассортимент IQOS, Glo, lil SOLID и стиков.",
+  alternates: { canonical: "https://hittabak.ru/about" },
+  openGraph: {
+    title: "О нас — hittabak",
+    description: "hittabak — официальный реселлер устройств нагревания табака и аксессуаров.",
+    locale: "ru_RU",
+    type: "website",
+    url: "https://hittabak.ru/about",
+  },
 };
 
 export default function AboutPage() {
@@ -82,7 +90,7 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-text-dark">Выгодные цены</h3>
-                    <p className="text-xs text-text-gray mt-1">Конкурентные цены и регулярные акции</p>
+                    <p className="text-xs text-text-gray mt-1">Конкурентные цены и выгодные предложения</p>
                   </div>
                 </div>
               </div>

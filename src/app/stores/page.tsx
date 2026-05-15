@@ -6,6 +6,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Где купить — hittabak",
   description: "Найдите ближайший магазин hittabak на карте. Адреса точек продаж по всей России.",
+  alternates: { canonical: "https://hittabak.ru/stores" },
+  openGraph: {
+    title: "Где купить — hittabak",
+    description: "Найдите ближайший магазин hittabak на карте.",
+    locale: "ru_RU",
+    type: "website",
+    url: "https://hittabak.ru/stores",
+  },
 };
 
 export const revalidate = 60;

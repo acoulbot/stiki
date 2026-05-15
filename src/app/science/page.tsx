@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Наука — hittabak",
   description: "Научный подход hittabak. Технология нагревания табака, исследования, преимущества перед горением.",
+  alternates: { canonical: "https://hittabak.ru/science" },
 };
 
 export default function SciencePage() {

@@ -5,6 +5,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Пользовательское соглашение — hittabak",
   description: "Пользовательское соглашение сайта hittabak. Условия продажи табачных изделий и аксессуаров.",
+  alternates: { canonical: "https://hittabak.ru/terms" },
+  openGraph: {
+    title: "Пользовательское соглашение — hittabak",
+    description: "Пользовательское соглашение сайта hittabak. Условия продажи табачных изделий и аксессуаров.",
+    locale: "ru_RU",
+    type: "website",
+    url: "https://hittabak.ru/terms",
+  },
 };
 
 export default function TermsPage() {
