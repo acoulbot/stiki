@@ -55,6 +55,8 @@ export async function POST(request: Request) {
     "Тип/Вид": p.productType,
     "Годен до": p.expirationDate,
     "Теги": p.tags,
+    "SEO Заголовок": p.metaTitle,
+    "SEO Описание": p.metaDescription,
     "Изображение": p.image,
   }));
 
@@ -78,6 +80,8 @@ export async function POST(request: Request) {
     { wch: 15 }, // Тип/Вид
     { wch: 12 }, // Годен до
     { wch: 40 }, // Теги
+    { wch: 40 }, // SEO Заголовок
+    { wch: 50 }, // SEO Описание
     { wch: 30 }, // Изображение
   ];
   worksheet["!cols"] = colWidths;

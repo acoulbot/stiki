@@ -29,10 +29,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     include: { category: true },
   });
   if (!product) return {};
-  const title = `${product.name} — купить в hittabak`;
-  const description = product.description
-    ? product.description.slice(0, 160)
-    : `${product.name} по цене ${product.price} ₽. ${product.brand ? `Бренд: ${product.brand}.` : ""} Купить в интернет-магазине hittabak с доставкой.`;
+  const title = product.metaTitle || `${product.name} — купить в hittabak`;
+  const description = product.metaDescription
+    || (product.description ? product.description.slice(0, 160) : `${product.name} по цене ${product.price} ₽. ${product.brand ? `Бренд: ${product.brand}.` : ""} Купить в интернет-магазине hittabak с доставкой.`);
   const keywords = product.tags
     ? product.tags
     : [product.name, product.brand, product.category.name, "купить", "hittabak"].filter(Boolean).join(", ");

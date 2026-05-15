@@ -10,13 +10,28 @@ function checkAdmin(request: Request): boolean {
   return !!payload && payload.role === "admin";
 }
 
-// Expected XLSX columns: №, Раздел, Название товара, Цвет, Цена (₽), Файл изображения
+// Expected XLSX columns — supports both initial import and re-import from export
 const KNOWN_COLUMNS: Record<string, string[]> = {
-  section: ["раздел", "модель", "девайс", "device", "section"],
+  section: ["раздел", "модель", "девайс", "device", "section", "категория"],
   name: ["название товара", "название", "наименование", "наименование товара", "товар", "name", "product"],
   color: ["цвет", "color"],
   price: ["цена", "цена (₽)", "цена (руб)", "цена (руб.)", "price", "стоимость"],
+  oldPrice: ["старая цена", "old price", "oldprice"],
   image: ["файл изображения", "изображение", "картинка", "фото", "image", "файл"],
+  description: ["описание", "description"],
+  brand: ["бренд", "brand", "производитель"],
+  country: ["страна", "country"],
+  barcode: ["штрихкод", "barcode", "ean"],
+  code: ["код/артикул", "код", "артикул", "code", "sku"],
+  productType: ["тип/вид", "тип", "вид", "type", "producttype"],
+  inStock: ["в наличии", "наличие", "instock", "in stock", "остаток"],
+  packSize: ["кол-во в упаковке", "упаковка", "packsize", "pack size"],
+  weight: ["вес (кг)", "вес", "weight"],
+  volume: ["объём (м³)", "объём", "объем", "volume"],
+  expirationDate: ["годен до", "срок годности", "expiration"],
+  tags: ["теги", "tags", "ключевые слова", "keywords"],
+  metaTitle: ["seo заголовок", "meta title", "metatitle", "мета заголовок"],
+  metaDescription: ["seo описание", "meta description", "metadescription", "мета описание"],
 };
 
 function autoDetectColumns(headers: string[]): Record<string, string> {
@@ -160,7 +175,22 @@ interface ImportProduct {
   name?: string;
   color?: string;
   price?: number | string;
+  oldPrice?: number | string;
   image?: string;
+  description?: string;
+  brand?: string;
+  country?: string;
+  barcode?: string;
+  code?: string;
+  productType?: string;
+  inStock?: number | string;
+  packSize?: number | string;
+  weight?: number | string;
+  volume?: number | string;
+  expirationDate?: string;
+  tags?: string;
+  metaTitle?: string;
+  metaDescription?: string;
 }
 
 // POST — import products with new structure (Раздел, Название, Цвет, Цена, Файл изображения)
@@ -235,22 +265,54 @@ export async function POST(request: Request) {
     const name = String(row.name).trim();
     const color = row.color ? String(row.color).trim() : "";
     const price = Number(row.price) || 0;
+    const oldPrice = row.oldPrice ? Number(row.oldPrice) || null : null;
     const image = row.image ? String(row.image).trim() : "";
     const section = row.section ? String(row.section).trim() : "";
+    const description = row.description ? String(row.description).trim() : "";
+    const brand = row.brand ? String(row.brand).trim() : "";
+    const country = row.country ? String(row.country).trim() : "";
+    const barcode = row.barcode ? String(row.barcode).trim() : "";
+    const code = row.code ? String(row.code).trim() : "";
+    const productType = row.productType ? String(row.productType).trim() : "";
+    const inStock = row.inStock !== undefined ? Number(row.inStock) || 0 : 0;
+    const packSize = row.packSize ? Number(row.packSize) || null : null;
+    const weight = row.weight ? Number(row.weight) || null : null;
+    const volume = row.volume ? Number(row.volume) || null : null;
+    const expirationDate = row.expirationDate ? String(row.expirationDate).trim() : "";
+    const tags = row.tags ? String(row.tags).trim() : "";
+    const metaTitle = row.metaTitle ? String(row.metaTitle).trim() : "";
+    const metaDescription = row.metaDescription ? String(row.metaDescription).trim() : "";
 
     const categoryId = (section ? catByName.get(section.toLowerCase()) : undefined) || defaultCatId;
     const key = `${name.toLowerCase()}|||${color.toLowerCase()}`;
     const existingId = existingByKey.get(key);
 
     if (existingId) {
+      const updateData: Record<string, unknown> = {
+        price,
+        color,
+        categoryId,
+      };
+      if (oldPrice !== null) updateData.oldPrice = oldPrice;
+      if (image) updateData.image = image;
+      if (description) updateData.description = description;
+      if (brand) updateData.brand = brand;
+      if (country) updateData.country = country;
+      if (barcode) updateData.barcode = barcode;
+      if (code) updateData.code = code;
+      if (productType) updateData.productType = productType;
+      if (row.inStock !== undefined) updateData.inStock = inStock;
+      if (packSize !== null) updateData.packSize = packSize;
+      if (weight !== null) updateData.weight = weight;
+      if (volume !== null) updateData.volume = volume;
+      if (expirationDate) updateData.expirationDate = expirationDate;
+      if (tags) updateData.tags = tags;
+      if (metaTitle) updateData.metaTitle = metaTitle;
+      if (metaDescription) updateData.metaDescription = metaDescription;
+
       await prisma.product.update({
         where: { id: existingId },
-        data: {
-          price,
-          color,
-          categoryId,
-          ...(image ? { image } : {}),
-        },
+        data: updateData,
       });
       updated++;
     } else {
@@ -268,20 +330,10 @@ export async function POST(request: Request) {
       }
       const created = await prisma.product.create({
         data: {
-          name,
-          slug,
-          price,
-          color,
-          image,
-          categoryId,
-          description: "",
-          brand: "",
-          productType: "",
-          country: "",
-          barcode: "",
-          code: "",
-          tags: "",
-          expirationDate: "",
+          name, slug, price, color, image, categoryId,
+          oldPrice, description, brand, productType, country,
+          barcode, code, inStock, packSize, weight, volume,
+          expirationDate, tags, metaTitle, metaDescription,
         },
       });
       existingByKey.set(key, created.id);
