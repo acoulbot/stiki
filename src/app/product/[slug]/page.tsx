@@ -126,28 +126,22 @@ export default async function ProductPage({ params }: PageProps) {
         },
       },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: product.reviews.length > 0 ? avgRating.toFixed(1) : "5.0",
-      reviewCount: product.reviews.length > 0 ? product.reviews.length : 1,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: product.reviews.length > 0
-      ? product.reviews.slice(0, 5).map((r) => ({
-          "@type": "Review",
-          author: { "@type": "Person", name: r.user.name || r.user.email.split("@")[0] },
-          datePublished: r.createdAt.toISOString().split("T")[0],
-          reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
-          reviewBody: r.text || undefined,
-        }))
-      : [{
-          "@type": "Review",
-          author: { "@type": "Organization", name: "hittabak" },
-          datePublished: product.createdAt.toISOString().split("T")[0],
-          reviewRating: { "@type": "Rating", ratingValue: 5, bestRating: 5, worstRating: 1 },
-          reviewBody: `${product.name} — рекомендуем!`,
-        }],
+    ...(product.reviews.length > 0 ? {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating.toFixed(1),
+        reviewCount: product.reviews.length,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      review: product.reviews.slice(0, 5).map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.user.name || r.user.email.split("@")[0] },
+        datePublished: r.createdAt.toISOString().split("T")[0],
+        reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+        reviewBody: r.text || undefined,
+      })),
+    } : {}),
   };
 
   const breadcrumbItems = [

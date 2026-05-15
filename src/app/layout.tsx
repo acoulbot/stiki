@@ -89,8 +89,8 @@ export default function RootLayout({
               logo: `${baseUrl}/logo.png`,
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+7-800-000-00-00",
                 contactType: "customer service",
+                url: "https://t.me/tophit_new",
                 areaServed: "RU",
                 availableLanguage: "Russian",
               },

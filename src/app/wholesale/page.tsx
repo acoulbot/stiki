@@ -110,7 +110,7 @@ export default async function WholesalePage() {
                           <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
                         </div>
                         <h4 className="font-medium text-text-dark text-sm mb-1">Специальные предложения</h4>
-                        <p className="text-xs text-text-gray">Регулярные акции и персональные промокоды для постоянных клиентов. Следите за обновлениями</p>
+                        <p className="text-xs text-text-gray">Персональные промокоды и специальные условия для постоянных клиентов. Следите за обновлениями</p>
                       </div>
                       <div className="bg-bg-light rounded-lg p-4 text-center">
                         <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">

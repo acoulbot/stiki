@@ -6,6 +6,14 @@ import ContactForm from "@/components/ContactForm";
 export const metadata: Metadata = {
   title: "Контакты — hittabak",
   description: "Свяжитесь с hittabak. Телефон, email, адрес офиса, форма обратной связи.",
+  alternates: { canonical: "https://hittabak.ru/contacts" },
+  openGraph: {
+    title: "Контакты — hittabak",
+    description: "Свяжитесь с hittabak. Телефон, email, адрес офиса, форма обратной связи.",
+    locale: "ru_RU",
+    type: "website",
+    url: "https://hittabak.ru/contacts",
+  },
 };
 
 export default function ContactsPage() {

@@ -11,7 +11,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Новости — hittabak",
-  description: "Новости hittabak: новые поставки, акции, специальные предложения для оптовых и розничных покупателей. Статьи о товарах и обновления ассортимента.",
+  description: "Новости hittabak: новые поставки, специальные предложения для оптовых и розничных покупателей. Статьи о товарах и обновления ассортимента.",
   openGraph: {
     title: "Новости — hittabak",
     description: "Новости и обновления магазина hittabak",

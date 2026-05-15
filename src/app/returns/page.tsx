@@ -2,6 +2,13 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ReturnForm from "@/components/ReturnForm";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Возврат и обмен — hittabak",
+  description: "Условия возврата и обмена товаров в магазине hittabak.",
+  alternates: { canonical: "https://hittabak.ru/returns" },
+};
 
 export default function ReturnsPage() {
   return (

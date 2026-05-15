@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "История бренда — hittabak",
   description: "История создания и развития бренда hittabak. От идеи до реализации.",
+  alternates: { canonical: "https://hittabak.ru/about/history" },
 };
 
 export default function HistoryPage() {

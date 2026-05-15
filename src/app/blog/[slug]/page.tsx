@@ -13,9 +13,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.blogPost.findUnique({ where: { slug } });
   if (!post) return { title: "Статья не найдена" };
+  const url = `https://hittabak.ru/blog/${slug}`;
   return {
     title: `${post.title} — Блог hittabak`,
     description: post.excerpt || post.title,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.title,
+      locale: "ru_RU",
+      type: "article",
+      url,
+      ...(post.image ? { images: [{ url: post.image }] } : {}),
+    },
+    alternates: { canonical: url },
   };
 }
 

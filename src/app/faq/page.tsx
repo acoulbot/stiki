@@ -7,6 +7,14 @@ import FaqAccordion from "@/components/FaqAccordion";
 export const metadata: Metadata = {
   title: "FAQ — hittabak",
   description: "Часто задаваемые вопросы о продукции hittabak. Ответы на популярные вопросы об устройствах и стиках.",
+  alternates: { canonical: "https://hittabak.ru/faq" },
+  openGraph: {
+    title: "FAQ — hittabak",
+    description: "Часто задаваемые вопросы о продукции hittabak.",
+    locale: "ru_RU",
+    type: "website",
+    url: "https://hittabak.ru/faq",
+  },
 };
 
 export const revalidate = 60;

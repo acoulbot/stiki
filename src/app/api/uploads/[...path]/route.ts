@@ -31,6 +31,7 @@ export async function GET(
     return new Response(buffer, {
       headers: {
         "Content-Type": MIME_TYPES[ext] || "application/octet-stream",
+        "Content-Length": String(buffer.length),
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });

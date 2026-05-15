@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Cookie-политика — hittabak",
   description: "Политика использования файлов cookie на сайте hittabak.",
+  alternates: { canonical: "https://hittabak.ru/cookies" },
 };
 
 export default function CookiesPage() {
