@@ -43,11 +43,6 @@ export default function Footer() {
           {/* Contacts & Social */}
           <div>
             <h3 className="font-bold mb-4 text-sm">Контакты</h3>
-            <ul className="space-y-1 text-xs text-white/70 mb-4">
-              <li>ИП Атаманова Н.О.</li>
-              <li>ИНН 720302151142</li>
-              <li>ОГРНИП 323508100551579</li>
-            </ul>
             <div className="flex items-center gap-3 mb-3">
               <a href="https://t.me/tophit_new" target="_blank" rel="nofollow noopener noreferrer"
                 className="w-10 h-10 bg-white/10 hover:bg-accent rounded-lg flex items-center justify-center transition-colors" title="Telegram">
