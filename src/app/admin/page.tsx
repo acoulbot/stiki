@@ -539,11 +539,26 @@ export default function AdminPage() {
   // Target fields for column mapping (simplified for new format)
   const targetFields: { value: string; label: string }[] = [
     { value: "", label: "— Пропустить —" },
-    { value: "section", label: "Раздел (модель девайса)" },
+    { value: "section", label: "Раздел (категория)" },
     { value: "name", label: "Название товара" },
     { value: "color", label: "Цвет" },
     { value: "price", label: "Цена (₽)" },
+    { value: "oldPrice", label: "Старая цена" },
     { value: "image", label: "Файл изображения" },
+    { value: "description", label: "Описание" },
+    { value: "brand", label: "Бренд" },
+    { value: "country", label: "Страна" },
+    { value: "barcode", label: "Штрихкод" },
+    { value: "code", label: "Код/Артикул" },
+    { value: "productType", label: "Тип/Вид" },
+    { value: "inStock", label: "В наличии" },
+    { value: "packSize", label: "Кол-во в упаковке" },
+    { value: "weight", label: "Вес (кг)" },
+    { value: "volume", label: "Объём (м³)" },
+    { value: "expirationDate", label: "Годен до" },
+    { value: "tags", label: "Теги / ключевые слова" },
+    { value: "metaTitle", label: "SEO Заголовок" },
+    { value: "metaDescription", label: "SEO Описание" },
   ];
 
   // Import — step 1: upload file to server for fast parsing
