@@ -91,22 +91,17 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const fetchCart = async () => {
-      const token = localStorage.getItem("userToken");
-      if (!token) return;
+    const updateCartCount = () => {
       try {
-        const res = await fetch("/api/user/cart", { headers: { Authorization: `Bearer ${token}` } });
-        if (res.ok) {
-          const items = await res.json();
-          setCartCount(items.reduce((sum: number, i: { quantity: number }) => sum + i.quantity, 0));
-        }
-      } catch {}
+        const cart = JSON.parse(localStorage.getItem("hittabak_cart") || "[]");
+        setCartCount(cart.reduce((sum: number, i: { quantity: number }) => sum + i.quantity, 0));
+      } catch {
+        setCartCount(0);
+      }
     };
-    fetchCart();
-    const interval = setInterval(fetchCart, 10000);
-    const handleCartUpdate = () => fetchCart();
-    window.addEventListener("cart-updated", handleCartUpdate);
-    return () => { clearInterval(interval); window.removeEventListener("cart-updated", handleCartUpdate); };
+    updateCartCount();
+    window.addEventListener("cart-updated", updateCartCount);
+    return () => { window.removeEventListener("cart-updated", updateCartCount); };
   }, []);
 
   useEffect(() => {
@@ -369,13 +364,6 @@ export default function Header() {
                 {cartCount}
               </span>
             )}
-          </Link>
-
-          {/* Account */}
-          <Link href="/account" className="p-2 hover:bg-white/10 rounded-lg transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
           </Link>
 
           {/* Mobile burger */}

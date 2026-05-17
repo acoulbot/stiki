@@ -239,9 +239,23 @@ model QuickOrder {
   id        String   @id @default(uuid())
   name      String
   phone     String
+  email     String   @default("")
   productId String
   productName String @default("")
   quantity  Int      @default(1)
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model Inquiry {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String
+  items     String   @default("[]")
+  comment   String   @default("")
+  address   String   @default("")
+  total     Int      @default(0)
   status    String   @default("new")
   createdAt DateTime @default(now())
 }

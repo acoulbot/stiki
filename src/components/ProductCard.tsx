@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, startTransition } from "react";
 import { showToast } from "@/components/Toast";
+import { addToCart as addToLocalCart } from "@/lib/localCart";
 
 interface ProductCardProps {
   id: string;
@@ -48,14 +49,8 @@ export default function ProductCard({
     });
   }, [id]);
 
-  const addToCart = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) { window.location.href = "/account"; return; }
-    await fetch("/api/user/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId: id, quantity: 1 }),
-    });
+  const addToCart = () => {
+    addToLocalCart(id, 1);
     if (cartBtnRef.current) {
       const cartIcon = document.getElementById("cart-icon");
       if (cartIcon) {
@@ -71,7 +66,6 @@ export default function ProductCard({
         setTimeout(() => ghost.remove(), 700);
       }
     }
-    window.dispatchEvent(new Event("cart-updated"));
     setAdded(true);
     showToast(`${name.slice(0, 30)}${name.length > 30 ? "..." : ""} добавлен в корзину`);
     setTimeout(() => setAdded(false), 2000);
@@ -89,20 +83,13 @@ export default function ProductCard({
     }
   };
 
-  const toggleWishlist = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) { window.location.href = "/account"; return; }
+  const toggleWishlist = () => {
     setWishlistLoading(true);
     try {
-      const res = await fetch("/api/user/wishlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ productId: id }),
-      });
-      const data = await res.json();
       const wishlist: string[] = JSON.parse(localStorage.getItem("wishlist") || "[]");
-      if (data.action === "added") {
+      if (!inWishlist) {
         wishlist.push(id);
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
         setInWishlist(true);
         showToast("Добавлено в избранное");
       } else {
@@ -111,7 +98,6 @@ export default function ProductCard({
         setInWishlist(false);
         showToast("Удалено из избранного");
       }
-      localStorage.setItem("wishlist", JSON.stringify(data.action === "added" ? wishlist : wishlist.filter((wid) => wid !== id)));
     } catch {} finally {
       setWishlistLoading(false);
     }

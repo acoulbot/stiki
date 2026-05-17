@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { addToCart as addToLocalCart } from "@/lib/localCart";
 
 function flyToCart(buttonEl: HTMLElement) {
   const cartIcon = document.getElementById("cart-icon");
@@ -26,22 +27,15 @@ export default function AddToCartButton({ productId, inStock }: { productId: str
   const [added, setAdded] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const addToCart = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) { window.location.href = "/account"; return; }
-    await fetch("/api/user/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId, quantity: 1 }),
-    });
+  const handleAdd = () => {
+    addToLocalCart(productId, 1);
     if (btnRef.current) flyToCart(btnRef.current);
-    window.dispatchEvent(new Event("cart-updated"));
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   return (
-    <button ref={btnRef} onClick={addToCart} disabled={inStock === 0}
+    <button ref={btnRef} onClick={handleAdd} disabled={inStock === 0}
       className={`flex-1 sm:flex-none px-8 py-3 rounded-lg font-medium transition-all duration-300 ${
         added ? "bg-success text-white scale-95" : inStock === 0 ? "bg-gray-200 text-text-gray cursor-not-allowed" : "bg-primary hover:bg-primary-dark text-white active:scale-95"
       }`}>
@@ -54,16 +48,9 @@ export function AddPackButton({ productId, inStock, packSize, price }: { product
   const [addedPack, setAddedPack] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const addPack = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) { window.location.href = "/account"; return; }
-    await fetch("/api/user/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId, quantity: packSize, isPack: true }),
-    });
+  const handleAddPack = () => {
+    addToLocalCart(productId, packSize, true);
     if (btnRef.current) flyToCart(btnRef.current);
-    window.dispatchEvent(new Event("cart-updated"));
     setAddedPack(true);
     setTimeout(() => setAddedPack(false), 2000);
   };
@@ -73,7 +60,7 @@ export function AddPackButton({ productId, inStock, packSize, price }: { product
   if (!packSize || packSize <= 1 || inStock === 0) return null;
 
   return (
-    <button ref={btnRef} onClick={addPack}
+    <button ref={btnRef} onClick={handleAddPack}
       className={`w-full px-6 py-3 rounded-lg font-medium transition-all duration-300 text-sm ${
         addedPack ? "bg-success text-white scale-95" : "bg-green-600 hover:bg-green-700 text-white active:scale-95"
       }`}>

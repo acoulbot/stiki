@@ -4,6 +4,13 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
+  const ids = searchParams.get("ids");
+  if (ids) {
+    const idList = ids.split(",").filter(Boolean);
+    const products = await prisma.product.findMany({ where: { id: { in: idList } }, include: { category: true } });
+    return Response.json(products);
+  }
+
   const id = searchParams.get("id");
   if (id) {
     const product = await prisma.product.findUnique({ where: { id }, include: { category: true } });
