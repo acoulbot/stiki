@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { showToast } from "@/components/Toast";
 
 interface StockAlertButtonProps {
@@ -9,30 +9,20 @@ interface StockAlertButtonProps {
 
 export default function StockAlertButton({ productId }: StockAlertButtonProps) {
   const [subscribed, setSubscribed] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const subscribe = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) {
-      showToast("Авторизуйтесь, чтобы подписаться на уведомление");
-      window.location.href = "/account";
-      return;
+  useEffect(() => {
+    const alerts: string[] = JSON.parse(localStorage.getItem("stockAlerts") || "[]");
+    if (alerts.includes(productId)) setSubscribed(true);
+  }, [productId]);
+
+  const subscribe = () => {
+    const alerts: string[] = JSON.parse(localStorage.getItem("stockAlerts") || "[]");
+    if (!alerts.includes(productId)) {
+      alerts.push(productId);
+      localStorage.setItem("stockAlerts", JSON.stringify(alerts));
     }
-    setLoading(true);
-    try {
-      const res = await fetch("/api/stock-alert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ productId }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setSubscribed(true);
-        showToast(data.message || "Подписка оформлена");
-      }
-    } catch {} finally {
-      setLoading(false);
-    }
+    setSubscribed(true);
+    showToast("Вы подписались на уведомление о поступлении");
   };
 
   if (subscribed) {
@@ -49,13 +39,12 @@ export default function StockAlertButton({ productId }: StockAlertButtonProps) {
   return (
     <button
       onClick={subscribe}
-      disabled={loading}
-      className="flex items-center gap-2 text-sm text-primary hover:text-primary-dark transition-colors disabled:opacity-50"
+      className="flex items-center gap-2 text-sm text-primary hover:text-primary-dark transition-colors"
     >
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
       </svg>
-      {loading ? "Подписка..." : "Сообщить о поступлении"}
+      Сообщить о поступлении
     </button>
   );
 }
