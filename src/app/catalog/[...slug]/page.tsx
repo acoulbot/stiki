@@ -6,7 +6,6 @@ import Pagination, { PER_PAGE } from "@/components/Pagination";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { getCategoryPath } from "@/lib/slugify";
@@ -336,9 +335,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       <Header />
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <Suspense fallback={<div className="text-center py-12 text-text-gray">Загрузка...</div>}>
-            <CategoryContent slugSegments={slug} searchParams={resolvedParams} />
-          </Suspense>
+          <CategoryContent slugSegments={slug} searchParams={resolvedParams} />
         </div>
       </main>
       <Footer />

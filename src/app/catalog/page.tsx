@@ -6,10 +6,8 @@ import MobileFilterDrawer from "@/components/MobileFilterDrawer";
 import Pagination, { PER_PAGE } from "@/components/Pagination";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { SkeletonProductGrid } from "@/components/Skeleton";
 
 
 export const revalidate = 60;
@@ -17,12 +15,15 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Каталог товаров — hittabak | Устройства и стики по выгодным ценам",
   description: "Каталог hittabak — устройства нагревания табака и стики. Широкий ассортимент IQOS, lil SOLID, MOK, Glo, TEO. Доставка по Москве и МО.",
+  keywords: "каталог hittabak, устройства нагревания табака, стики, IQOS, Glo, lil SOLID, MOK, TEO, купить стики, купить нагреватель",
   alternates: { canonical: "https://hittabak.ru/catalog" },
   openGraph: {
     title: "Каталог товаров — hittabak | Устройства и стики",
     description: "Устройства нагревания табака и стики — широкий ассортимент IQOS, lil SOLID, MOK, Glo, TEO",
     locale: "ru_RU",
     type: "website",
+    url: "https://hittabak.ru/catalog",
+    images: [{ url: "https://hittabak.ru/opengraph-image" }],
   },
 };
 
@@ -222,9 +223,20 @@ function SortLinks({ current }: { current: string }) {
 
 export default async function CatalogPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Главная", item: "https://hittabak.ru/" },
+      { "@type": "ListItem", position: 2, name: "Каталог" },
+    ],
+  };
+
   return (
     <>
       <Header />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <Breadcrumbs items={[{ label: "Каталог" }]} />
@@ -232,9 +244,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
           <h1 className="text-xl sm:text-2xl font-bold text-text-dark mb-1 sm:mb-2">Каталог товаров hittabak</h1>
           <p className="text-text-gray text-sm mb-4 sm:mb-6">Покупайте поштучно или упаковками со скидкой 10% — доставка и самовывоз</p>
 
-          <Suspense fallback={<SkeletonProductGrid count={8} />}>
-            <CatalogContent searchParams={resolvedParams} />
-          </Suspense>
+          <CatalogContent searchParams={resolvedParams} />
         </div>
       </main>
       <Footer />

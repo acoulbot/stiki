@@ -4,15 +4,17 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "О нас — hittabak",
+  title: "О нас — hittabak | Официальный реселлер устройств нагревания табака",
   description: "hittabak — официальный реселлер устройств нагревания табака и аксессуаров. Широкий ассортимент IQOS, Glo, lil SOLID и стиков.",
+  keywords: "hittabak, о нас, официальный реселлер, устройства нагревания табака, IQOS, Glo, lil SOLID",
   alternates: { canonical: "https://hittabak.ru/about" },
   openGraph: {
-    title: "О нас — hittabak",
+    title: "О нас — hittabak | Официальный реселлер",
     description: "hittabak — официальный реселлер устройств нагревания табака и аксессуаров.",
     locale: "ru_RU",
     type: "website",
     url: "https://hittabak.ru/about",
+    images: [{ url: "https://hittabak.ru/opengraph-image" }],
   },
 };
 
