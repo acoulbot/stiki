@@ -29,10 +29,10 @@ export default function ContactsPage() {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl border border-border p-5">
                   <h3 className="text-sm font-bold text-text-dark mb-2">Телефон горячей линии</h3>
-                  <a href="tel:+78000000000" className="text-lg font-bold text-accent hover:text-accent-dark transition-colors">
-                    8 (800) 000-00-00
+                  <a href="tel:+79362568950" className="text-lg font-bold text-accent hover:text-accent-dark transition-colors">
+                    +7 (936) 256-89-50
                   </a>
-                  <p className="text-xs text-text-gray mt-1">Бесплатно по России, ПН-ВС 09:00-21:00</p>
+                  <p className="text-xs text-text-gray mt-1">ПН-ВС 09:00-21:00</p>
                 </div>
 
                 <div className="bg-white rounded-xl border border-border p-5">

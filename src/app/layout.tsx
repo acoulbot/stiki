@@ -90,6 +90,7 @@ export default function RootLayout({
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer service",
+                telephone: "+7-936-256-89-50",
                 url: "https://t.me/tophit_new",
                 areaServed: "RU",
                 availableLanguage: "Russian",
