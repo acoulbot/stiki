@@ -224,19 +224,9 @@ function SortLinks({ current }: { current: string }) {
 export default async function CatalogPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
 
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Главная", item: "https://hittabak.ru/" },
-      { "@type": "ListItem", position: 2, name: "Каталог" },
-    ],
-  };
-
   return (
     <>
       <Header />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <Breadcrumbs items={[{ label: "Каталог" }]} />
