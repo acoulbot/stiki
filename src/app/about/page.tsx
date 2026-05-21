@@ -99,6 +99,33 @@ export default function AboutPage() {
             </section>
 
             <section className="bg-white rounded-xl border border-border p-6">
+              <h2 className="text-xl font-bold text-text-dark mb-3">Как мы работаем</h2>
+              <p className="text-text-gray leading-relaxed mb-4">
+                Простой и удобный процесс заказа — от оформления до получения посылки.
+              </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/delivery-process.jpg" alt="Оформление заказа → Согласование доставки → Отправка трек-номера → Получение посылки" className="w-full h-auto rounded-lg" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 text-center text-sm">
+                <div>
+                  <span className="block font-bold text-text-dark">1. Заявка</span>
+                  <span className="text-xs text-text-gray">Оформите заказ на сайте</span>
+                </div>
+                <div>
+                  <span className="block font-bold text-text-dark">2. Согласование</span>
+                  <span className="text-xs text-text-gray">Менеджер свяжется с вами</span>
+                </div>
+                <div>
+                  <span className="block font-bold text-text-dark">3. Трек-номер</span>
+                  <span className="text-xs text-text-gray">Отправим номер для отслеживания</span>
+                </div>
+                <div>
+                  <span className="block font-bold text-text-dark">4. Получение</span>
+                  <span className="text-xs text-text-gray">Заберите посылку</span>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-white rounded-xl border border-border p-6">
               <h2 className="text-xl font-bold text-text-dark mb-3">Что такое нагревание табака?</h2>
               <p className="text-text-gray leading-relaxed">
                 В отличие от обычных сигарет, устройства нагревания табака нагревают табак, а не сжигают его. Это означает отсутствие дыма, пепла и значительно меньшее количество вредных веществ по сравнению с горением. Технология нагревания позволяет сохранить вкус табака без продуктов горения.
