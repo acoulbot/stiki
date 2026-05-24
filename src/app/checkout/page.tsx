@@ -18,6 +18,12 @@ export default function CheckoutPage() {
   const [inquiryId, setInquiryId] = useState("");
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
+  const [codeSending, setCodeSending] = useState(false);
+  const [codeError, setCodeError] = useState("");
+  const [codeVerifying, setCodeVerifying] = useState(false);
 
   useEffect(() => {
     const cartItems = getCart();
@@ -79,9 +85,50 @@ export default function CheckoutPage() {
     return Object.keys(errors).length === 0;
   };
 
+  const handleSendCode = async () => {
+    if (!form.email.trim() || !form.email.includes("@")) {
+      setFieldErrors((p) => ({ ...p, email: "Укажите корректный email" }));
+      return;
+    }
+    setCodeSending(true);
+    setCodeError("");
+    try {
+      const res = await fetch("/api/email/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCodeError(data.error || "Ошибка отправки кода"); }
+      else { setCodeSent(true); }
+    } catch { setCodeError("Ошибка сети"); }
+    setCodeSending(false);
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verificationCode || verificationCode.length !== 6) {
+      setCodeError("Введите 6-значный код");
+      return;
+    }
+    setCodeVerifying(true);
+    setCodeError("");
+    try {
+      const res = await fetch("/api/email/verify-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email.trim(), code: verificationCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCodeError(data.error || "Неверный код"); }
+      else { setEmailVerified(true); setCodeError(""); }
+    } catch { setCodeError("Ошибка сети"); }
+    setCodeVerifying(false);
+  };
+
   const handleSubmit = async () => {
     setError("");
     if (!validateForm()) return;
+    if (!emailVerified) { setError("Подтвердите email"); return; }
     if (items.length === 0) { setError("Корзина пуста"); return; }
 
     setLoading(true);
@@ -103,6 +150,7 @@ export default function CheckoutPage() {
           comment: form.comment.trim(),
           address: isPickup ? "Самовывоз" : form.address.trim(),
           total,
+          emailVerified: true,
         }),
       });
       const data = await res.json();
@@ -205,14 +253,61 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                       <label className="text-sm text-text-gray mb-1 block">Email *</label>
-                      <input
-                        type="email"
-                        value={form.email}
-                        onChange={(e) => { setForm({ ...form, email: e.target.value }); setFieldErrors((p) => ({ ...p, email: "" })); }}
-                        placeholder="example@mail.ru"
-                        className={`w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary ${fieldErrors.email ? "border-danger" : "border-border"}`}
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => {
+                            setForm({ ...form, email: e.target.value });
+                            setFieldErrors((p) => ({ ...p, email: "" }));
+                            if (emailVerified) { setEmailVerified(false); setCodeSent(false); setVerificationCode(""); }
+                          }}
+                          placeholder="example@mail.ru"
+                          disabled={emailVerified}
+                          className={`flex-1 border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary ${fieldErrors.email ? "border-danger" : "border-border"} ${emailVerified ? "bg-green-50 border-green-300" : ""}`}
+                        />
+                        {!emailVerified && !codeSent && (
+                          <button
+                            type="button"
+                            onClick={handleSendCode}
+                            disabled={codeSending || !form.email.includes("@")}
+                            className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {codeSending ? "..." : "Отправить код"}
+                          </button>
+                        )}
+                        {emailVerified && (
+                          <span className="flex items-center text-green-600 text-sm font-medium px-3">✓ Подтверждён</span>
+                        )}
+                      </div>
                       {fieldErrors.email && <p className="text-danger text-xs mt-1">{fieldErrors.email}</p>}
+                      {codeSent && !emailVerified && (
+                        <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <p className="text-sm text-blue-700 mb-2">Код отправлен на {form.email}</p>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={verificationCode}
+                              onChange={(e) => { setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6)); setCodeError(""); }}
+                              placeholder="6-значный код"
+                              maxLength={6}
+                              className="flex-1 border border-blue-300 rounded-lg px-4 py-2 text-center text-lg tracking-widest focus:outline-none focus:border-primary"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleVerifyCode}
+                              disabled={codeVerifying || verificationCode.length !== 6}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+                            >
+                              {codeVerifying ? "..." : "Подтвердить"}
+                            </button>
+                          </div>
+                          {codeError && <p className="text-danger text-xs mt-1">{codeError}</p>}
+                          <button type="button" onClick={handleSendCode} className="text-xs text-blue-600 hover:underline mt-2">
+                            Отправить код повторно
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-sm text-text-gray mb-1 block">Телефон *</label>

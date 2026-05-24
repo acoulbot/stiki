@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendNewInquiryNotification } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
-  const { name, email, phone, items, comment, address, total } = await req.json();
+  const { name, email, phone, items, comment, address, total, emailVerified } = await req.json();
 
   if (!name || !email || !phone || !items || items.length === 0) {
     return NextResponse.json({ error: "Заполните все обязательные поля" }, { status: 400 });
@@ -30,8 +31,19 @@ export async function POST(req: NextRequest) {
       comment: comment || "",
       address: address || "",
       total: total || 0,
+      emailVerified: emailVerified || false,
     },
   });
+
+  sendNewInquiryNotification({
+    name,
+    email,
+    phone,
+    items: JSON.stringify(items),
+    total: total || 0,
+    address: address || "",
+    comment: comment || "",
+  }).catch((err) => console.error("Failed to send admin notification:", err));
 
   return NextResponse.json({ success: true, inquiryId: inquiry.id });
 }

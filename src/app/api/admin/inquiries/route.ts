@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
+import { sendStatusUpdateNotification } from "@/lib/mail";
 
 const SECRET = process.env.JWT_SECRET || "hittabak-secret-key-2025";
 
@@ -28,10 +29,20 @@ export async function PATCH(req: NextRequest) {
   if (!checkAdmin(req)) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id, status } = await req.json();
+
+  const existing = await prisma.inquiry.findUnique({ where: { id } });
+  if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
+
   const updated = await prisma.inquiry.update({
     where: { id },
     data: { status },
   });
+
+  if (existing.status !== status && existing.emailVerified && existing.email) {
+    sendStatusUpdateNotification(existing.email, existing.name, status, id)
+      .catch((err) => console.error("Failed to send status notification:", err));
+  }
+
   return Response.json(updated);
 }
 

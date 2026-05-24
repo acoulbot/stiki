@@ -248,16 +248,17 @@ model QuickOrder {
 }
 
 model Inquiry {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  phone     String
-  items     String   @default("[]")
-  comment   String   @default("")
-  address   String   @default("")
-  total     Int      @default(0)
-  status    String   @default("new")
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  phone         String
+  items         String   @default("[]")
+  comment       String   @default("")
+  address       String   @default("")
+  total         Int      @default(0)
+  status        String   @default("new")
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
 }
 
 model CallbackRequest {
