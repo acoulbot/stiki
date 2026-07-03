@@ -8,6 +8,7 @@ import { getCart, clearCart } from "@/lib/localCart";
 
 interface CartProduct { id: string; name: string; price: number; image?: string; packSize?: number | null; }
 interface CartItemDisplay { productId: string; quantity: number; isPack: boolean; product: CartProduct; }
+interface PublicSettings { disableCheckoutEmailVerification: boolean; }
 
 export default function CheckoutPage() {
   const [items, setItems] = useState<CartItemDisplay[]>([]);
@@ -24,6 +25,18 @@ export default function CheckoutPage() {
   const [codeSending, setCodeSending] = useState(false);
   const [codeError, setCodeError] = useState("");
   const [codeVerifying, setCodeVerifying] = useState(false);
+  const [settings, setSettings] = useState<PublicSettings>({ disableCheckoutEmailVerification: false });
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: PublicSettings | null) => {
+        if (data) {
+          startTransition(() => setSettings({ disableCheckoutEmailVerification: Boolean(data.disableCheckoutEmailVerification) }));
+        }
+      })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     const cartItems = getCart();
@@ -128,7 +141,7 @@ export default function CheckoutPage() {
   const handleSubmit = async () => {
     setError("");
     if (!validateForm()) return;
-    if (!emailVerified) { setError("Подтвердите email"); return; }
+    if (!settings.disableCheckoutEmailVerification && !emailVerified) { setError("Подтвердите email"); return; }
     if (items.length === 0) { setError("Корзина пуста"); return; }
 
     setLoading(true);
@@ -150,7 +163,7 @@ export default function CheckoutPage() {
           comment: form.comment.trim(),
           address: isPickup ? "Самовывоз" : form.address.trim(),
           total,
-          emailVerified: true,
+          emailVerified: settings.disableCheckoutEmailVerification ? false : emailVerified,
         }),
       });
       const data = await res.json();
@@ -260,13 +273,13 @@ export default function CheckoutPage() {
                           onChange={(e) => {
                             setForm({ ...form, email: e.target.value });
                             setFieldErrors((p) => ({ ...p, email: "" }));
-                            if (emailVerified) { setEmailVerified(false); setCodeSent(false); setVerificationCode(""); }
+                            if (!settings.disableCheckoutEmailVerification && emailVerified) { setEmailVerified(false); setCodeSent(false); setVerificationCode(""); }
                           }}
                           placeholder="example@mail.ru"
-                          disabled={emailVerified}
-                          className={`flex-1 border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary ${fieldErrors.email ? "border-danger" : "border-border"} ${emailVerified ? "bg-green-50 border-green-300" : ""}`}
+                          disabled={!settings.disableCheckoutEmailVerification && emailVerified}
+                          className={`flex-1 border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary ${fieldErrors.email ? "border-danger" : "border-border"} ${!settings.disableCheckoutEmailVerification && emailVerified ? "bg-green-50 border-green-300" : ""}`}
                         />
-                        {!emailVerified && !codeSent && (
+                        {!settings.disableCheckoutEmailVerification && !emailVerified && !codeSent && (
                           <button
                             type="button"
                             onClick={handleSendCode}
@@ -276,12 +289,15 @@ export default function CheckoutPage() {
                             {codeSending ? "..." : "Отправить код"}
                           </button>
                         )}
-                        {emailVerified && (
+                        {!settings.disableCheckoutEmailVerification && emailVerified && (
                           <span className="flex items-center text-green-600 text-sm font-medium px-3">✓ Подтверждён</span>
                         )}
                       </div>
                       {fieldErrors.email && <p className="text-danger text-xs mt-1">{fieldErrors.email}</p>}
-                      {codeSent && !emailVerified && (
+                      {settings.disableCheckoutEmailVerification && (
+                        <p className="text-xs text-text-gray mt-2">Подтверждение email отключено администратором.</p>
+                      )}
+                      {codeSent && !settings.disableCheckoutEmailVerification && !emailVerified && (
                         <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                           <p className="text-sm text-blue-700 mb-2">Код отправлен на {form.email}</p>
                           <div className="flex gap-2">

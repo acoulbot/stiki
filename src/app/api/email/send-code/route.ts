@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendVerificationCode } from "@/lib/mail";
+import { getSiteSettings } from "@/lib/siteSettings";
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
+  const settings = await getSiteSettings();
+
+  if (settings.disableCheckoutEmailVerification) {
+    return NextResponse.json({ success: true, verificationDisabled: true });
+  }
 
   if (!email || !email.includes("@")) {
     return NextResponse.json({ error: "Укажите корректный email" }, { status: 400 });

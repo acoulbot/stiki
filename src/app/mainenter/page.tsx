@@ -130,6 +130,11 @@ interface AnalyticsData {
   topPages: { path: string; views: number }[];
 }
 
+interface SiteSettings {
+  disableUserEmailVerification: boolean;
+  disableCheckoutEmailVerification: boolean;
+}
+
 interface MsgItem { id: string; senderId: string; senderRole: string; text: string; createdAt: string; }
 
 function OrdersPanel({ orders, statusLabels, updateOrderStatus, deleteOrder, token }: {
@@ -277,6 +282,8 @@ export default function AdminPage() {
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
   const [adminSettings, setAdminSettings] = useState({ newUsername: "", currentPassword: "", newPassword: "" });
   const [adminSettingsMsg, setAdminSettingsMsg] = useState("");
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>({ disableUserEmailVerification: false, disableCheckoutEmailVerification: false });
+  const [siteSettingsMsg, setSiteSettingsMsg] = useState("");
 
 
 
@@ -304,16 +311,24 @@ export default function AdminPage() {
 
   const fetchData = useCallback(async () => {
     if (!token) return;
-    const [catRes, prodRes, newsRes, ordersRes] = await Promise.all([
+    const [catRes, prodRes, newsRes, ordersRes, siteSettingsRes] = await Promise.all([
       fetch("/api/admin/categories", { headers: hdrs() }),
       fetch("/api/admin/products", { headers: hdrs() }),
       fetch("/api/admin/news", { headers: hdrs() }),
       fetch("/api/admin/orders", { headers: hdrs() }),
+      fetch("/api/admin/settings", { headers: hdrs() }),
     ]);
     if (catRes.ok) setCategories(await catRes.json());
     if (prodRes.ok) setProducts(await prodRes.json());
     if (newsRes.ok) setNews(await newsRes.json());
     if (ordersRes.ok) setOrders(await ordersRes.json());
+    if (siteSettingsRes.ok) {
+      const data = await siteSettingsRes.json();
+      setSiteSettings({
+        disableUserEmailVerification: Boolean(data.disableUserEmailVerification),
+        disableCheckoutEmailVerification: Boolean(data.disableCheckoutEmailVerification),
+      });
+    }
   }, [token, hdrs]);
 
   useEffect(() => {
@@ -522,6 +537,28 @@ export default function AdminPage() {
       setTimeout(() => setAdminSettingsMsg(""), 3000);
     } else {
       setAdminSettingsMsg(data.error || "Ошибка");
+    }
+  };
+
+  const updateSiteSettings = async () => {
+    setSiteSettingsMsg("");
+    const res = await fetch("/api/admin/settings", {
+      method: "PUT",
+      headers: hdrs(),
+      body: JSON.stringify(siteSettings),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (data.settings) {
+        setSiteSettings({
+          disableUserEmailVerification: Boolean(data.settings.disableUserEmailVerification),
+          disableCheckoutEmailVerification: Boolean(data.settings.disableCheckoutEmailVerification),
+        });
+      }
+      setSiteSettingsMsg("Настройки сохранены");
+      setTimeout(() => setSiteSettingsMsg(""), 3000);
+    } else {
+      setSiteSettingsMsg(data.error || "Ошибка");
     }
   };
 
@@ -1498,7 +1535,7 @@ export default function AdminPage() {
 
         {/* Settings */}
         {activeTab === "settings" && (
-          <div className="max-w-lg">
+          <div className="max-w-2xl space-y-4">
             <div className="bg-bg-white rounded-xl border border-border p-5">
               <h2 className="font-bold text-text-dark mb-4">Настройки аккаунта</h2>
               {adminSettingsMsg && (
@@ -1525,6 +1562,44 @@ export default function AdminPage() {
                 </div>
                 <button onClick={updateAdminSettings} className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg transition-colors font-medium">
                   Сохранить
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-bg-white rounded-xl border border-border p-5">
+              <h2 className="font-bold text-text-dark mb-4">Настройки оформления и авторизации</h2>
+              {siteSettingsMsg && (
+                <p className={`text-sm mb-4 ${siteSettingsMsg.includes("Ошибка") ? "text-danger" : "text-success"}`}>{siteSettingsMsg}</p>
+              )}
+              <div className="space-y-4">
+                <label className="flex items-start gap-3 p-3 bg-bg-light rounded-lg cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={siteSettings.disableUserEmailVerification}
+                    onChange={(e) => setSiteSettings((prev) => ({ ...prev, disableUserEmailVerification: e.target.checked }))}
+                    className="mt-1 h-4 w-4"
+                  />
+                  <div>
+                    <p className="font-medium text-text-dark">Отключить подтверждение email при регистрации</p>
+                    <p className="text-sm text-text-gray">Новые пользователи смогут регистрироваться без кода из письма.</p>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 p-3 bg-bg-light rounded-lg cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={siteSettings.disableCheckoutEmailVerification}
+                    onChange={(e) => setSiteSettings((prev) => ({ ...prev, disableCheckoutEmailVerification: e.target.checked }))}
+                    className="mt-1 h-4 w-4"
+                  />
+                  <div>
+                    <p className="font-medium text-text-dark">Отключить подтверждение email при оформлении заказа</p>
+                    <p className="text-sm text-text-gray">Клиенты смогут отправлять заявку без SMTP-подтверждения email.</p>
+                  </div>
+                </label>
+
+                <button onClick={updateSiteSettings} className="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg transition-colors font-medium">
+                  Сохранить настройки
                 </button>
               </div>
             </div>

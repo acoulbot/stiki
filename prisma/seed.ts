@@ -35,6 +35,12 @@ function slug(name: string): string {
 }
 
 async function main() {
+  await prisma.siteSettings.upsert({
+    where: { id: "default" },
+    update: {},
+    create: { id: "default" },
+  });
+
   // Admin — create default only if no admins exist (first install)
   const existingAdmins = await prisma.admin.count();
   if (existingAdmins === 0) {

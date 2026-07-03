@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { signToken } from "@/lib/auth";
+import { getSiteSettings } from "@/lib/siteSettings";
 import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
@@ -12,7 +13,9 @@ export async function POST(request: Request) {
     if (password.length < 6) {
       return Response.json({ error: "Пароль должен быть минимум 6 символов" }, { status: 400 });
     }
-    if (!verified) {
+
+    const settings = await getSiteSettings();
+    if (!settings.disableUserEmailVerification && !verified) {
       return Response.json({ error: "Подтвердите email" }, { status: 400 });
     }
     const existing = await prisma.user.findUnique({ where: { email } });

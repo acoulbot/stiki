@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { sendVerificationCode } from "@/lib/mail";
+import { getSiteSettings } from "@/lib/siteSettings";
 
 function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -8,6 +9,11 @@ function generateCode(): string {
 export async function POST(request: Request) {
   try {
     const { action, email, code, password } = await request.json();
+    const settings = await getSiteSettings();
+
+    if (settings.disableUserEmailVerification) {
+      return Response.json({ success: true, verified: true, verificationDisabled: true });
+    }
 
     if (action === "send-code") {
       if (!email || !email.includes("@")) {
