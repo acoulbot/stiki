@@ -14,6 +14,12 @@ model Admin {
   role     String @default("admin")
 }
 
+model SiteSettings {
+  id                                String  @id @default("default")
+  disableUserEmailVerification      Boolean @default(false)
+  disableCheckoutEmailVerification  Boolean @default(false)
+}
+
 model Category {
   id              String        @id @default(uuid())
   name            String

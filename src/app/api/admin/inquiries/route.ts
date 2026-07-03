@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 import { sendStatusUpdateNotification } from "@/lib/mail";
+import { getSiteSettings } from "@/lib/siteSettings";
 
 const SECRET = process.env.JWT_SECRET || "hittabak-secret-key-2025";
 
@@ -29,6 +30,7 @@ export async function PATCH(req: NextRequest) {
   if (!checkAdmin(req)) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id, status } = await req.json();
+  const settings = await getSiteSettings();
 
   const existing = await prisma.inquiry.findUnique({ where: { id } });
   if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
@@ -38,7 +40,8 @@ export async function PATCH(req: NextRequest) {
     data: { status },
   });
 
-  if (existing.status !== status && existing.emailVerified && existing.email) {
+  const canSendStatusEmail = existing.email && (existing.emailVerified || settings.disableCheckoutEmailVerification);
+  if (existing.status !== status && canSendStatusEmail) {
     sendStatusUpdateNotification(existing.email, existing.name, status, id)
       .catch((err) => console.error("Failed to send status notification:", err));
   }

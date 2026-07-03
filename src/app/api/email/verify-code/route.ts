@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSiteSettings } from "@/lib/siteSettings";
 
 export async function POST(req: NextRequest) {
   const { email, code } = await req.json();
+  const settings = await getSiteSettings();
+
+  if (settings.disableCheckoutEmailVerification) {
+    return NextResponse.json({ success: true, verified: true, verificationDisabled: true });
+  }
 
   if (!email || !code) {
     return NextResponse.json({ error: "Email и код обязательны" }, { status: 400 });
