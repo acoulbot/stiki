@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   if (existing) return Response.json({ error: "Вы уже оставили отзыв на этот товар" }, { status: 400 });
 
   const review = await prisma.review.create({
-    data: { productId, userId: payload.id, rating, text: text || "" },
+    data: { productId, userId: payload.id, rating, text: text || "", source: "user" },
     include: { user: { select: { name: true, email: true } } },
   });
 
@@ -34,6 +34,6 @@ export async function POST(request: Request) {
     rating: review.rating,
     text: review.text,
     createdAt: review.createdAt.toISOString(),
-    userName: review.user.name || review.user.email.split("@")[0],
+    userName: review.authorName || (review.user ? (review.user.name || review.user.email.split("@")[0]) : "Аноним"),
   }, { status: 201 });
 }

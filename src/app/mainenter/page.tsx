@@ -92,7 +92,7 @@ const statusLabels: Record<string, string> = {
   cancelled: "Отменён",
 };
 
-type TabType = "analytics" | "categories" | "products" | "news" | "orders" | "inquiries" | "callbacks" | "clients" | "constructor" | "admins" | "settings";
+type TabType = "analytics" | "categories" | "products" | "reviews" | "news" | "orders" | "inquiries" | "callbacks" | "clients" | "constructor" | "admins" | "settings";
 
 interface HomeBlock {
   id: string;
@@ -871,7 +871,7 @@ export default function AdminPage() {
 
   const topCategories = categories.filter((c) => !c.parentId);
   const tabLabels: Record<TabType, string> = {
-    analytics: "Статистика", categories: "Категории", products: "Товары", news: "Новости", orders: `Заказы (${orders.length})`, inquiries: "Заявки", callbacks: `Заявки на звонок`, clients: "Клиенты", constructor: "Конструктор", admins: "Администраторы", settings: "Настройки",
+    analytics: "Статистика", categories: "Категории", products: "Товары", reviews: "Отзывы", news: "Новости", orders: `Заказы (${orders.length})`, inquiries: "Заявки", callbacks: `Заявки на звонок`, clients: "Клиенты", constructor: "Конструктор", admins: "Администраторы", settings: "Настройки",
   };
 
   return (
@@ -1519,6 +1519,8 @@ export default function AdminPage() {
           <OrdersPanel orders={orders} statusLabels={statusLabels} updateOrderStatus={updateOrderStatus} deleteOrder={deleteOrder} token={token} />
         )}
         {/* Inquiries */}
+        {activeTab === "reviews" && <ReviewsPanel token={token} />}
+
         {activeTab === "inquiries" && <InquiriesPanel token={token} />}
 
         {/* Callbacks */}
@@ -2523,6 +2525,539 @@ function AdminsPanel({ token }: { token: string }) {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ============================ Отзывы ============================
+
+interface AdminReview {
+  id: string;
+  authorName: string;
+  userName: string;
+  rating: number;
+  text: string;
+  published: boolean;
+  source: string;
+  isUser: boolean;
+  createdAt: string;
+}
+
+interface ReviewProduct {
+  id: string;
+  name: string;
+  slug: string;
+  image: string;
+  brand: string;
+  productType: string;
+  price: number;
+  categoryName: string;
+  reviews: AdminReview[];
+}
+
+function ReviewStars({ rating }: { rating: number }) {
+  const full = Math.max(0, Math.min(5, Math.round(rating)));
+  return (
+    <span className="text-sm tracking-tight" title={`${rating} из 5`}>
+      <span className="text-yellow-400">{"★".repeat(full)}</span>
+      <span className="text-gray-300">{"★".repeat(5 - full)}</span>
+    </span>
+  );
+}
+
+const SOURCE_LABELS: Record<string, string> = { ai: "ИИ", import: "Импорт", manual: "Вручную", user: "Клиент" };
+const SOURCE_COLORS: Record<string, string> = {
+  ai: "bg-purple-100 text-purple-700",
+  import: "bg-blue-100 text-blue-700",
+  manual: "bg-gray-100 text-gray-700",
+  user: "bg-green-100 text-green-700",
+};
+
+function ReviewsPanel({ token }: { token: string }) {
+  const [products, setProducts] = useState<ReviewProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [geminiOn, setGeminiOn] = useState<boolean | null>(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "missing" | "has">("all");
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 8;
+
+  const [formProductId, setFormProductId] = useState<string | null>(null);
+  const [form, setForm] = useState({ authorName: "", rating: 5, text: "", date: "" });
+  const [genLoading, setGenLoading] = useState(false);
+  const [savingForm, setSavingForm] = useState(false);
+  const [quickGenId, setQuickGenId] = useState<string | null>(null);
+
+  const [bulkOnlyMissing, setBulkOnlyMissing] = useState(true);
+  const [bulkPer, setBulkPer] = useState(1);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkMsg, setBulkMsg] = useState("");
+
+  const [impStep, setImpStep] = useState<"idle" | "mapping">("idle");
+  const [impHeaders, setImpHeaders] = useState<string[]>([]);
+  const [impMap, setImpMap] = useState<Record<string, string>>({});
+  const [impSample, setImpSample] = useState<Record<string, string>[]>([]);
+  const [impRows, setImpRows] = useState<Record<string, string>[]>([]);
+  const [impLoading, setImpLoading] = useState(false);
+  const [impMsg, setImpMsg] = useState("");
+
+  const authHdr = { Authorization: `Bearer ${token}` };
+  const jsonHdr = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+
+  const load = async () => {
+    const res = await fetch("/api/admin/reviews", { headers: authHdr });
+    if (res.ok) setProducts(await res.json());
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+    fetch("/api/admin/reviews/generate", { headers: authHdr })
+      .then((r) => (r.ok ? r.json() : { gemini: false }))
+      .then((d) => setGeminiOn(Boolean(d.gemini)))
+      .catch(() => setGeminiOn(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openForm = (p: ReviewProduct) => {
+    setFormProductId(formProductId === p.id ? null : p.id);
+    setForm({ authorName: "", rating: 5, text: "", date: "" });
+  };
+
+  const generateDraft = async (p: ReviewProduct) => {
+    setGenLoading(true);
+    try {
+      const res = await fetch("/api/admin/reviews/generate", {
+        method: "POST",
+        headers: jsonHdr,
+        body: JSON.stringify({ productId: p.id, rating: form.rating || undefined, authorName: form.authorName || undefined }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setForm((f) => ({ ...f, authorName: d.authorName, rating: d.rating, text: d.text }));
+      }
+    } finally {
+      setGenLoading(false);
+    }
+  };
+
+  const applyForm = async (productId: string) => {
+    if (!form.text.trim()) return;
+    setSavingForm(true);
+    try {
+      const res = await fetch("/api/admin/reviews", {
+        method: "POST",
+        headers: jsonHdr,
+        body: JSON.stringify({ productId, authorName: form.authorName, rating: form.rating, text: form.text, source: "manual", createdAt: form.date || undefined }),
+      });
+      if (res.ok) {
+        setFormProductId(null);
+        await load();
+      }
+    } finally {
+      setSavingForm(false);
+    }
+  };
+
+  const quickGenerate = async (p: ReviewProduct) => {
+    setQuickGenId(p.id);
+    try {
+      const gen = await fetch("/api/admin/reviews/generate", {
+        method: "POST",
+        headers: jsonHdr,
+        body: JSON.stringify({ productId: p.id }),
+      });
+      if (gen.ok) {
+        const d = await gen.json();
+        await fetch("/api/admin/reviews", {
+          method: "POST",
+          headers: jsonHdr,
+          body: JSON.stringify({ productId: p.id, authorName: d.authorName, rating: d.rating, text: d.text, source: "ai" }),
+        });
+        await load();
+      }
+    } finally {
+      setQuickGenId(null);
+    }
+  };
+
+  const togglePublished = async (r: AdminReview) => {
+    await fetch("/api/admin/reviews", { method: "PATCH", headers: jsonHdr, body: JSON.stringify({ id: r.id, published: !r.published }) });
+    await load();
+  };
+
+  const deleteReview = async (id: string) => {
+    if (!confirm("Удалить отзыв?")) return;
+    await fetch("/api/admin/reviews", { method: "DELETE", headers: jsonHdr, body: JSON.stringify({ id }) });
+    await load();
+  };
+
+  const openGoogle = (p: ReviewProduct) => {
+    const q = `Напиши правдоподобный отзыв покупателя на товар "${p.name}" для интернет-магазина, 2-3 предложения, от первого лица`;
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, "_blank");
+  };
+
+  const runBulk = async () => {
+    const scope = bulkOnlyMissing ? "товаров без отзывов" : "ВСЕХ товаров";
+    if (!confirm(`Сгенерировать и применить отзывы для ${scope}? Будет создано по ${bulkPer} отзыв(а) на товар.`)) return;
+    setBulkLoading(true);
+    setBulkMsg("");
+    try {
+      const res = await fetch("/api/admin/reviews/generate", {
+        method: "POST",
+        headers: jsonHdr,
+        body: JSON.stringify({ bulk: true, onlyMissing: bulkOnlyMissing, perProduct: bulkPer }),
+      });
+      const d = await res.json();
+      if (res.ok) {
+        setBulkMsg(`Готово: создано ${d.created} отзывов для ${d.productsProcessed} товаров${d.engine === "gemini" ? " (нейросеть Google)" : " (локальный генератор)"}.`);
+        await load();
+      } else {
+        setBulkMsg(`Ошибка: ${d.error || "не удалось"}`);
+      }
+    } catch {
+      setBulkMsg("Ошибка сети");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const REVIEW_FIELDS = [
+    { value: "", label: "— Пропустить —" },
+    { value: "product", label: "Товар (название/артикул)" },
+    { value: "author", label: "Автор" },
+    { value: "rating", label: "Оценка" },
+    { value: "text", label: "Текст отзыва" },
+    { value: "date", label: "Дата" },
+    { value: "published", label: "Опубликован" },
+  ];
+
+  const handleImportUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImpLoading(true);
+    setImpMsg("");
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/admin/reviews/import", { method: "PUT", headers: authHdr, body: fd });
+      const d = await res.json();
+      if (res.ok) {
+        setImpHeaders(d.headers);
+        setImpMap(d.autoMap);
+        setImpSample(d.sample);
+        setImpRows(d.rows);
+        setImpStep("mapping");
+        setImpMsg(`Найдено строк: ${d.totalRows}`);
+      } else {
+        setImpMsg(`Ошибка: ${d.error}`);
+      }
+    } catch {
+      setImpMsg("Ошибка загрузки файла");
+    } finally {
+      setImpLoading(false);
+      e.target.value = "";
+    }
+  };
+
+  const commitImport = async () => {
+    const mapped = impRows.map((row) => {
+      const o: Record<string, string> = {};
+      for (const [header, field] of Object.entries(impMap)) {
+        if (field) o[field] = row[header] ?? "";
+      }
+      return o;
+    });
+    setImpLoading(true);
+    setImpMsg("");
+    try {
+      const res = await fetch("/api/admin/reviews/import", { method: "POST", headers: jsonHdr, body: JSON.stringify({ reviews: mapped }) });
+      const d = await res.json();
+      if (res.ok) {
+        setImpMsg(`Импортировано ${d.imported} из ${d.total}. Товаров не найдено: ${d.notFoundCount}${d.notFound?.length ? ` (${d.notFound.slice(0, 5).join(", ")}${d.notFoundCount > 5 ? "…" : ""})` : ""}. Пропущено: ${d.skipped}.`);
+        setImpStep("idle");
+        setImpHeaders([]);
+        setImpRows([]);
+        await load();
+      } else {
+        setImpMsg(`Ошибка: ${d.error}`);
+      }
+    } catch {
+      setImpMsg("Ошибка импорта");
+    } finally {
+      setImpLoading(false);
+    }
+  };
+
+  const resetImport = () => {
+    setImpStep("idle");
+    setImpHeaders([]);
+    setImpRows([]);
+    setImpMap({});
+    setImpMsg("");
+  };
+
+  const downloadTemplate = async () => {
+    const res = await fetch("/api/admin/reviews/import", { headers: authHdr });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "reviews-template.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const filtered = products.filter((p) => {
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filter === "missing" && p.reviews.length > 0) return false;
+    if (filter === "has" && p.reviews.length === 0) return false;
+    return true;
+  });
+  const totalReviews = products.reduce((s, p) => s + p.reviews.length, 0);
+  const missingCount = products.filter((p) => p.reviews.length === 0).length;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const curPage = Math.min(page, pageCount);
+  const pageItems = filtered.slice((curPage - 1) * PER_PAGE, curPage * PER_PAGE);
+  const mappingValid = Object.values(impMap).includes("product") && Object.values(impMap).includes("text");
+
+  if (loading) return <p className="text-text-gray">Загрузка...</p>;
+
+  return (
+    <div className="space-y-6">
+      {/* Заголовок и статус нейросети */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 className="font-bold text-text-dark">Отзывы</h2>
+            <p className="text-sm text-text-gray mt-1">
+              Всего товаров: {products.length} · отзывов: {totalReviews} · без отзывов: {missingCount}
+            </p>
+          </div>
+          {geminiOn !== null && (
+            <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${geminiOn ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-600"}`}>
+              {geminiOn ? "✨ Нейросеть Google подключена" : "Локальный генератор (без ключа Google)"}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Массовая генерация */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <h3 className="font-bold text-text-dark mb-2">Сгенерировать отзывы для товаров</h3>
+        <p className="text-sm text-text-gray mb-3">
+          Нейросеть создаст отзыв от имени случайного покупателя (например, «Василий А.») для каждого товара и сразу применит его.
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="flex items-center gap-2 text-sm text-text-dark cursor-pointer">
+            <input type="checkbox" checked={bulkOnlyMissing} onChange={(e) => setBulkOnlyMissing(e.target.checked)} className="accent-primary w-4 h-4" />
+            Только товары без отзывов
+          </label>
+          <label className="flex items-center gap-2 text-sm text-text-dark">
+            Отзывов на товар:
+            <input type="number" min={1} max={5} value={bulkPer} onChange={(e) => setBulkPer(Math.min(5, Math.max(1, Number(e.target.value) || 1)))}
+              className="w-16 border border-border rounded-lg px-2 py-1 text-sm focus:outline-none focus:border-primary" />
+          </label>
+          <button onClick={runBulk} disabled={bulkLoading}
+            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 text-white text-sm px-5 py-2 rounded-lg transition-all">
+            {bulkLoading ? "Генерация…" : "Сгенерировать и применить"}
+          </button>
+          {bulkMsg && <span className="text-sm text-text-dark">{bulkMsg}</span>}
+        </div>
+      </div>
+
+      {/* Импорт через таблицу */}
+      <div className="bg-bg-white rounded-xl border border-border p-5">
+        <h3 className="font-bold text-text-dark mb-2">Загрузка отзывов через таблицу</h3>
+        <p className="text-sm text-text-gray mb-3">
+          Загрузите XLSX/CSV с колонками: Товар (название или артикул), Автор, Оценка, Текст отзыва, Дата, Опубликован.
+          Отзывы привяжутся к уже существующим товарам по названию, артикулу или штрихкоду.
+        </p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <button onClick={downloadTemplate} className="inline-flex items-center gap-2 border border-border text-text-dark text-sm px-4 py-2 rounded-lg hover:bg-bg-light transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            Скачать шаблон
+          </button>
+          <label className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm px-4 py-2 rounded-lg cursor-pointer transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+            {impStep !== "idle" ? "Загрузить другой файл" : "Выбрать файл"}
+            <input type="file" accept=".csv,.xlsx,.xls" onChange={handleImportUpload} className="hidden" />
+          </label>
+          {impStep !== "idle" && <button onClick={resetImport} className="text-sm text-danger hover:underline">Отмена</button>}
+          {impLoading && <span className="text-sm text-text-gray">Обработка…</span>}
+          {impMsg && <span className="text-sm text-text-dark">{impMsg}</span>}
+        </div>
+
+        {impStep === "mapping" && impHeaders.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-sm font-bold text-text-dark mb-2">Настройте соответствие колонок</h4>
+            <div className="overflow-x-auto border border-border rounded-lg">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Колонка файла</th>
+                    <th className="px-3 py-2 text-left">Поле отзыва</th>
+                    <th className="px-3 py-2 text-left">Пример</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {impHeaders.map((header) => (
+                    <tr key={header} className="border-t border-border">
+                      <td className="px-3 py-2 font-medium">{header}</td>
+                      <td className="px-3 py-2">
+                        <select value={impMap[header] || ""} onChange={(e) => setImpMap({ ...impMap, [header]: e.target.value })}
+                          className="border border-border rounded px-2 py-1 text-sm w-full max-w-[220px] focus:outline-none focus:border-primary">
+                          {REVIEW_FIELDS.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
+                        </select>
+                      </td>
+                      <td className="px-3 py-2 text-text-gray text-xs max-w-[240px] truncate">
+                        {impSample.map((s, i) => <span key={i}>{i > 0 && " | "}{s[header] || "—"}</span>)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <button onClick={commitImport} disabled={impLoading || !mappingValid}
+                className="bg-primary hover:bg-primary-dark disabled:opacity-50 text-white text-sm px-4 py-2 rounded-lg transition-colors">
+                Импортировать {impRows.length} отзыв(ов)
+              </button>
+              {!mappingValid && <span className="text-xs text-danger">Укажите колонки «Товар» и «Текст отзыва»</span>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Фильтры */}
+      <div className="bg-bg-white rounded-xl border border-border p-4 flex flex-wrap items-center gap-3">
+        <input type="text" placeholder="Поиск по названию товара" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="flex-1 min-w-[200px] border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+        <select value={filter} onChange={(e) => { setFilter(e.target.value as "all" | "missing" | "has"); setPage(1); }}
+          className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
+          <option value="all">Все товары</option>
+          <option value="missing">Без отзывов</option>
+          <option value="has">С отзывами</option>
+        </select>
+      </div>
+
+      {/* Список товаров */}
+      {pageItems.length === 0 ? (
+        <p className="text-text-gray text-sm">Товары не найдены</p>
+      ) : (
+        <div className="space-y-4">
+          {pageItems.map((p) => {
+            const avg = p.reviews.length ? p.reviews.reduce((s, r) => s + r.rating, 0) / p.reviews.length : 0;
+            const isFormOpen = formProductId === p.id;
+            return (
+              <div key={p.id} className="bg-bg-white rounded-xl border border-border p-5">
+                <div className="flex items-start gap-4 flex-wrap">
+                  <div className="w-14 h-14 rounded-lg bg-bg-light overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> : <span className="text-2xl">📦</span>}
+                  </div>
+                  <div className="flex-1 min-w-[180px]">
+                    <p className="font-medium text-text-dark">{p.name}</p>
+                    <p className="text-xs text-text-gray">{p.categoryName}{p.brand ? ` · ${p.brand}` : ""}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {p.reviews.length > 0 ? (
+                        <>
+                          <ReviewStars rating={avg} />
+                          <span className="text-xs text-text-gray">{avg.toFixed(1)} · {p.reviews.length} отзыв(ов)</span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-text-light">Отзывов пока нет</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => quickGenerate(p)} disabled={quickGenId === p.id} title="Сгенерировать отзыв нейросетью и сразу применить"
+                      className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 text-white text-sm px-3 py-1.5 rounded-lg transition-all">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
+                      {quickGenId === p.id ? "…" : "Сгенерировать"}
+                    </button>
+                    <button onClick={() => openForm(p)} className="text-sm px-3 py-1.5 rounded-lg border border-border text-text-gray hover:bg-bg-light transition-colors">
+                      {isFormOpen ? "Скрыть" : "Добавить"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Форма добавления / генерации с редактированием */}
+                {isFormOpen && (
+                  <div className="mt-4 border-t border-border pt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="flex gap-2">
+                      <input type="text" placeholder="Имя автора (напр. Василий А.)" value={form.authorName} onChange={(e) => setForm({ ...form, authorName: e.target.value })}
+                        className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                      <select value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })}
+                        className="border border-border rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-primary">
+                        {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} ★</option>)}
+                      </select>
+                    </div>
+                    <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })}
+                      className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary text-text-gray" />
+                    <div className="md:col-span-2 relative">
+                      <textarea placeholder="Текст отзыва" value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} rows={3}
+                        className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary pr-10" />
+                      <button type="button" title="Открыть поиск Google для написания отзыва" onClick={() => openGoogle(p)}
+                        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-lg border border-border text-text-gray hover:bg-bg-light">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
+                      </button>
+                    </div>
+                    <div className="md:col-span-2 flex items-center gap-2 flex-wrap">
+                      <button type="button" onClick={() => generateDraft(p)} disabled={genLoading}
+                        className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 text-white text-sm px-4 py-2 rounded-lg transition-all">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
+                        {genLoading ? "Генерация…" : "Сгенерировать черновик"}
+                      </button>
+                      <button type="button" onClick={() => applyForm(p.id)} disabled={savingForm || !form.text.trim()}
+                        className="bg-primary hover:bg-primary-dark disabled:opacity-50 text-white text-sm px-5 py-2 rounded-lg transition-colors">
+                        {savingForm ? "Сохранение…" : "Применить"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Существующие отзывы */}
+                {p.reviews.length > 0 && (
+                  <div className="mt-4 border-t border-border pt-3 space-y-2">
+                    {p.reviews.map((r) => (
+                      <div key={r.id} className={`flex items-start justify-between gap-3 p-3 rounded-lg ${r.published ? "bg-bg-light" : "bg-bg-light/50 opacity-60"}`}>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-medium text-text-dark text-sm">{r.userName || "Аноним"}</span>
+                            <ReviewStars rating={r.rating} />
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${SOURCE_COLORS[r.source] || "bg-gray-100 text-gray-600"}`}>{SOURCE_LABELS[r.source] || r.source}</span>
+                            {!r.published && <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">Скрыт</span>}
+                            <span className="text-[10px] text-text-light">{new Date(r.createdAt).toLocaleDateString("ru-RU")}</span>
+                          </div>
+                          {r.text && <p className="text-sm text-text-gray mt-1 whitespace-pre-line">{r.text}</p>}
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <button onClick={() => togglePublished(r)} className="text-xs text-primary hover:underline">
+                            {r.published ? "Скрыть" : "Показать"}
+                          </button>
+                          <button onClick={() => deleteReview(r.id)} className="text-xs text-danger hover:underline">Удалить</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Пагинация */}
+      {pageCount > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <button onClick={() => setPage((n) => Math.max(1, n - 1))} disabled={curPage <= 1}
+            className="px-3 py-1.5 rounded-lg border border-border text-sm text-text-gray disabled:opacity-40 hover:bg-bg-light">Назад</button>
+          <span className="text-sm text-text-gray">Стр. {curPage} из {pageCount}</span>
+          <button onClick={() => setPage((n) => Math.min(pageCount, n + 1))} disabled={curPage >= pageCount}
+            className="px-3 py-1.5 rounded-lg border border-border text-sm text-text-gray disabled:opacity-40 hover:bg-bg-light">Вперёд</button>
+        </div>
+      )}
     </div>
   );
 }
