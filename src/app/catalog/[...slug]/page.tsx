@@ -8,36 +8,37 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { getCategoryPath } from "@/lib/slugify";
+import { getCategoryHref, getDescendantIds, loadAllCategories } from "@/lib/catalogCategories";
 
 
 export const revalidate = 60;
 
 async function resolveCategory(slugSegments: string[]) {
-  const leafSlug = slugSegments[slugSegments.length - 1];
-  const category = await prisma.category.findUnique({
-    where: { slug: leafSlug },
-    include: { children: { orderBy: { order: "asc" } }, parent: true },
-  });
-  if (!category) return null;
-
-  if (slugSegments.length === 2) {
-    if (!category.parent || category.parent.slug !== slugSegments[0]) return null;
-  } else if (slugSegments.length === 1) {
-    // ok
-  } else {
-    return null;
+  const categories = await loadAllCategories();
+  const path = [];
+  let parentId: string | null = null;
+  for (const slug of slugSegments) {
+    const category = categories.find((item) => item.slug === slug && item.parentId === parentId);
+    if (!category) return null;
+    path.push(category);
+    parentId = category.id;
   }
-  return category;
+  const category = path[path.length - 1];
+  if (!category) return null;
+  const children = categories.filter((item) => item.parentId === category.id);
+  return { category, categories, path, children };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = await resolveCategory(slug);
-  if (!category) return {};
-  const canonicalPath = getCategoryPath(category);
-  const title = category.metaTitle || `${category.name} — купить в hittabak`;
-  const description = category.metaDescription || `Купить ${category.name} в магазине hittabak. Широкий ассортимент, выгодные цены, доставка по Москве и МО.`;
+  const resolved = await resolveCategory(slug);
+  if (!resolved) return {};
+  const { category, categories } = resolved;
+  const fullCategory = await prisma.category.findUnique({ where: { id: category.id } });
+  if (!fullCategory) return {};
+  const canonicalPath = getCategoryHref(category.id, categories);
+  const title = fullCategory.metaTitle || `${category.name} — купить в hittabak`;
+  const description = fullCategory.metaDescription || `Купить ${category.name} в магазине hittabak. Широкий ассортимент, выгодные цены, доставка по Москве и МО.`;
   return {
     title,
     description,
@@ -51,51 +52,6 @@ interface PageProps {
   searchParams: Promise<Record<string, string | undefined>>;
 }
 
-const DEVICE_MODELS = [
-  "IQOS Iluma i Prime", "IQOS Iluma i One", "IQOS Iluma i",
-  "IQOS Iluma Prime", "IQOS Iluma One", "IQOS Iluma",
-  "IQOS 3 Duos",
-  "lil Solid Dual", "lil Solid EZ", "lil SOLID 3.0", "lil SOLID 2.0 Plus", "lil SOLID 2.0",
-  "MOK FWRD", "MOK Sensio",
-  "Glo Hyper Pro",
-  "TEO",
-];
-
-function getModelKey(productName: string): string {
-  for (const m of DEVICE_MODELS) {
-    if (productName.toLowerCase().startsWith(m.toLowerCase())) return m;
-  }
-  return productName.split(" - ")[0];
-}
-
-function matchProductsForCategory(
-  products: { id: string; name: string }[],
-  categoryName: string,
-): string[] {
-  if (DEVICE_MODELS.some((m) => m === categoryName)) {
-    return products
-      .filter((p) => getModelKey(p.name) === categoryName)
-      .map((p) => p.id);
-  }
-  const countryMatch = categoryName.match(/^(.+?)\s*\((.+?)\)\s*$/);
-  if (countryMatch) {
-    const model = countryMatch[1].trim();
-    const country = countryMatch[2];
-    return products
-      .filter(
-        (p) =>
-          p.name.toLowerCase().startsWith(model.toLowerCase()) &&
-          p.name.includes(`(${country})`),
-      )
-      .map((p) => p.id);
-  }
-  return products
-    .filter((p) =>
-      p.name.toLowerCase().startsWith(categoryName.toLowerCase()),
-    )
-    .map((p) => p.id);
-}
-
 async function CategoryContent({
   slugSegments,
   searchParams,
@@ -103,10 +59,13 @@ async function CategoryContent({
   slugSegments: string[];
   searchParams: Record<string, string | undefined>;
 }) {
-  const category = await resolveCategory(slugSegments);
-  if (!category) notFound();
+  const resolved = await resolveCategory(slugSegments);
+  if (!resolved) notFound();
+  const { category, categories, path, children } = resolved;
+  const fullCategory = await prisma.category.findUnique({ where: { id: category.id } });
+  if (!fullCategory) notFound();
 
-  const categoryPath = getCategoryPath(category);
+  const categoryPath = getCategoryHref(category.id, categories);
 
   const sort = searchParams.sort || "popular";
   const priceFrom = searchParams.priceFrom ? Number(searchParams.priceFrom) : undefined;
@@ -115,23 +74,8 @@ async function CategoryContent({
   const types = searchParams.types?.split(",").filter(Boolean);
   const colors = searchParams.colors?.split(",").filter(Boolean);
 
-  const childIds = category.children.map((c) => c.id);
-  let baseWhere: Record<string, unknown> = { categoryId: { in: [category.id, ...childIds] } };
-
-  // Auto-matching: if leaf subcategory has 0 products, match from parent by model name
-  if (category.parentId && childIds.length === 0) {
-    const ownCount = await prisma.product.count({ where: { categoryId: category.id } });
-    if (ownCount === 0) {
-      const parentProducts = await prisma.product.findMany({
-        where: { categoryId: category.parentId },
-        select: { id: true, name: true },
-      });
-      const matchingIds = matchProductsForCategory(parentProducts, category.name);
-      if (matchingIds.length > 0) {
-        baseWhere = { id: { in: matchingIds } };
-      }
-    }
-  }
+  const categoryIds = getDescendantIds(category.id, categories);
+  const baseWhere: Record<string, unknown> = { categoryId: { in: categoryIds } };
 
   const where: Record<string, unknown> = { ...baseWhere };
   const andFilters: Record<string, unknown>[] = [];
@@ -188,7 +132,7 @@ async function CategoryContent({
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: category.name,
-    description: category.metaDescription || `Купить ${category.name} в магазине hittabak`,
+    description: fullCategory.metaDescription || `Купить ${category.name} в магазине hittabak`,
     url: `https://hittabak.ru${categoryPath}`,
     mainEntity: {
       "@type": "ItemList",
@@ -216,7 +160,7 @@ async function CategoryContent({
 
   const breadcrumbItems = [
     { label: "Каталог", href: "/catalog" },
-    ...(category.parent ? [{ label: category.parent.name, href: `/catalog/${category.parent.slug}` }] : []),
+    ...path.slice(0, -1).map((item) => ({ label: item.name, href: getCategoryHref(item.id, categories) })),
     { label: category.name },
   ];
 
@@ -227,14 +171,14 @@ async function CategoryContent({
 
       <h1 className="text-2xl font-bold text-text-dark mb-6">{category.name}</h1>
 
-      {category.seoText && (
-        <div className="text-text-gray text-sm leading-relaxed mb-6 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: category.seoText }} />
+      {fullCategory.seoText && (
+        <div className="text-text-gray text-sm leading-relaxed mb-6 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: fullCategory.seoText }} />
       )}
 
-      {category.children.length > 0 && (
+      {children.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6">
-          {category.children.map((sub) => (
-            <Link key={sub.id} href={`/catalog/${category.slug}/${sub.slug}`}
+          {children.map((sub) => (
+            <Link key={sub.id} href={getCategoryHref(sub.id, categories)}
               className="px-4 py-2 bg-bg-white border border-border rounded-lg text-sm text-text-gray hover:text-primary hover:border-primary/30 transition-colors">
               {sub.name}
             </Link>

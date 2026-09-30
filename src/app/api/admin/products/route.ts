@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { verifyToken, getTokenFromRequest } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { classificationFromPath, getCategoryPathNodes, loadAllCategories } from "@/lib/catalogCategories";
 
 function checkAdmin(request: Request): boolean {
   const token = getTokenFromRequest(request);
@@ -23,14 +24,14 @@ export async function POST(request: Request) {
   if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
 
   const body = await request.json();
-  const { name, description, price, oldPrice, image, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured, tags, metaTitle, metaDescription } = body;
+  const { name, description, price, oldPrice, image, inStock, packSize, brand, color, productType, categoryId, isFeatured, tags, metaTitle, metaDescription } = body;
 
   if (!name || !price || !categoryId) {
     return Response.json({ error: "Название, цена и категория обязательны" }, { status: 400 });
   }
 
   let slug = slugify(name);
-  let existing = await prisma.product.findFirst({ where: { slug } });
+  const existing = await prisma.product.findFirst({ where: { slug } });
   if (existing) {
     let counter = 2;
     while (await prisma.product.findFirst({ where: { slug: `${slug}-${counter}` } })) {
@@ -38,13 +39,15 @@ export async function POST(request: Request) {
     }
     slug = `${slug}-${counter}`;
   }
+  const categoryPath = getCategoryPathNodes(categoryId, await loadAllCategories());
+  const derived = classificationFromPath(categoryPath);
   const product = await prisma.product.create({
     data: {
       name, slug, description: description || "", price: Number(price),
       oldPrice: oldPrice ? Number(oldPrice) : null, image: image || "",
       inStock: Number(inStock) || 0, packSize: packSize ? Number(packSize) : null,
-      expirationDate: expirationDate || "", brand: brand || "", color: color || "",
-      productType: productType || "", categoryId, isFeatured: !!isFeatured,
+      brand: derived.brand || brand || "", color: derived.color || color || "",
+      productType: derived.productType || productType || "", categoryId, isFeatured: !!isFeatured,
       tags: tags || "", metaTitle: metaTitle || "", metaDescription: metaDescription || "",
     },
   });
@@ -73,12 +76,14 @@ export async function PUT(request: Request) {
     return Response.json({ success: true, updated: result.count });
   }
 
-  const { id, name, description, price, oldPrice, image, image2, image3, image4, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured, tags, metaTitle, metaDescription } = body;
+  const { id, name, description, price, oldPrice, image, image2, image3, image4, inStock, packSize, brand, color, productType, categoryId, isFeatured, tags, metaTitle, metaDescription } = body;
 
   if (!id || !name || !price || !categoryId) {
     return Response.json({ error: "Обязательные поля не заполнены" }, { status: 400 });
   }
 
+  const categoryPath = getCategoryPathNodes(categoryId, await loadAllCategories());
+  const derived = classificationFromPath(categoryPath);
   const product = await prisma.product.update({
     where: { id },
     data: {
@@ -86,8 +91,8 @@ export async function PUT(request: Request) {
       oldPrice: oldPrice ? Number(oldPrice) : null, image: image || "",
       image2: image2 || "", image3: image3 || "", image4: image4 || "",
       inStock: Number(inStock) || 0, packSize: packSize ? Number(packSize) : null,
-      expirationDate: expirationDate || "", brand: brand || "", color: color || "",
-      productType: productType || "", categoryId, isFeatured: !!isFeatured,
+      brand: derived.brand || brand || "", color: derived.color || color || "",
+      productType: derived.productType || productType || "", categoryId, isFeatured: !!isFeatured,
       tags: tags || "", metaTitle: metaTitle || "", metaDescription: metaDescription || "",
     },
   });

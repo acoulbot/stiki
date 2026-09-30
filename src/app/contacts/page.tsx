@@ -45,7 +45,7 @@ export default function ContactsPage() {
                 <div className="bg-white rounded-xl border border-border p-5">
                   <h3 className="text-sm font-bold text-text-dark mb-2">Мессенджеры</h3>
                   <div className="flex gap-3">
-                    <a href="https://t.me/hittabak_zakaz" target="_blank" rel="nofollow noopener noreferrer"
+                    <a href="https://t.me/tophit_new" target="_blank" rel="nofollow noopener noreferrer"
                       className="px-4 py-2 bg-[#229ED9]/10 text-[#229ED9] rounded-lg text-sm font-medium hover:bg-[#229ED9]/20 transition-colors">
                       Telegram
                     </a>
