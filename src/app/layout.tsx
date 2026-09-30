@@ -1,21 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import ClientShell from "@/components/ClientShell";
-
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const manrope = Manrope({
-  subsets: ["latin", "cyrillic"],
-  weight: ["600", "700", "800"],
-  variable: "--font-manrope",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://hittabak.ru"),
@@ -60,7 +45,7 @@ export default function RootLayout({
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "";
 
   return (
-    <html lang="ru" className={`h-full antialiased ${inter.variable} ${manrope.variable}`}>
+    <html lang="ru" className="h-full antialiased">
       <head>
         {gaId && (
           <>
