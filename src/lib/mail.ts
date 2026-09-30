@@ -1,7 +1,7 @@
 const SMTP_URL = process.env.SMTP_API_URL || "http://178.253.16.19:3003";
 const SMTP_KEY = process.env.SMTP_API_KEY || "";
 const FROM_EMAIL = process.env.SMTP_FROM_EMAIL || "hittabak@hittabak.ru";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "s4810769@ya.ru";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "a9951200752@rambler.ru";
 
 interface SendEmailOptions {
   to: string;
