@@ -13,7 +13,7 @@ interface Category {
   metaTitle?: string;
   metaDescription?: string;
   seoText?: string;
-  _count?: { products: number };
+  _count?: { products: number; children?: number };
 }
 
 
@@ -376,15 +376,19 @@ export default function AdminPage() {
     const body = editingCat
       ? { id: editingCat.id, name: catName, icon: catIcon, order: catOrder, parentId: catParentId || null, ...seoFields }
       : { name: catName, icon: catIcon, order: catOrder, parentId: catParentId || null, ...seoFields };
-    await fetch("/api/admin/categories", { method, headers: hdrs(), body: JSON.stringify(body) });
+    const res = await fetch("/api/admin/categories", { method, headers: hdrs(), body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || "Не удалось сохранить категорию"); return; }
     setCatName(""); setCatIcon(""); setCatOrder(0); setCatParentId(""); setCatMetaTitle(""); setCatMetaDesc(""); setCatSeoText(""); setEditingCat(null);
     fetchData();
   };
 
   // Site pages
   const deleteCategory = async (id: string) => {
-    if (!confirm("Удалить категорию? Все товары в ней также будут удалены.")) return;
-    await fetch("/api/admin/categories", { method: "DELETE", headers: hdrs(), body: JSON.stringify({ id }) });
+    if (!confirm("Удалить пустую категорию? Категории с товарами или дочерними элементами защищены от удаления.")) return;
+    const res = await fetch("/api/admin/categories", { method: "DELETE", headers: hdrs(), body: JSON.stringify({ id }) });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || "Категория не удалена"); return; }
     fetchData();
   };
 
@@ -592,7 +596,6 @@ export default function AdminPage() {
     { value: "packSize", label: "Кол-во в упаковке" },
     { value: "weight", label: "Вес (кг)" },
     { value: "volume", label: "Объём (м³)" },
-    { value: "expirationDate", label: "Годен до" },
     { value: "tags", label: "Теги / ключевые слова" },
     { value: "metaTitle", label: "SEO Заголовок" },
     { value: "metaDescription", label: "SEO Описание" },
@@ -869,7 +872,42 @@ export default function AdminPage() {
     );
   }
 
-  const topCategories = categories.filter((c) => !c.parentId);
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const categoryDepth = (category: Category) => {
+    let depth = 0;
+    let parentId = category.parentId;
+    const seen = new Set<string>();
+    while (parentId && !seen.has(parentId)) {
+      seen.add(parentId);
+      depth++;
+      parentId = categoryById.get(parentId)?.parentId;
+    }
+    return depth;
+  };
+  const categoryLevelName = (depth: number) => ["Тип", "Бренд", "Модель", "Цвет"][depth] || `Уровень ${depth + 1}`;
+  const sortedCategories = (() => {
+    const byParent = new Map<string | null, Category[]>();
+    for (const category of categories) {
+      const list = byParent.get(category.parentId || null) || [];
+      list.push(category); byParent.set(category.parentId || null, list);
+    }
+    for (const list of byParent.values()) list.sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, "ru"));
+    const result: Category[] = [];
+    const visit = (parentId: string | null) => { for (const item of byParent.get(parentId) || []) { result.push(item); visit(item.id); } };
+    visit(null); return result;
+  })();
+  const categoryLabel = (category: Category) => `${"— ".repeat(categoryDepth(category))}${category.name}`;
+  const categoryPathLabel = (category: Category) => {
+    const names = [category.name]; let parentId = category.parentId; const seen = new Set<string>();
+    while (parentId && !seen.has(parentId)) { seen.add(parentId); const parent = categoryById.get(parentId); if (!parent) break; names.unshift(parent.name); parentId = parent.parentId; }
+    return names.join(" / ");
+  };
+  const invalidParentIds = new Set<string>(editingCat ? [editingCat.id] : []);
+  if (editingCat) {
+    let changed = true;
+    while (changed) { changed = false; for (const category of categories) if (category.parentId && invalidParentIds.has(category.parentId) && !invalidParentIds.has(category.id)) { invalidParentIds.add(category.id); changed = true; } }
+  }
+  const categoryParentOptions = sortedCategories.filter((category) => categoryDepth(category) < 3 && !invalidParentIds.has(category.id));
   const tabLabels: Record<TabType, string> = {
     analytics: "Статистика", categories: "Категории", products: "Товары", reviews: "Отзывы", news: "Новости", orders: `Заказы (${orders.length})`, inquiries: "Заявки", callbacks: `Заявки на звонок`, clients: "Клиенты", constructor: "Конструктор", admins: "Администраторы", settings: "Настройки",
   };
@@ -929,7 +967,7 @@ export default function AdminPage() {
                 <select value={catParentId} onChange={(e) => setCatParentId(e.target.value)}
                   className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option value="">Корневая категория</option>
-                  {topCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {categoryParentOptions.map((c) => <option key={c.id} value={c.id}>{categoryLabel(c)} ({categoryLevelName(categoryDepth(c))})</option>)}
                 </select>
                 <input type="number" placeholder="Порядок" value={catOrder} onChange={(e) => setCatOrder(Number(e.target.value))}
                   className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
@@ -952,8 +990,8 @@ export default function AdminPage() {
               <h2 className="font-bold text-text-dark mb-4">Все категории ({categories.length})</h2>
               {categories.length === 0 ? <p className="text-text-gray text-sm">Категорий пока нет</p> : (
                 <div className="space-y-2">
-                  {categories.map((cat) => (
-                    <div key={cat.id} className={`flex items-center justify-between p-3 rounded-lg ${cat.parentId ? "bg-bg-light/50 ml-6 border-l-2 border-primary/20" : "bg-bg-light"}`}>
+                  {sortedCategories.map((cat) => { const depth = categoryDepth(cat); return (
+                    <div key={cat.id} className="flex items-center justify-between p-3 rounded-lg bg-bg-light/70 border-l-2 border-primary/20" style={{ marginLeft: `${depth * 24}px` }}>
                       <div className="flex items-center gap-2">
                         {cat.icon && (cat.icon.startsWith("/") || cat.icon.startsWith("http")) ? (
                           <img src={cat.icon} alt="" className="w-8 h-8 object-cover rounded" />
@@ -962,7 +1000,7 @@ export default function AdminPage() {
                         )}
                         <div>
                           <span className="font-medium text-text-dark">{cat.name}</span>
-                          {cat.parentId && <span className="text-xs text-primary ml-2">подкатегория</span>}
+                          <span className="text-xs text-primary ml-2">{categoryLevelName(depth)}</span>
                           <span className="text-text-light text-sm ml-2">({cat._count?.products || 0} товаров)</span>
                         </div>
                       </div>
@@ -971,7 +1009,7 @@ export default function AdminPage() {
                         <button onClick={() => deleteCategory(cat.id)} className="text-danger hover:underline text-sm">Удалить</button>
                       </div>
                     </div>
-                  ))}
+                  ); })}
                 </div>
               )}
             </div>
@@ -986,7 +1024,7 @@ export default function AdminPage() {
               <h2 className="font-bold text-text-dark mb-3">Импорт товаров</h2>
               <p className="text-sm text-text-gray mb-3">
                 Загрузите XLSX файл с колонками: №, Раздел, Название товара, Цвет, Цена (₽), Файл изображения.
-                Раздел — модель девайса (автоматически создаётся как категория).
+                Раздел — существующая категория. Для новой структуры сначала создайте тип → бренд → модель → цвет в разделе «Категории».
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <label className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm px-4 py-2 rounded-lg cursor-pointer transition-colors">
@@ -1231,8 +1269,6 @@ export default function AdminPage() {
                   className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                 <input type="number" placeholder="Кол-во в упаковке" value={prodForm.packSize} onChange={(e) => setProdForm({ ...prodForm, packSize: e.target.value })}
                   className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Срок годности" value={prodForm.expirationDate} onChange={(e) => setProdForm({ ...prodForm, expirationDate: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                 <input type="text" placeholder="Бренд" value={prodForm.brand} onChange={(e) => setProdForm({ ...prodForm, brand: e.target.value })}
                   className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
                 <input type="text" placeholder="Цвет" value={prodForm.color} onChange={(e) => setProdForm({ ...prodForm, color: e.target.value })}
@@ -1242,7 +1278,7 @@ export default function AdminPage() {
                 <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })} required
                   className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option value="">Выберите категорию *</option>
-                  {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.parentId ? `  └ ${cat.name}` : cat.name}</option>)}
+                  {sortedCategories.map((cat) => <option key={cat.id} value={cat.id}>{categoryLabel(cat)}</option>)}
                 </select>
                 <div className="md:col-span-2 lg:col-span-3 relative">
                   <textarea placeholder="Описание" value={prodForm.description} onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
@@ -1291,7 +1327,7 @@ export default function AdminPage() {
                       <select value={bulkCategoryId} onChange={(e) => setBulkCategoryId(e.target.value)}
                         className="border border-border rounded-lg px-2 py-1.5 text-sm">
                         <option value="">Назначить категорию...</option>
-                        {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                        {sortedCategories.map((cat) => <option key={cat.id} value={cat.id}>{categoryLabel(cat)}</option>)}
                       </select>
                       {bulkCategoryId && (
                         <button onClick={bulkAssignCategory} className="bg-primary hover:bg-primary-dark text-white text-sm px-3 py-1.5 rounded-lg transition-colors">
@@ -1333,7 +1369,7 @@ export default function AdminPage() {
                 <select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setProdPage(1); setSelectedProducts(new Set()); }}
                   className="border border-border rounded-lg px-3 py-1.5 text-sm">
                   <option value="">Все категории</option>
-                  {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                  {sortedCategories.map((cat) => <option key={cat.id} value={cat.id}>{categoryLabel(cat)}</option>)}
                 </select>
                 <label className="flex items-center gap-1.5 text-sm text-text-gray cursor-pointer">
                   <input type="checkbox" checked={hideOutOfStock} onChange={(e) => { setHideOutOfStock(e.target.checked); setProdPage(1); setSelectedProducts(new Set()); }} className="w-4 h-4 rounded" />
@@ -1353,7 +1389,6 @@ export default function AdminPage() {
                       <th className="text-right py-2 px-2 text-text-gray font-medium">Цена</th>
                       <th className="text-right py-2 px-2 text-text-gray font-medium">В наличии</th>
                       <th className="text-right py-2 px-2 text-text-gray font-medium">В упак.</th>
-                      <th className="text-left py-2 px-2 text-text-gray font-medium">Годен до</th>
                       <th className="text-right py-2 px-2 text-text-gray font-medium">Действия</th>
                     </tr></thead>
                     <tbody>
@@ -1374,11 +1409,10 @@ export default function AdminPage() {
                             {!prod.tags && <span title="Нет мета-тегов" className="inline-flex items-center justify-center w-4 h-4 bg-orange-100 text-orange-600 rounded-full text-xs font-bold mr-1 cursor-help">!</span>}
                             {prod.name}
                           </td>
-                          <td className="py-2 px-2 text-text-gray">{prod.category?.name}</td>
+                          <td className="py-2 px-2 text-text-gray">{prod.category ? categoryPathLabel(prod.category) : "—"}</td>
                           <td className="py-2 px-2 text-right font-medium">{prod.price.toLocaleString("ru-RU")} ₽</td>
                           <td className="py-2 px-2 text-right">{prod.inStock}</td>
                           <td className="py-2 px-2 text-right">{prod.packSize || "—"}</td>
-                          <td className="py-2 px-2 text-text-gray text-sm">{prod.expirationDate || "—"}</td>
                           <td className="py-2 px-2 text-right whitespace-nowrap">
                             <button onClick={() => searchProduct(prod.name)} className="text-accent hover:underline mr-2" title="Поиск в интернете">
                               <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>

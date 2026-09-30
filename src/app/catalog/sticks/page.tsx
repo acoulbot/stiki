@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
+import { findCatalogRoot, getDescendantIds, loadAllCategories } from "@/lib/catalogCategories";
 
 export const metadata: Metadata = {
   title: "Стики — hittabak",
@@ -12,8 +13,11 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function SticksPage() {
+  const categories = await loadAllCategories();
+  const root = findCatalogRoot(categories, "stick");
+  const categoryIds = root ? getDescendantIds(root.id, categories) : [];
   const products = await prisma.product.findMany({
-    where: { productType: "stick" },
+    where: { OR: [{ productType: "stick" }, ...(categoryIds.length ? [{ categoryId: { in: categoryIds } }] : [])] },
     orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
     include: { category: true, reviews: { select: { rating: true } } },
   });

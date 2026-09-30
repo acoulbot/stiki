@@ -53,7 +53,6 @@ export async function POST(request: Request) {
     "Объём (м³)": p.volume ?? "",
     "Цвет": p.color,
     "Тип/Вид": p.productType,
-    "Годен до": p.expirationDate,
     "Теги": p.tags,
     "SEO Заголовок": p.metaTitle,
     "SEO Описание": p.metaDescription,
@@ -78,7 +77,6 @@ export async function POST(request: Request) {
     { wch: 10 }, // Объём
     { wch: 12 }, // Цвет
     { wch: 15 }, // Тип/Вид
-    { wch: 12 }, // Годен до
     { wch: 40 }, // Теги
     { wch: 40 }, // SEO Заголовок
     { wch: 50 }, // SEO Описание

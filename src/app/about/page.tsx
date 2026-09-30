@@ -149,7 +149,7 @@ export default function AboutPage() {
                 <Link href="/contacts" className="inline-block bg-accent hover:bg-accent-dark text-white font-bold px-6 py-3 rounded-lg transition-colors text-sm">
                   Контакты
                 </Link>
-                <a href="https://t.me/hittabak_zakaz" target="_blank" rel="nofollow noopener noreferrer" className="inline-block bg-[#229ED9] hover:bg-[#1a8bc2] text-white font-bold px-6 py-3 rounded-lg transition-colors text-sm">
+                <a href="https://t.me/tophit_new" target="_blank" rel="nofollow noopener noreferrer" className="inline-block bg-[#229ED9] hover:bg-[#1a8bc2] text-white font-bold px-6 py-3 rounded-lg transition-colors text-sm">
                   Telegram
                 </a>
               </div>

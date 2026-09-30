@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { getDescendantIds, loadAllCategories } from "@/lib/catalogCategories";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -38,18 +39,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (categorySlug) {
-    const cat = await prisma.category.findUnique({
-      where: { slug: categorySlug },
-      include: { children: true },
-    });
-    if (cat) {
-      const childIds = cat.children.map((c) => c.id);
-      if (childIds.length > 0) {
-        where.categoryId = { in: [cat.id, ...childIds] };
-      } else {
-        where.category = { slug: categorySlug };
-      }
-    }
+    const categories = await loadAllCategories();
+    const cat = categories.find((item) => item.slug === categorySlug);
+    if (cat) where.categoryId = { in: getDescendantIds(cat.id, categories) };
   }
   if (priceFrom || priceTo) {
     where.price = {};

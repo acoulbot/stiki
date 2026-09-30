@@ -29,23 +29,28 @@ interface NavProduct {
 interface NavModel {
   name: string;
   slug: string;
+  href?: string;
   products: NavProduct[];
 }
 
 interface NavBrand {
   name: string;
+  href?: string;
   models: NavModel[];
 }
 
 interface NavStickBrand {
   name: string;
   slug: string;
+  href?: string;
   count: number;
 }
 
 interface NavData {
   devices: NavBrand[];
   sticks: NavStickBrand[];
+  deviceRootHref?: string;
+  stickRootHref?: string;
 }
 
 function getImageSrc(image: string) {
@@ -148,6 +153,8 @@ export default function Header() {
   /* ── find active data ── */
   const deviceBrands = navData?.devices || [];
   const stickBrands = navData?.sticks || [];
+  const deviceRootHref = navData?.deviceRootHref || "/catalog/devices";
+  const stickRootHref = navData?.stickRootHref || "/catalog/sticks";
   const currentDeviceBrand = deviceBrands.find((b) => b.name === activeBrand);
   const currentModel = currentDeviceBrand?.models.find((m) => m.name === activeModel);
 
@@ -172,7 +179,7 @@ export default function Header() {
             onMouseLeave={handleMouseLeave}
           >
             <Link
-              href="/catalog/nagrevateli-tabaka"
+              href={deviceRootHref}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-white/10 ${openDropdown === "Устройства" ? "bg-white/10" : ""}`}
             >
               Устройства
@@ -186,7 +193,7 @@ export default function Header() {
                 {/* Column 1: Brands */}
                 <div className="py-2 min-w-[180px] border-r border-border">
                   <Link
-                    href="/catalog/nagrevateli-tabaka"
+                    href={deviceRootHref}
                     className="block px-4 py-2 text-sm font-semibold text-accent hover:bg-bg-light transition-colors"
                     onClick={closeAll}
                   >
@@ -195,7 +202,7 @@ export default function Header() {
                   {deviceBrands.map((brand) => (
                     <Link
                       key={brand.name}
-                      href={`/catalog/nagrevateli-tabaka?brands=${encodeURIComponent(brand.name)}`}
+                      href={brand.href || `${deviceRootHref}?brands=${encodeURIComponent(brand.name)}`}
                       className={`px-4 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between ${activeBrand === brand.name ? "bg-bg-light font-semibold" : "hover:bg-bg-light"}`}
                       onMouseEnter={() => handleBrandEnter(brand.name)}
                       onClick={closeAll}
@@ -214,7 +221,7 @@ export default function Header() {
                     {currentDeviceBrand.models.map((model) => (
                       <Link
                         key={model.name}
-                        href={`/catalog/nagrevateli-tabaka/${model.slug}`}
+                        href={model.href || `${deviceRootHref}/${model.slug}`}
                         className={`px-4 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between ${activeModel === model.name ? "bg-bg-light font-semibold" : "hover:bg-bg-light"}`}
                         onMouseEnter={() => handleModelEnter(model.name)}
                         onClick={closeAll}
@@ -264,7 +271,7 @@ export default function Header() {
             onMouseLeave={handleMouseLeave}
           >
             <Link
-              href="/catalog/stiki-dlya-nagrevatelej"
+              href={stickRootHref}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-white/10 ${openDropdown === "Стики" ? "bg-white/10" : ""}`}
             >
               Стики
@@ -276,7 +283,7 @@ export default function Header() {
             {openDropdown === "Стики" && (
               <div className="absolute top-full left-0 mt-1 bg-white text-text-dark rounded-xl shadow-2xl border border-border py-2 min-w-[240px] max-h-[500px] overflow-y-auto animate-scale-in z-50">
                 <Link
-                  href="/catalog/stiki-dlya-nagrevatelej"
+                  href={stickRootHref}
                   className="block px-4 py-2 text-sm font-semibold text-accent hover:bg-bg-light transition-colors"
                   onClick={closeAll}
                 >
@@ -285,7 +292,7 @@ export default function Header() {
                 {stickBrands.map((brand) => (
                   <Link
                     key={brand.slug}
-                    href={`/catalog/stiki-dlya-nagrevatelej/${brand.slug}`}
+                    href={brand.href || `${stickRootHref}/${brand.slug}`}
                     className="flex items-center justify-between px-4 py-2 text-sm hover:bg-bg-light transition-colors"
                     onClick={closeAll}
                   >
@@ -401,14 +408,14 @@ export default function Header() {
               </button>
               {mobileExpanded === "devices" && (
                 <div className="ml-3 space-y-0.5">
-                  <Link href="/catalog/nagrevateli-tabaka" className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
+                  <Link href={deviceRootHref} className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
                     Все устройства
                   </Link>
                   {deviceBrands.map((brand) => (
                     <div key={brand.name}>
                       <div className="flex items-center gap-1">
                         <Link
-                          href={`/catalog/nagrevateli-tabaka?brands=${encodeURIComponent(brand.name)}`}
+                          href={brand.href || `${deviceRootHref}?brands=${encodeURIComponent(brand.name)}`}
                           className={`flex-1 px-3 py-2 text-xs rounded transition-colors ${mobileBrand === brand.name ? "bg-white/10 text-white" : "text-white/70 hover:text-white"}`}
                           onClick={closeAll}
                         >
@@ -429,7 +436,7 @@ export default function Header() {
                             <div key={model.name}>
                               <div className="flex items-center gap-1">
                                 <Link
-                                  href={`/catalog/nagrevateli-tabaka/${model.slug}`}
+                                  href={model.href || `${deviceRootHref}/${model.slug}`}
                                   className={`flex-1 px-3 py-1.5 text-xs rounded transition-colors truncate ${mobileModel === model.name ? "bg-white/5 text-white" : "text-white/60 hover:text-white"}`}
                                   onClick={closeAll}
                                 >
@@ -479,13 +486,13 @@ export default function Header() {
               </button>
               {mobileExpanded === "sticks" && (
                 <div className="ml-3 space-y-0.5">
-                  <Link href="/catalog/stiki-dlya-nagrevatelej" className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
+                  <Link href={stickRootHref} className="block px-3 py-2 text-xs text-accent font-semibold" onClick={closeAll}>
                     Все стики
                   </Link>
                   {stickBrands.map((brand) => (
                     <Link
                       key={brand.slug}
-                      href={`/catalog/stiki-dlya-nagrevatelej/${brand.slug}`}
+                      href={brand.href || `${stickRootHref}/${brand.slug}`}
                       className="flex items-center justify-between px-3 py-2 text-xs text-white/70 hover:text-white transition-colors"
                       onClick={closeAll}
                     >
